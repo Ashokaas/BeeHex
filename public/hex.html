@@ -1,0 +1,64 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="../src/output.css" rel="stylesheet">
+    <script src="../node_modules/flowbite/dist/flowbite.min.js"></script>
+
+    <link rel="stylesheet" href="../src/hex.css">
+</head>
+
+
+<script>
+    document.querySelector('html').classList.add('dark');
+</script>
+
+<body class="bg-white dark:bg-slate-800">
+    <div id="grille">
+
+    </div>
+    
+    <script>
+    // Pour la première boucle
+for (let i = 0; i < 11; i++) {
+    let row = document.createElement('div');
+    row.classList.add('row');
+
+    // Pour la deuxième boucle à l'intérieur de la première
+    for (let j = 0; j <= i; j++) {
+        let hexagon = document.createElement('div');
+        hexagon.classList.add('hexagon');
+        hexagon.id = `${i - j}-${j}`;
+        row.appendChild(hexagon);
+    }
+
+    // Ajouter la ligne générée au document
+    document.getElementById("grille").appendChild(row);
+}
+
+// Pour la deuxième boucle
+for (let i = 0; i < 10; i++) {
+    let row = document.createElement('div');
+    row.classList.add('row');
+
+    // Pour la deuxième boucle à l'intérieur de la deuxième
+    for (let j = 0; j < 10 - i; j++) {
+        let hexagon = document.createElement('div');
+        hexagon.classList.add('hexagon');
+        hexagon.id = `${10 - j}-${i + j + 1}`;
+        row.appendChild(hexagon);
+    }
+
+    // Ajouter la ligne générée au document
+    document.getElementById("grille").appendChild(row);
+}
+   
+        
+    </script>
+
+
+    
+
+</body>
+</html>

@@ -1,0 +1,33 @@
+#grille {
+    margin-top: 3em;
+    display: flex;
+    flex-flow: column;
+    flex: none;
+    align-items: center;
+    transform: rotate(-60.15deg) scale(0.8);
+    margin: -300px 0px;
+
+}
+
+.hexagon {
+    width: 60px;
+    height: 70px;
+    background-color: rgb(85, 85, 85);
+    position: relative;
+    display: inline-block;
+    margin: -7px 0.15em;
+    -webkit-clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+
+}
+
+.hexagon:hover {
+    background-color: rgb(54, 54, 54);
+}
+
+
+@media screen and (max-width: 768px) {
+    #grille {
+        transform: rotate(-60.15deg) scale(0.5);
+    }
+}
