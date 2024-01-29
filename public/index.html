@@ -4,28 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="manifest" href="/pwa.webmanifest">
-    <title>BeeHex</title>
-    <link href="../src/output.css" rel="stylesheet">
-    <script src="../node_modules/flowbite/dist/flowbite.min.js"></script>
+    <title>BeeHex - Accueil</title>
+    <link rel="stylesheet" href="../src/css/index.css">
 
 </head>
+
+<script src="../dependencies/jquery-3.7.1/dist/jquery.min.js"></script>
 <script>
     document.querySelector('html').classList.add('dark');
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register("/sw.js");
     }
+
+    $(document).ready(function() {
+    $('#bottom_nav_bar_page').load('bottom_nav_bar.html');
+    });
 </script>
 
-<body class="bg-white dark:bg-slate-800">
-    <div class="text-center m-5">
-        <h1
-            class="mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white">
-            Bienvenue sur BeeHex</h1>
-        <p class="mb-6 text-lg font-normal text-gray-500 lg:text-xl sm:px-16 xl:px-48 dark:text-gray-400">
+<body>
+    <div>
+        <h1>Bienvenue sur BeeHex</h1>
+        <p>
             Sur ce site vous pourrez jouer au jeu de Hex. C'est un jeu de société qui est un jeu de société. Lorem Ipsum
             ?
         </p>
-        <ul class="space-y-1 text-gray-500 list-none dark:text-gray-400">
+        <ul>
             <li>Deux joueurs s'affrontent sur un tablier hexagonal.
             </li>
             <li>Chaque joueur a une couleur (rouge ou bleu).
@@ -35,43 +38,35 @@
             <li>Le premier joueur à relier les deux cotés du tablier gagne la partie.
             </li>
         </ul>
-        </p>
-        <br>
 
+        <br>
         <br>
         
         <div>
-        <div class="inline-flex rounded-md shadow-sm" role="group">
-            <button type="button" class="px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-l-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white">
+        <div>
+            <button>
                 Joueur vs Joueur
             </button>
-            <button type="button" class="px-4 py-2 text-sm font-medium text-gray-900 bg-white border-t border-b border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white">
+            <button>
                 Joueur vs Bot (facile)
             </button>
-            <button type="button" class="px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white">
+            <button>
                 Joueur vs Bot (moyen)
             </button>
-            <button type="button" class="px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-r-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-blue-500 dark:focus:text-white">
+            <button>
                 Joueur vs Bot (difficile)
             </button>
             
             
         </div>
 
-        <a href="#"
-            class="inline-flex items-center justify-center px-5 py-3 text-base font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-900">
-            Lancer une partie
-            <svg class="w-3.5 h-3.5 ms-2 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                fill="none" viewBox="0 0 14 10">
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M1 5h12m0 0L9 1m4 4L9 9" />
-            </svg>
-        </a>
+        <button>Lancer une partie</button>
         </div>
 
-        <img class="w-1/4 mx-auto mt-10" src="../src/img/logo.png" alt="Hex board">
+        <img src="../src/img/logo.png" alt="Logo">
     </div>
 
+    <div id="bottom_nav_bar_page"></div>
 
 </body>
 

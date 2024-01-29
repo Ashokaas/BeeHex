@@ -1,0 +1,12 @@
+.eslintignore
+.eslintrc.json
+
+/.editorconfig
+/.gitattributes
+/.mailmap
+
+/build
+/external
+/speed
+/test
+/Gruntfile.js

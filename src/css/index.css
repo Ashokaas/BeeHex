@@ -1,0 +1,23 @@
+@font-face {
+    font-family: Roboto;
+    src: url('../fonts/Roboto/Roboto-Medium.ttf')  format('truetype');
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Roboto;
+}
+
+
+
+body {
+    background-color: black;
+    color:white;
+}
+
+img {
+    width: 15em;
+    height: 15em;
+}
