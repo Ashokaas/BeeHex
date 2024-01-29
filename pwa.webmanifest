@@ -1,0 +1,13 @@
+{
+    "name": "Beehex",
+    "start_url" : "http://localhost:8080/public",
+    "display": "standalone",
+    "id": "beehex.test.dev",
+    "icons": [
+        {
+            "src": "src/img/144x144.png",
+            "sizes": "144x144",
+            "type": "image/png"
+        }
+    ]
+}

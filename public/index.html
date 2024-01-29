@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="/pwa.webmanifest">
     <title>BeeHex</title>
     <link href="../src/output.css" rel="stylesheet">
     <script src="../node_modules/flowbite/dist/flowbite.min.js"></script>
@@ -10,6 +11,9 @@
 </head>
 <script>
     document.querySelector('html').classList.add('dark');
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register("/sw.js");
+    }
 </script>
 
 <body class="bg-white dark:bg-slate-800">
