@@ -10,14 +10,58 @@
     font-family: Roboto;
 }
 
-
-
 body {
     background-color: black;
-    color:white;
+    color: white;
 }
 
-img {
-    width: 15em;
-    height: 15em;
+#home_content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+
+
+#home_content h1 {
+    font-size: 3rem;
+    font-weight: 500;
+    text-align: center;
+    margin: 2rem 0;
+}
+
+#home_content p {
+    font-size: 1.5rem;
+    font-weight: 300;
+    text-align: center;
+    margin: 2rem 0;
+}
+
+#home_content ul {
+    list-style-type: disc;
+}
+#home_content li {
+    margin: 1rem;
+}
+
+#home_content button {
+    background-color: rgb(43, 43, 43);
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    font-size: 1rem;
+    margin: 1rem;
+    cursor: pointer;
+}
+
+#home_content button:hover {
+    background-color: rgb(84, 84, 84);
+}
+
+
+#home_content img {
+    width: 15rem;
+    height: 15rem;
 }

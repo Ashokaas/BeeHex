@@ -21,8 +21,7 @@ body {
     justify-content: space-around;
     align-items: center;
     background-color: rgb(43, 43, 43);
-    position: fixed;
-    bottom: 0;
+    position: absolute;
     width: 100%;
 }
 
