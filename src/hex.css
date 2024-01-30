@@ -1,33 +1,66 @@
-#grille {
-    margin-top: 3em;
-    display: flex;
-    flex-flow: column;
-    flex: none;
-    align-items: center;
-    transform: rotate(-60.15deg) scale(0.8);
-    margin: -300px 0px;
-
-}
-
 .hexagon {
-    width: 60px;
+    /* width: calc(70px * calc(6 / 7)); */
+    aspect-ratio: 6 / 7;
     height: 70px;
     background-color: rgb(85, 85, 85);
     position: relative;
     display: inline-block;
-    margin: -7px 0.15em;
+    margin: -6px 0.02em;
+    margin-left: 6px;
     -webkit-clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
     clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-
+    
 }
-
+.spacer {
+    width: calc(70px * calc(6 / 14) + 3px);
+    height: 0px;
+    opacity: 0%;
+    position: relative;
+    display: inline-block;
+}
+.hexagon-grid {
+    white-space: nowrap;
+    position: absolute;
+}
+.hexagon-row {
+    white-space: nowrap;
+}
+.noselect {
+-webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+    -khtml-user-select: none; /* Konqueror HTML */
+        -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                supported by Chrome and Opera */
+}
+  
 .hexagon:hover {
     background-color: rgb(54, 54, 54);
 }
 
+.blue:hover {
+    background-color: royalblue;
+}
+
+.wall {
+    background-color: rgb(20, 20, 20);
+}
+
+.blue {
+    background-color: royalblue;
+}
+
+.red {
+    background-color: red;
+}
+
+.red:hover {
+    background-color: red;
+}
 
 @media screen and (max-width: 768px) {
-    #grille {
-        transform: rotate(-60.15deg) scale(0.5);
+    #hexagon-grid {
+        transform: scale(0.5);
     }
 }
