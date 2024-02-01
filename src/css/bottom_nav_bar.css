@@ -32,6 +32,7 @@
     justify-content: center;
     height: 10vh;
     width: 100%;
+    transition: all 0.3s;
 }
 
 #bottom_nav_bar a:hover {
