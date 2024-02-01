@@ -10,12 +10,32 @@
     <script src="../src/js/utils.js"></script>
 
     <script src="../src/js/hex.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            startGame(11);
+        });
+    </script>
+
     
 </head>
 
 <body>
 
-    <section id="hexagon-grid" class="noselect"> </section>
+    <div id="game_interface">
+        <div id="player1">
+            <h3>Joueur 1</h3>
+        </div>
+        <div id="hex_parent">
+            <h3>Au tour de [INSERER JOUEUR]</h3>
+            <section id="hexagon-grid" class="noselect"> </section>
+        </div>
+        <div id="player2">
+            <h3>Joueur 2</h3>
+        </div>
+        
+    </div>
+    
     <div id="bottom_nav_bar_parent"></div>
 
 </body>

@@ -47,7 +47,7 @@ body {
 }
 
 .blue:hover {
-    background-color: royalblue;
+    background-color: var(--blue-side);
 }
 
 .wall {
@@ -55,19 +55,53 @@ body {
 }
 
 .blue {
-    background-color: royalblue;
+    background-color: var(--blue-side);
 }
 
 .red {
-    background-color: red;
+    background-color: var(--red-side);
 }
 
 .red:hover {
-    background-color: red;
+    background-color: var(--red-side);
 }
 
 @media screen and (max-width: 768px) {
     #hexagon-grid {
         transform: scale(0.5);
     }
+}
+
+
+#game_interface {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    height: 90%;
+}
+
+#game_interface h3 {
+    color: var(--txt-color);
+    font-size: 2em;
+}
+
+#game_interface #player1 h3 {
+    color: var(--blue-side);
+}
+
+#game_interface #player2 h3 {
+    color: var(--red-side);
+}
+
+#game_interface #hex_parent {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 2vh;
+}
+
+#game_interface #hex_parent > * {
+    margin: 1vh 0;
 }
