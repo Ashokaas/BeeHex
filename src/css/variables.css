@@ -2,6 +2,8 @@
 
 :root {
     --bg-color: rgb(27, 27, 27);
+    --bg-color-secondary: rgb(54, 54, 54);
+    
     --txt-color: rgb(241, 241, 241);
     --txt-color-100: rgb(255, 255, 255);
 

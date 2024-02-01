@@ -33,6 +33,15 @@ body {
     margin: 2rem 0;
 }
 
+#home_content #rules {
+    background-color: var(--bg-color-secondary);
+    padding: 2vh 1.5vw;
+    border-radius: 30px;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+
+}
+
+
 #home_content p {
     font-size: 1.5rem;
     font-weight: 300;
