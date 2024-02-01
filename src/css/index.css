@@ -1,3 +1,5 @@
+@import url("variables.css");
+
 @font-face {
     font-family: Roboto;
     src: url('../fonts/Roboto/Roboto-Medium.ttf')  format('truetype');
@@ -11,8 +13,8 @@
 }
 
 body {
-    background-color: black;
-    color: white;
+    background-color: var(--bg-color);
+    color: var(--txt-color);
 }
 
 #home_content {
@@ -46,7 +48,7 @@ body {
 }
 
 #home_content button {
-    background-color: rgb(43, 43, 43);
+    background-color: var(--primary-accent-400);
     color: white;
     border: none;
     border-radius: 0.5rem;
@@ -57,7 +59,8 @@ body {
 }
 
 #home_content button:hover {
-    background-color: rgb(84, 84, 84);
+    background-color: var(--primary-accent-500);
+    color: var(--txt-color);
 }
 
 

@@ -1,0 +1,75 @@
+
+
+:root {
+    --bg-color: rgb(27, 27, 27);
+    --txt-color: rgb(241, 241, 241);
+    --txt-color-100: rgb(255, 255, 255);
+
+    --primary: #ffd400;
+    --primary-100: #332b00;
+    --primary-200: #665500;
+    --primary-300: #998000;
+    --primary-400: #ccaa00;
+    --primary-500: #ffd400;
+    --primary-600: #ffdd33;
+    --primary-700: #ffe666;
+    --primary-800: #ffee99;
+    --primary-900: #fff6cc;
+
+    --primary-light: #f2e318;
+    --primary-light-100: #322f03;
+    --primary-light-200: #645e06;
+    --primary-light-300: #968d09;
+    --primary-light-400: #c8bc0c;
+    --primary-light-500: #f2e318;
+    --primary-light-600: #f4e946;
+    --primary-light-700: #f7ee74;
+    --primary-light-800: #faf4a2;
+    --primary-light-900: #fcf9d1;
+  
+    --primary-accent: #ff9d00;
+    --primary-accent-100: #331f00;
+    --primary-accent-200: #663f00;
+    --primary-accent-300: #995e00;
+    --primary-accent-400: #cc7e00;
+    --primary-accent-500: #ff9d00;
+    --primary-accent-600: #ffb133;
+    --primary-accent-700: #ffc466;
+    --primary-accent-800: #ffd899;
+    --primary-accent-900: #ffebcc;
+
+    --secondary: #749e35;
+    --secondary-100: #171f0a;
+    --secondary-200: #2e3f15;
+    --secondary-300: #455e1f;
+    --secondary-400: #5c7d2a;
+    --secondary-500: #749e35;
+    --secondary-600: #93c34a;
+    --secondary-700: #aed278;
+    --secondary-800: #c9e1a5;
+    --secondary-900: #e4f0d2;
+  
+    --secondary-light: #8abc40;
+    --secondary-light-100: #1b250d;
+    --secondary-light-200: #374a19;
+    --secondary-light-300: #527026;
+    --secondary-light-400: #6e9533;
+    --secondary-light-500: #8abc40;
+    --secondary-light-600: #a1ca64;
+    --secondary-light-700: #b9d78b;
+    --secondary-light-800: #d0e4b1;
+    --secondary-light-900: #e8f2d8;
+  
+  
+    --blue-main: var(--blue-500);
+    --blue-100: #cfe8ff;
+    --blue-200: #9ec2ff;
+    --blue-300: #6d9aff;
+    --blue-400: #3c73ff;
+    --blue-500: #0b4bff;
+    --blue-600: #083aa6;
+    --blue-700: #052874;
+    --blue-800: #031743;
+    --blue-900: #000d11;
+  }
+  

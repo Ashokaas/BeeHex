@@ -1,3 +1,10 @@
+@import url("variables.css");
+
+body {
+    background-color: var(--bg-color);
+}
+
+
 .hexagon {
     /* width: calc(70px * calc(6 / 7)); */
     aspect-ratio: 6 / 7;

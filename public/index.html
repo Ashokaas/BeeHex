@@ -5,20 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="manifest" href="/pwa.webmanifest">
     <title>BeeHex - Accueil</title>
+    <link rel="icon" href="../src/icons/icon-128.png">
     <link rel="stylesheet" href="../src/css/index.css">
 
 </head>
 
 <script src="../dependencies/jquery-3.7.1/dist/jquery.min.js"></script>
+<script src="../src/js/utils.js"></script>
 <script>
-    document.querySelector('html').classList.add('dark');
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register("/sw.js");
     }
-
-    $(document).ready(function() {
-    $('#bottom_nav_bar_page').load('bottom_nav_bar.html');
-    });
 </script>
 
 <body>
@@ -62,10 +59,10 @@
 
         </div>
 
-        <img src="../src/img/logo.png" alt="Logo">
+        <img src="../src/svgs/logo.svg" alt="Logo">
     </div>
 
-    <div id="bottom_nav_bar_page"></div>
+    <div id="bottom_nav_bar_parent"></div>
 
 </body>
 
