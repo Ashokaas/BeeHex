@@ -1,12 +1,16 @@
 
 let currentGame;
 
+var unsavedChanges = false;
+
 const hexagonStates = {
     0 : "empty",
     1 : "player1",
     2 : "player2",
     3 : "wall"
 }
+
+
 function generateGrid(n) {
     let hexSection = document.querySelector("#hexagon-grid");
     hexSection.innerHTML = "";
@@ -21,17 +25,60 @@ function generateGrid(n) {
             row.appendChild(spacer);
         }
         for (let j = 0; j < n; j++) {
+            let greenHex = document.createElement("div");
+            greenHex.classList.add("hexagon_border");
+            
+            // (Ouest) Si première colonne
+            if (j === 0 && (i > 0 && i < n-1) ) {
+                greenHex.classList.add("hexagon_w_border");
+            } 
+            // (Nord) Si première ligne
+            else if (i === 0 && (j > 0 && j < n-1)) {
+                greenHex.classList.add("hexagon_n_border");
+            }
+            // (Est) Si dernière colonne
+            else if (j === n-1 && (i > 0 && i < n-1)) {
+                greenHex.classList.add("hexagon_e_border");
+            } 
+            // (Sud) Si dernière ligne
+            else if (i === n-1 && (j > 0 && j < n-1)) {
+                greenHex.classList.add("hexagon_s_border");
+            }
+
+            // (Nord-Ouest) Si première ligne et première colonne
+            else if (i === 0 && j === 0) {
+                greenHex.classList.add("hexagon_nw_border");
+            }
+            // (Nord-Est) Si première ligne et dernière colonne
+            else if (i === 0 && j === n-1) {
+                greenHex.classList.add("hexagon_ne_border");
+            }
+            // (Sud-Ouest) Si dernière ligne et première colonne
+            else if (i === n-1 && j === 0) {
+                greenHex.classList.add("hexagon_sw_border");
+            }
+            // (Sud-Est) Si dernière ligne et dernière colonne
+            else if (i === n-1 && j === n-1) {
+                greenHex.classList.add("hexagon_se_border");
+            }
+
+
+            row.appendChild(greenHex);
+            
             let hex = document.createElement("div");
             hex.classList.add("hexagon");
             hex.classList.add(`${j}-${i}`);
             hex.setAttribute("onclick", "currentGame.clickHexagon(this)")
             row.appendChild(hex);
+
+
         }
     }
 }
 
 function startGame(n) {
     currentGame = new Game(n);
+    unsavedChanges = true;
     generateGrid(n)
 }
 
@@ -78,13 +125,14 @@ class Game {
             this.updateVisualHexagon(hexagon, this.turn)
             
             if (this.board.checkForWinnerXY(x, y)) {
+                unsavedChanges = false;
                 alert("Player " + this.turn + " wins!");
                 clearGrid();
                 currentGame = undefined;
             }
             this.turn = this.turn === 1 ? 2 : 1;
             this.turns++;
-            
+            document.getElementById("currentPlayer").innerText = `Au tour de ${hexagonStates[this.turn]}`
 
             
             
@@ -229,3 +277,9 @@ class Board {
 }
 
 
+// Demande de confirmation avant de quitter la page si la partie n'est pas terminée
+window.addEventListener('beforeunload', function (e) {
+    if (unsavedChanges) {
+        e.preventDefault();
+    }
+});
