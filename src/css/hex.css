@@ -35,58 +35,58 @@ body {
 .hexagon_w_border {
     background: conic-gradient(
         transparent 0deg 180deg,
-        var(--blue-side) 180deg 300deg,
+        var(--red-side) 180deg 300deg,
         transparent 300deg 360deg
       );
 }
 .hexagon_n_border {
     background: conic-gradient(
-        var(--red-side) 0deg 60deg,
+        var(--blue-side) 0deg 60deg,
         transparent 60deg 300deg,
-        var(--red-side) 300deg 360deg
+        var(--blue-side) 300deg 360deg
       );
 }
 .hexagon_e_border {
     background: conic-gradient(
-        var(--blue-side) 0deg 120deg,
+        var(--red-side) 0deg 120deg,
         transparent 120deg 360deg
       );
 }
 .hexagon_s_border {
     background: conic-gradient(
         transparent 0deg 120deg,
-        var(--red-side) 120deg 240deg,
+        var(--blue-side) 120deg 240deg,
         transparent 240deg 360deg
       );
 }
 .hexagon_nw_border {
     background: conic-gradient(
-        var(--red-side) 0deg 60deg,
+        var(--blue-side) 0deg 60deg,
         transparent 60deg 180deg,
-        var(--blue-side) 180deg 300deg,
-        var(--red-side) 300deg 360deg
+        var(--red-side) 180deg 300deg,
+        var(--blue-side) 300deg 360deg
       );
 }
 .hexagon_ne_border {
     background: conic-gradient(
-        var(--red-side) 0deg 30deg,
-        var(--blue-side) 30deg 120deg,
+        var(--blue-side) 0deg 30deg,
+        var(--red-side) 30deg 120deg,
         transparent 120deg 300deg,
-        var(--red-side) 300deg 360deg
+        var(--blue-side) 300deg 360deg
       );
 }
 .hexagon_se_border {
     background: conic-gradient(
-        var(--blue-side) 0deg 120deg,
-        var(--red-side) 120deg 240deg,
+        var(--red-side) 0deg 120deg,
+        var(--blue-side) 120deg 240deg,
         transparent 240deg 360deg
       );
 }
 .hexagon_sw_border {
     background: conic-gradient(
         transparent 0deg 120deg,
-        var(--red-side) 120deg 210deg,
-        var(--blue-side) 210deg 300deg,
+        var(--blue-side) 120deg 210deg,
+        var(--red-side) 210deg 300deg,
         transparent 300deg 360deg
       );
 }
@@ -160,11 +160,11 @@ body {
 }
 
 #game_interface #player1 h3 {
-    color: var(--blue-side);
+    color: var(--red-side);
 }
 
 #game_interface #player2 h3 {
-    color: var(--red-side);
+    color: var(--blue-side);
 }
 
 #game_interface #hex_parent {
