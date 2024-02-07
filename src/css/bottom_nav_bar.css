@@ -56,7 +56,7 @@
 }
 
 #bottom_nav_bar a img {
-    width: 10%;
-    height: auto;
+    width: 10vw;
+    max-height: 50%;
     filter: invert(100%);
 }

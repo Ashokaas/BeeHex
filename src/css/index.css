@@ -22,6 +22,7 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    margin: 0 10% 10% 10%;
 }
 
 
@@ -35,7 +36,7 @@ body {
 
 #home_content #rules {
     background-color: var(--bg-color-secondary);
-    padding: 2vh 1.5vw;
+    padding: 4vh;
     border-radius: 30px;
     box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 
@@ -56,10 +57,18 @@ body {
     margin: 1rem;
 }
 
-#home_content button {
+#home_content #buttons {
+    display: flex;
+    justify-content: space-evenly;
+    flex-flow: row wrap;
+}
+
+#home_content #buttons button {
     background-color: var(--primary-accent-400);
     color: white;
     border: none;
+    width: 30%;
+    height: auto;
     border-radius: 0.5rem;
     padding: 1rem;
     font-size: 1rem;

@@ -23,20 +23,29 @@
 <body>
 
     <div id="game_interface">
-        <div id="player1">
-            <h3>Joueur 1</h3>
-        </div>
+        
         <div id="hex_parent">
-            <h3 id="currentPlayer">Au tour de [INSERER JOUEUR]</h3>
             <section id="hexagon-grid" class="noselect"> </section>
         </div>
-        <div id="player2">
-            <h3>Joueur 2</h3>
+        <div id="players">
+            <div id="player1">
+                <div class="players_title">
+                    <h3>Joueur 1</h3>
+                    <div id="player1_status"></div>
+                </div>
+            </div>
+            <div id="player2">
+                <div class="players_title">
+                    <h3>Joueur 2</h3>
+                    <div id="player2_status"></div>
+                </div>
+            </div>
         </div>
         
     </div>
     
     <div id="bottom_nav_bar_parent"></div>
+
 
 </body>
 </html>
