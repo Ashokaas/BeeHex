@@ -8,7 +8,9 @@
     --txt-color-100: rgb(255, 255, 255);
 
     --blue-side: royalblue;
+    --blue-side-secondary: rgb(35, 63, 148);
     --red-side: red;
+    --red-side-secondary: rgb(148, 10, 0);
 
     --primary: #ffd400;
     --primary-100: #332b00;
