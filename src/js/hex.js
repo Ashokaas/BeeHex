@@ -25,7 +25,15 @@ function generateGrid(n) {
             row.appendChild(spacer);
         }
         for (let j = 0; j < n; j++) {
+            let first_border = document.createElement("div")
+            first_border.classList.add("hexagon_border")
+            first_border.style.transform = "scale(1.2)"
+            first_border.style.backgroundColor = "rgb(27, 27, 27)"
+            row.appendChild(first_border)
+
+
             let greenHex = document.createElement("div");
+            greenHex.style.zIndex = "-10"
             greenHex.classList.add("hexagon_border");
             
             // (Ouest) Si première colonne
@@ -79,6 +87,7 @@ function generateGrid(n) {
 function startGame(n) {
     currentGame = new Game(n);
     unsavedChanges = true;
+    document.getElementById(`player1_status`).classList.add("current_player");
     generateGrid(n)
 }
 
@@ -130,9 +139,10 @@ class Game {
                 clearGrid();
                 currentGame = undefined;
             }
+            document.getElementById(`player${this.turn}_status`).classList.remove("current_player");
             this.turn = this.turn === 1 ? 2 : 1;
             this.turns++;
-            document.getElementById("currentPlayer").innerText = `Au tour de ${hexagonStates[this.turn]}`
+            document.getElementById(`player${this.turn}_status`).classList.add("current_player");
 
             
             
@@ -277,9 +287,36 @@ class Board {
 }
 
 
+$(document).ready(function() {
+    function scaleHexagonGrid() {
+        const hexagonGrid = $('#hexagon-grid');
+        const outerWidth = hexagonGrid.outerWidth();
+
+        if (outerWidth === 0) {
+            console.log(outerWidth);
+            setTimeout(scaleHexagonGrid, 100);
+            return;
+        }
+
+        const screen_width = window.innerWidth;
+        if (screen_width < 1115) {
+            hexagonGrid.css('transform', `scale(${(screen_width / outerWidth) - 0.05})`);
+        } else {
+            hexagonGrid.css('transform', 'scale(1.0)');
+        }
+        console.log(screen_width, outerWidth);
+    }
+
+    scaleHexagonGrid();
+
+    window.addEventListener('resize', scaleHexagonGrid);
+});
+
+
 // Demande de confirmation avant de quitter la page si la partie n'est pas terminée
-window.addEventListener('beforeunload', function (e) {
+/*window.addEventListener('beforeunload', function (e) {
     if (unsavedChanges) {
         e.preventDefault();
     }
-});
+});*/
+

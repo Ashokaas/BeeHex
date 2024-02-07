@@ -2,6 +2,7 @@
 
 body {
     background-color: var(--bg-color);
+    overflow-x: hidden;
 }
 
 
@@ -28,65 +29,65 @@ body {
     clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
 
     position: absolute;
-    transform: scale(1.2);
+    transform: scale(1.5);
 
     
 }
 .hexagon_w_border {
     background: conic-gradient(
         transparent 0deg 180deg,
-        var(--red-side) 180deg 300deg,
+        var(--red-side-secondary) 180deg 300deg,
         transparent 300deg 360deg
       );
 }
 .hexagon_n_border {
     background: conic-gradient(
-        var(--blue-side) 0deg 60deg,
+        var(--blue-side-secondary) 0deg 60deg,
         transparent 60deg 300deg,
-        var(--blue-side) 300deg 360deg
+        var(--blue-side-secondary) 300deg 360deg
       );
 }
 .hexagon_e_border {
     background: conic-gradient(
-        var(--red-side) 0deg 120deg,
+        var(--red-side-secondary) 0deg 120deg,
         transparent 120deg 360deg
       );
 }
 .hexagon_s_border {
     background: conic-gradient(
         transparent 0deg 120deg,
-        var(--blue-side) 120deg 240deg,
+        var(--blue-side-secondary) 120deg 240deg,
         transparent 240deg 360deg
       );
 }
 .hexagon_nw_border {
     background: conic-gradient(
-        var(--blue-side) 0deg 60deg,
+        var(--blue-side-secondary) 0deg 60deg,
         transparent 60deg 180deg,
-        var(--red-side) 180deg 300deg,
-        var(--blue-side) 300deg 360deg
+        var(--red-side-secondary) 180deg 300deg,
+        var(--blue-side-secondary) 300deg 360deg
       );
 }
 .hexagon_ne_border {
     background: conic-gradient(
-        var(--blue-side) 0deg 30deg,
-        var(--red-side) 30deg 120deg,
+        var(--blue-side-secondary) 0deg 30deg,
+        var(--red-side-secondary) 30deg 120deg,
         transparent 120deg 300deg,
-        var(--blue-side) 300deg 360deg
+        var(--blue-side-secondary) 300deg 360deg
       );
 }
 .hexagon_se_border {
     background: conic-gradient(
-        var(--red-side) 0deg 120deg,
-        var(--blue-side) 120deg 240deg,
+        var(--red-side-secondary) 0deg 120deg,
+        var(--blue-side-secondary) 120deg 240deg,
         transparent 240deg 360deg
       );
 }
 .hexagon_sw_border {
     background: conic-gradient(
         transparent 0deg 120deg,
-        var(--blue-side) 120deg 210deg,
-        var(--red-side) 210deg 300deg,
+        var(--blue-side-secondary) 120deg 210deg,
+        var(--red-side-secondary) 210deg 300deg,
         transparent 300deg 360deg
       );
 }
@@ -139,18 +140,10 @@ body {
     background-color: var(--red-side);
 }
 
-@media screen and (max-width: 768px) {
-    #hexagon-grid {
-        transform: scale(0.5);
-    }
-}
-
 
 #game_interface {
     display: flex;
     flex-direction: row;
-    justify-content: center;
-    align-items: center;
     height: 90%;
 }
 
@@ -177,4 +170,80 @@ body {
 
 #game_interface #hex_parent > * {
     margin: 1vh 0;
+}
+
+#players {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 2vh;
+    width: 100%;
+}
+
+#players > * {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 1%;
+    width: 100%;
+    height: 100%;
+}
+
+.players_title {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+
+
+}
+
+.players_title > * {
+    margin: 0 2%;
+    text-wrap: nowrap;
+}
+
+.players_title > div {
+    width: 2vh;
+    height: 2vh;
+    background-color: grey;
+    border-radius: 50%;
+}
+
+
+.current_player {
+    animation: currentPlayer 2s infinite ease-in-out;
+}
+
+@keyframes currentPlayer {
+    0% {
+        transform: scale(1);
+        background-color: var(--primary-400);
+    }
+    50% {
+        transform: scale(1.2);
+        background-color: var(--primary);
+    }
+    100% {
+        transform: scale(1);
+        background-color: var(--primary-400);
+
+    }
+}
+
+
+
+
+@media screen and (max-width: 1115px) {
+    #game_interface {
+        display: flex;
+        flex-direction: column !important;
+        margin-bottom: 200px;
+    }
+
+
+
 }
