@@ -35,7 +35,7 @@ body {
 }
 
 #home_content #rules {
-    background-color: var(--bg-color-secondary);
+    background-image: linear-gradient(to bottom, var(--bg-color-secondary) 0%, rgba(255, 212, 0, 0.05) 100%);
     padding: 4vh;
     border-radius: 30px;
     box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
@@ -69,16 +69,15 @@ body {
     border: none;
     width: 30%;
     height: auto;
-    border-radius: 0.5rem;
-    padding: 1rem;
+    border-radius: 2vw;
+    padding: 2vh;
     font-size: 1rem;
-    margin: 1rem;
+    margin: 2vh;
     cursor: pointer;
 }
 
 #home_content button:hover {
-    background-color: var(--primary-accent-500);
-    color: var(--txt-color);
+    background-color: var(--primary-accent-500) !important;
 }
 
 
