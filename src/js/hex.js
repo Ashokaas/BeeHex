@@ -301,8 +301,10 @@ $(document).ready(function() {
         const screen_width = window.innerWidth;
         if (screen_width < 1115) {
             hexagonGrid.css('transform', `scale(${(screen_width / outerWidth) - 0.05})`);
+            hexagonGrid.css('margin', `${-1/(screen_width / outerWidth)*50}`)
         } else {
             hexagonGrid.css('transform', 'scale(1.0)');
+            hexagonGrid.css('margin', `0`)
         }
         console.log(screen_width, outerWidth);
     }
