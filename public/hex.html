@@ -13,7 +13,7 @@
 
     <script>
         $(document).ready(function() {
-            startGame(11);
+            startGame(9);
         });
     </script>
 
@@ -29,19 +29,19 @@
         </div>
         <!-- Statistiques des joueurs -->
         <div id="players">
-            <!-- Joueur 1 -->
-            <div id="player1">
-                <div class="players_title">
-                    <h3>Joueur 1</h3>
-                    <div id="player1_status"></div>
+            <div id="game-status">
+                <div id="player1-status" class="player-status">
+                    <h1 id="player1-name" class="player-name">Joueur 1</h1>
+                    <h1 id="player1-timer" class="player-timer">X:XX</h1>
+                </div>
+                <div id="player2-status" class="player-status">
+                    <h1 id="player2-name" class="player-name">Joueur 2</h1>
+                    <h1 id="player2-timer"  class="player-timer">X:XX</h1>
                 </div>
             </div>
-            <!-- Joueur 2 -->
-            <div id="player2">
-                <div class="players_title">
-                    <h3>Joueur 2</h3>
-                    <div id="player2_status"></div>
-                </div>
+            <div id="victory_screen">
+                <h1 id="victory_text">Victoire de <span>Joueur 1</span></h1>
+                <button onclick="startGame(9)">Rejouer</button>
             </div>
         </div>
         

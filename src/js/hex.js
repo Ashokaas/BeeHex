@@ -85,9 +85,11 @@ function generateGrid(n) {
 }
 
 function startGame(n) {
+    clearGrid();
     currentGame = new Game(n);
     unsavedChanges = true;
-    document.getElementById(`player1_status`).classList.add("current_player");
+    // document.getElementById(`player1_status`).classList.add("current_player");
+    document.getElementById('victory_screen').style.display = "none";
     generateGrid(n)
 }
 
@@ -123,27 +125,38 @@ class Game {
         this.turns = 0;
         this.player1Color = "red";
         this.player2Color = "blue";
+        document.getElementById('player'+ this.turn + '-timer').classList.add(this["player" + this.turn + "Color"]);
+        document.getElementById('player'+ this.turn + '-timer').classList.add("active-timer");
     }
     
     clickHexagon(hexagon) {
         let coords = hexagon.classList[1].split("-");
         let x = parseInt(coords[0]);
         let y = parseInt(coords[1]);
+        console.log(this.board.grid);
         if (this.board.isValidPlacementXY(x, y)) {
             this.board.applyMoveXY(x, y, this.turn);
             this.updateVisualHexagon(hexagon, this.turn)
             
-            if (this.board.checkForWinnerXY(x, y)) {
+            let result = this.board.checkForWinnerXY(x, y);
+            if (result.winner) {
                 unsavedChanges = false;
-                alert("Player " + this.turn + " wins!");
-                clearGrid();
+                document.getElementById('victory_screen').style.display = "flex";
+                document.getElementById('victory_screen').getElementsByTagName('span')[0].innerText = `Joueur ${this.turn}`;
+                document.getElementById(`player${this.turn}-timer`).classList.remove(`${this[`player${this.turn}Color`]}`);
+                document.getElementById(`player${this.turn}-timer`).classList.remove("active-timer");
                 currentGame = undefined;
+                return;
             }
-            document.getElementById(`player${this.turn}_status`).classList.remove("current_player");
+         //   document.getElementById(`player${this.turn}_status`).classList.remove("current_player");
+            
+            document.getElementById(`player${this.turn}-timer`).classList.remove(`${this[`player${this.turn}Color`]}`);
+            document.getElementById(`player${this.turn}-timer`).classList.remove("active-timer");
             this.turn = this.turn === 1 ? 2 : 1;
             this.turns++;
-            document.getElementById(`player${this.turn}_status`).classList.add("current_player");
-
+         //   document.getElementById(`player${this.turn}_status`).classList.add("current_player");
+            document.getElementById(`player${this.turn}-timer`).classList.add(`${this[`player${this.turn}Color`]}`);
+            document.getElementById(`player${this.turn}-timer`).classList.add("active-timer");
             
             
         }
@@ -200,22 +213,29 @@ class Board {
     checkForWinnerXY(x, y) {
         let hexagonState = this.grid[y][x];
         if (hexagonState != 1 && hexagonState != 2) {
-            console.warn("Check for winner called on hexagon of type " + hexagonState + ".")
-            return false;
+            console.warn("Check for winner called on hexagon of type " + hexagonState + ".");
+            return { winner: false, winningHexagons: [] };
         }
-        let hexagonsToCheck = [[x, y]]
+    
+        let hexagonsToCheck = [[x, y]];
         let checkedHexagons = [];
+        let winningHexagons = [];
         let lowerBound = false;
         let higherBound = false;
+    
         while (hexagonsToCheck.length > 0) {
             let hexagon = hexagonsToCheck.pop();
-            checkedHexagons.push(this.hashHexagon(hexagon))
+            checkedHexagons.push(this.hashHexagon(hexagon));
+            winningHexagons.push(hexagon); // Ajout de l'hexagone à la liste gagnante
+    
             let ownSurroundingHexagons = this.filterHexagons(this.getSurroundingHexagons(hexagon[0], hexagon[1]), hexagonState);
+    
             for (let ownHexagon of ownSurroundingHexagons) {
                 if (!checkedHexagons.includes(this.hashHexagon(ownHexagon))) {
                     hexagonsToCheck.push(ownHexagon);
                 }
             }
+    
             if (hexagonState === 1) {
                 if (hexagon[0] === 0) {
                     lowerBound = true;
@@ -231,13 +251,15 @@ class Board {
                     higherBound = true;
                 }
             }
-
+    
             if (lowerBound && higherBound) {
-                return true;
+                return { winner: true, winningHexagons: winningHexagons };
             }
         }
-        return false;
+    
+        return { winner: false, winningHexagons: [] };
     }
+    
 
     hashXY(x, y) {
         return x + y * this.size
@@ -300,13 +322,13 @@ $(document).ready(function() {
 
         const screen_width = window.innerWidth;
         if (screen_width < 1115) {
-            hexagonGrid.css('transform', `scale(${(screen_width / outerWidth) - 0.05})`);
-            hexagonGrid.css('margin', `${-1/(screen_width / outerWidth)*50}`)
+            hexagonGrid.css('transform', `scale(${(screen_width / (outerWidth*1.25))})`);
+            //hexagonGrid.css('margin', `${-1/(screen_width / outerWidth)*50}`)
         } else {
             hexagonGrid.css('transform', 'scale(1.0)');
-            hexagonGrid.css('margin', `0`)
+            //hexagonGrid.css('margin', `0`)
         }
-        console.log(screen_width, outerWidth);
+        //console.log(screen_width, outerWidth);
     }
 
     scaleHexagonGrid();

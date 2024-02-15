@@ -116,6 +116,146 @@ body {
                                 supported by Chrome and Opera */
 }
   
+#game_interface {
+    display: grid;
+    height: 90vh;
+    grid-template-columns: 4fr 2fr;
+}
+
+#game_interface h3 {
+    color: var(--txt-color);
+    font-size: 2em;
+}
+
+#game_interface #player1 h3 {
+    color: var(--red-side);
+}
+
+#game_interface #player2 h3 {
+    color: var(--blue-side);
+}
+
+#game_interface #hex_parent {
+    grid-column: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2vh;
+}
+
+#game_interface #hex_parent > * {
+    margin: 1vh 0;
+}
+
+#players {
+    grid-column: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: rgba(60, 60, 60, 0.3);
+    max-width: 600px;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+
+#game-status {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin: 4%;
+    width: 95%;
+}
+
+.player-timer {
+    padding: 10px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    margin-top: 5px;
+    font-size: 3em;
+    background-color: var(--bg-color);
+    color: gray;
+
+}
+
+.player-status {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 50%;
+    height: 100%;
+}
+
+#player1-name {
+    color: var(--red-side);
+}
+
+#player2-name {
+    color: var(--blue-side);
+}
+
+.players_title {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.players_title > * {
+    margin: 0 2%;
+    text-wrap: nowrap;
+}
+
+.players_title > div {
+    width: 2vh;
+    height: 2vh;
+    background-color: grey;
+    border-radius: 50%;
+}
+
+#victory_screen {
+    margin-top: 10%;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+#victory_screen button {
+    background-color: var(--primary-accent-400);
+    color: white;
+    border: none;
+    height: auto;
+    border-radius: 2vw;
+    width: 90%;
+    padding: 2vh;
+    font-size: 1rem;
+    margin: 2vh;
+    cursor: pointer;
+}
+
+#victory_screen button:hover {
+    background-color: var(--primary-accent-500) !important;
+}
+
+
+
+
+
+@media screen and (max-width: 1175px) {
+    #game_interface {
+        display: flex;
+        flex-direction: column !important;
+        margin-bottom: 200px;
+        justify-content: center;
+    }
+    #players {
+        max-width: 1775px;
+    }
+
+
+
+
+}
 .hexagon:hover {
     background-color: rgb(54, 54, 54);
 }
@@ -140,110 +280,6 @@ body {
     background-color: var(--red-side);
 }
 
-
-#game_interface {
-    display: flex;
-    flex-direction: row;
-    height: 90%;
-}
-
-#game_interface h3 {
-    color: var(--txt-color);
-    font-size: 2em;
-}
-
-#game_interface #player1 h3 {
-    color: var(--red-side);
-}
-
-#game_interface #player2 h3 {
-    color: var(--blue-side);
-}
-
-#game_interface #hex_parent {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 2vh;
-}
-
-#game_interface #hex_parent > * {
-    margin: 1vh 0;
-}
-
-#players {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 2vh;
-    width: 100%;
-}
-
-#players > * {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    margin: 1%;
-    width: 100%;
-    height: 100%;
-}
-
-.players_title {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-
-
-}
-
-.players_title > * {
-    margin: 0 2%;
-    text-wrap: nowrap;
-}
-
-.players_title > div {
-    width: 2vh;
-    height: 2vh;
-    background-color: grey;
-    border-radius: 50%;
-}
-
-
-.current_player {
-    animation: currentPlayer 2s infinite ease-in-out;
-}
-
-@keyframes currentPlayer {
-    0% {
-        transform: scale(1);
-        background-color: var(--primary-400);
-    }
-    50% {
-        transform: scale(1.2);
-        background-color: var(--primary);
-    }
-    100% {
-        transform: scale(1);
-        background-color: var(--primary-400);
-
-    }
-}
-
-
-
-
-@media screen and (max-width: 1115px) {
-    #game_interface {
-        display: flex;
-        flex-direction: column !important;
-        margin-bottom: 200px;
-    }
-
-
-
+.active-timer {
+    color: lightgray;
 }
