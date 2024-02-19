@@ -237,9 +237,25 @@ body {
     background-color: var(--primary-accent-500) !important;
 }
 
+#revert-button {
+    display: flex;
+    color : lightgray;
+    position: sticky;
+    font-family: Roboto, sans-serif;
+    font-size: 2.5em;
+    width: 100%;
+    height: 10%;
+    align-self:flex-end;
+    bottom: 0%;
+    justify-content: center;
+    text-align: center;
+    align-items: center;
+    border-radius: 2vw;
+}
 
-
-
+#revert-button:hover {
+    background-color: rgb(85, 85, 85) !important;
+}
 
 @media screen and (max-width: 1175px) {
     #game_interface {

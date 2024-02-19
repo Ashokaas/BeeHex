@@ -40,9 +40,11 @@
                 </div>
             </div>
             <div id="victory_screen">
-                <h1 id="victory_text">Victoire de <span>Joueur 1</span></h1>
+                <h1 id="victory_text" class="noselect">Victoire du <span>Joueur 1</span></h1>
                 <button onclick="startGame(9)">Rejouer</button>
             </div>
+            <div id="revert-button" class="noselect" onclick="currentGame.revertMove()"><span>⬅ Annuler</span></div>
+
         </div>
         
     </div>

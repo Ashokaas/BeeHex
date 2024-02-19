@@ -90,6 +90,7 @@ function startGame(n) {
     unsavedChanges = true;
     // document.getElementById(`player1_status`).classList.add("current_player");
     document.getElementById('victory_screen').style.display = "none";
+    document.getElementById('revert-button').style.display = "flex";
     generateGrid(n)
 }
 
@@ -121,6 +122,7 @@ function generateRandomGrid(n) {
 class Game {
     constructor(size) {
         this.board = new Board(size);
+        this.previousBoards = [];
         this.turn = 1
         this.turns = 0;
         this.player1Color = "red";
@@ -133,8 +135,9 @@ class Game {
         let coords = hexagon.classList[1].split("-");
         let x = parseInt(coords[0]);
         let y = parseInt(coords[1]);
-        console.log(this.board.grid);
-        if (this.board.isValidPlacementXY(x, y)) {
+        //console.log(this.board.grid);
+        if (this.board.isValidPlacementXY(x, y) && (this.turns > 0  || this.board.size % 2 === 0 || x  != Math.floor(this.board.size / 2) || y != Math.floor(this.board.size / 2))) {
+            this.previousBoards.push(this.board.copy());
             this.board.applyMoveXY(x, y, this.turn);
             this.updateVisualHexagon(hexagon, this.turn)
             
@@ -142,6 +145,7 @@ class Game {
             if (result.winner) {
                 unsavedChanges = false;
                 document.getElementById('victory_screen').style.display = "flex";
+                document.getElementById('revert-button').style.display = "none";
                 document.getElementById('victory_screen').getElementsByTagName('span')[0].innerText = `Joueur ${this.turn}`;
                 document.getElementById(`player${this.turn}-timer`).classList.remove(`${this[`player${this.turn}Color`]}`);
                 document.getElementById(`player${this.turn}-timer`).classList.remove("active-timer");
@@ -161,6 +165,19 @@ class Game {
             
         }
     }
+
+    revertMove() {
+        if (this.previousBoards.length > 0) {
+            document.getElementById(`player${this.turn}-timer`).classList.remove(`${this[`player${this.turn}Color`]}`);
+            document.getElementById(`player${this.turn}-timer`).classList.remove("active-timer");
+            this.board = this.previousBoards.pop();
+            this.updateAllVisualHexagons();
+            this.turn = this.turn === 1 ? 2 : 1;
+            document.getElementById(`player${this.turn}-timer`).classList.add(`${this[`player${this.turn}Color`]}`);
+            document.getElementById(`player${this.turn}-timer`).classList.add("active-timer");
+            this.turns--;
+        }
+    }
     updateVisualHexagon(visualHexagon, state) {
         visualHexagon.classList.remove("empty", this.player1Color, this.player2Color, "wall");
         let stateClass = hexagonStates[state];
@@ -171,6 +188,16 @@ class Game {
             stateClass = this.player2Color;
         }
         visualHexagon.classList.add(stateClass);
+    }
+
+    updateAllVisualHexagons() {
+        let hexagons = document.querySelectorAll(".hexagon");
+        for (let hexagon of hexagons) {
+            let coords = hexagon.classList[1].split("-");
+            let x = parseInt(coords[0]);
+            let y = parseInt(coords[1]);
+            this.updateVisualHexagon(hexagon, this.board.grid[y][x]);
+        }
     }
 }
 
