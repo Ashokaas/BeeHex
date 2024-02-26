@@ -1,10 +1,10 @@
 {
   "name": "Beehex",
   "short_name": "Beehex",
-  "start_url": "127.0.0.1:5500/public",
+  "start_url": "beehex.fr",
   "description": "Jeu de stratégie et de réflexion",
   "display": "standalone",
-  "id": "beehex.test.dev",
+  "id": "beehex.fr",
   "icons": [
       {
         "src": "src/icons/icon-72.png",
