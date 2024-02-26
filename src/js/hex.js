@@ -91,7 +91,8 @@ function startGame(n) {
     // document.getElementById(`player1_status`).classList.add("current_player");
     document.getElementById('victory_screen').style.display = "none";
     document.getElementById('revert-button').style.display = "flex";
-    generateGrid(n)
+    applyTimerStatus(1, true);
+    
 }
 
 function clearGrid() {
@@ -117,6 +118,16 @@ function generateRandomGrid(n) {
     }, 500);
 }
 
+function applyTimerStatus(player, status) {
+    if (status) {
+        document.getElementById(`player${player}-timer`).classList.add("active-timer");
+        document.getElementById(`player${player}-timer`).classList.add(currentGame[`player${player}Color`]);
+    } else {
+        document.getElementById(`player${player}-timer`).classList.remove("active-timer");
+        document.getElementById(`player${player}-timer`).classList.remove(currentGame[`player${player}Color`]);
+    }
+}
+
 
 // Hexagon states : Empty = 0 | Player 1 = 1 | Player 2 = 2 | Wall = 3 
 class Game {
@@ -127,8 +138,8 @@ class Game {
         this.turns = 0;
         this.player1Color = "red";
         this.player2Color = "blue";
-        document.getElementById('player'+ this.turn + '-timer').classList.add(this["player" + this.turn + "Color"]);
-        document.getElementById('player'+ this.turn + '-timer').classList.add("active-timer");
+        generateGrid(size)
+        
     }
     
     clickHexagon(hexagon) {
@@ -147,20 +158,16 @@ class Game {
                 document.getElementById('victory_screen').style.display = "flex";
                 document.getElementById('revert-button').style.display = "none";
                 document.getElementById('victory_screen').getElementsByTagName('span')[0].innerText = `Joueur ${this.turn}`;
-                document.getElementById(`player${this.turn}-timer`).classList.remove(`${this[`player${this.turn}Color`]}`);
-                document.getElementById(`player${this.turn}-timer`).classList.remove("active-timer");
+                applyTimerStatus(1, false);
                 currentGame = undefined;
                 return;
             }
          //   document.getElementById(`player${this.turn}_status`).classList.remove("current_player");
-            
-            document.getElementById(`player${this.turn}-timer`).classList.remove(`${this[`player${this.turn}Color`]}`);
-            document.getElementById(`player${this.turn}-timer`).classList.remove("active-timer");
+            applyTimerStatus(this.turn, false);
             this.turn = this.turn === 1 ? 2 : 1;
             this.turns++;
          //   document.getElementById(`player${this.turn}_status`).classList.add("current_player");
-            document.getElementById(`player${this.turn}-timer`).classList.add(`${this[`player${this.turn}Color`]}`);
-            document.getElementById(`player${this.turn}-timer`).classList.add("active-timer");
+            applyTimerStatus(this.turn, true);
             
             
         }
@@ -168,13 +175,11 @@ class Game {
 
     revertMove() {
         if (this.previousBoards.length > 0) {
-            document.getElementById(`player${this.turn}-timer`).classList.remove(`${this[`player${this.turn}Color`]}`);
-            document.getElementById(`player${this.turn}-timer`).classList.remove("active-timer");
+            applyTimerStatus(this.turn, false);
             this.board = this.previousBoards.pop();
             this.updateAllVisualHexagons();
             this.turn = this.turn === 1 ? 2 : 1;
-            document.getElementById(`player${this.turn}-timer`).classList.add(`${this[`player${this.turn}Color`]}`);
-            document.getElementById(`player${this.turn}-timer`).classList.add("active-timer");
+            applyTimerStatus(this.turn, true);
             this.turns--;
         }
     }
@@ -359,7 +364,6 @@ $(document).ready(function() {
     }
 
     scaleHexagonGrid();
-
     window.addEventListener('resize', scaleHexagonGrid);
 });
 
