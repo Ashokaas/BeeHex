@@ -344,20 +344,29 @@ class Board {
 $(document).ready(function() {
     function scaleHexagonGrid() {
         const hexagonGrid = $('#hexagon-grid');
+        const hexagonParent = $('#hex_parent');
+        const playerPanel = $('#players');
+        const playerPanelWidth = playerPanel.outerWidth();
         const outerWidth = hexagonGrid.outerWidth();
-
+        const parentOuterWidth = hexagonParent.outerWidth();
+        const outerHeight = hexagonGrid.outerHeight();
+        const parentOuterHeight = hexagonParent.outerHeight();
+        const screen_width = Math.min(screen.availWidth, window.innerWidth)
+        const screen_height =  Math.min(screen.availHeight, window.innerHeight)
         if (outerWidth === 0) {
-            console.log(outerWidth);
             setTimeout(scaleHexagonGrid, 100);
             return;
         }
-
-        const screen_width = window.innerWidth;
-        if (screen_width < 1115) {
-            hexagonGrid.css('transform', `scale(${(screen_width / (outerWidth*1.25))})`);
-            //hexagonGrid.css('margin', `${-1/(screen_width / outerWidth)*50}`)
-        } else {
-            hexagonGrid.css('transform', 'scale(1.0)');
+        
+        const width_ratio = 1/(outerWidth/parentOuterWidth)*0.85
+        const height_ratio = 1/(outerHeight/parentOuterHeight)*0.85
+        hexagonGrid.css('transform', `scale(${Math.min(width_ratio, height_ratio)})`)
+        if (screen_width >= screen_height) {
+            hexagonParent.css('width', `${screen_width - playerPanelWidth}px`)
+           
+        }  else {
+            hexagonParent.css('max-width', `100%`);
+            hexagonParent.css('width', `100%`);
             //hexagonGrid.css('margin', `0`)
         }
         //console.log(screen_width, outerWidth);
@@ -365,6 +374,7 @@ $(document).ready(function() {
 
     scaleHexagonGrid();
     window.addEventListener('resize', scaleHexagonGrid);
+    scaleHexagonGrid();
 });
 
 
