@@ -264,13 +264,26 @@ body {
     #game_interface {
         display: flex;
         flex-direction: column !important;
-        margin-bottom: 200px;
         justify-content: center;
+        align-items: center;
+        width: 100%;
+        padding: 0%;
     }
     #players {
         max-width: 100%;
         width: 100%;
         height: auto;
+    }
+    #hex_parent {
+        padding: 0;
+        margin-bottom: 2.5%;
+        margin-top: 2.5%;
+        max-height: 60%;
+        width: 100%;
+    }
+    #revert-button {
+        height: 80px;
+        width: 100%;
     }
 
 

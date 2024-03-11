@@ -358,8 +358,8 @@ $(document).ready(function() {
             return;
         }
         
-        const width_ratio = 1/(outerWidth/parentOuterWidth)*0.85
-        const height_ratio = 1/(outerHeight/parentOuterHeight)*0.85
+        const width_ratio = 1/(outerWidth/parentOuterWidth)*0.92    
+        const height_ratio = 1/(outerHeight/parentOuterHeight)*0.92
         hexagonGrid.css('transform', `scale(${Math.min(width_ratio, height_ratio)})`)
         if (screen_width >= screen_height) {
             hexagonParent.css('width', `${screen_width - playerPanelWidth}px`)
@@ -371,9 +371,12 @@ $(document).ready(function() {
         }
         //console.log(screen_width, outerWidth);
     }
-
-    scaleHexagonGrid();
+    const resizeObserver = new ResizeObserver(entries => {
+        scaleHexagonGrid();
+    });
+    resizeObserver.observe(document.getElementById('hex_parent'));
     window.addEventListener('resize', scaleHexagonGrid);
+    screen.orientation.addEventListener('change', scaleHexagonGrid);
     scaleHexagonGrid();
 });
 
