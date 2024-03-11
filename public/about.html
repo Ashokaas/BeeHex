@@ -1,0 +1,43 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="/pwa.webmanifest">
+    <title>BeeHex - À propos</title>
+    <link rel="icon" href="../src/icons/icon-128.png">
+    <link rel="stylesheet" href="../src/css/index.css">
+
+</head>
+
+<script src="../dependencies/jquery-3.7.1/dist/jquery.min.js"></script>
+<script src="../src/js/utils.js"></script>
+<script>
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register("/sw.js");
+    }
+</script>
+
+<body>
+    <div id="home_content">
+        <h1>À propos</h1>
+        <p>
+            Ce projet a été réalisé par Théo BERGERAULT--ROTUREAU, Antonin MOREAU et Encadré par M. Emmanuel NÉRON durant le deuxième semestre de L1 à Polytech Tours.
+            <br><br>
+            Le code du projet est disponible sur <a href="https://github.com/Ashokaas/BeeHex">Github</a> et est open source.
+        </p>
+        
+        <br>
+        <br>
+        
+
+
+        <img src="../src/svgs/logo.svg" alt="Logo">
+
+    </div>
+
+    <div id="bottom_nav_bar_parent"></div>
+
+</body>
+
+</html>
