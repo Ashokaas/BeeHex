@@ -1,0 +1,39 @@
+@import url("variables.css");
+
+@font-face {
+    font-family: Roboto;
+    src: url('../fonts/Roboto/Roboto-Medium.ttf')  format('truetype');
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Roboto;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--txt-color);
+}
+
+#settings_content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+#settings_content > * {
+    margin: 1vh;
+}
+
+
+
+#new_preset form > div {
+    margin:  0;
+}
+
+#new_preset form > div > * {
+    margin: 5% 0;
+}

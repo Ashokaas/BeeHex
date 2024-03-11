@@ -84,13 +84,15 @@ function generateGrid(n) {
     }
 }
 
-function startGame(n) {
+function startGame(gridSize, j1_name, j2_name, j1_type, j2_type, timer) {
+    document.getElementById("player1-name").innerText = j1_name;
+    document.getElementById("player2-name").innerText = j2_name;
     clearGrid();
-    currentGame = new Game(n);
+    currentGame = new Game(gridSize);
     unsavedChanges = true;
     // document.getElementById(`player1_status`).classList.add("current_player");
     document.getElementById('victory_screen').style.display = "none";
-    generateGrid(n)
+    generateGrid(gridSize);
 }
 
 function clearGrid() {
@@ -334,6 +336,31 @@ $(document).ready(function() {
     scaleHexagonGrid();
 
     window.addEventListener('resize', scaleHexagonGrid);
+});
+
+
+
+$(document).ready(function() {
+    var dataReceived = localStorage.getItem("data");
+
+    if (dataReceived) {
+        var parsedData = JSON.parse(dataReceived);
+
+        for (var key in parsedData) {
+            if (parsedData.hasOwnProperty(key)) {
+                var value = parsedData[key];
+                console.log(key + ": " + value);
+
+            }
+        }
+
+        startGame(parsedData.grid_size_in, parsedData.j1_name, parsedData.j2_name, parsedData.j1_type, parsedData.j2_type, parsedData.timer);
+    } else {
+        startGame(9, "Joueur 1", "Joueur 2", "human", "human", false);
+    }
+
+    localStorage.removeItem("data");
+
 });
 
 

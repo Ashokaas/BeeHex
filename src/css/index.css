@@ -85,3 +85,12 @@ body {
     width: 15rem;
     height: 15rem;
 }
+
+a {
+    color: rgb(57, 57, 255);
+    text-decoration: none;
+}
+
+a:hover {
+    color: rgb(231, 42, 42);
+}

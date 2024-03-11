@@ -36,6 +36,7 @@
     width: 100%;
     transition: all 0.2s ease-out;
     border-radius: 2vw;
+    -webkit-tap-highlight-color: transparent;
 }
 
 /* LOGOS des menus */
