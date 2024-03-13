@@ -93,4 +93,20 @@ a {
 
 a:hover {
     color: rgb(231, 42, 42);
+    text-decoration: underline;
+}
+
+#logos {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#logos img {
+    transition: transform 0.3s;
+}
+
+#logos img:hover {
+    transform: scale(1.05);
 }

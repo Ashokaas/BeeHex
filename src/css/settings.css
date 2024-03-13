@@ -30,10 +30,67 @@ body {
 
 
 
-#new_preset form > div {
+form > div {
     margin:  0;
 }
 
-#new_preset form > div > * {
+form > div > * {
     margin: 5% 0;
 }
+
+form hr {
+    width: 100%;
+    margin: 5% 0;
+    border: 1px solid var(--txt-color);
+
+}
+
+input[type="text"] {
+    width: 100%;
+    padding: 1vh;
+    border: 1px solid var(--txt-color);
+    border-radius: 5px;
+    background-color: var(--bg-color);
+    color: var(--txt-color);
+    font-size: 1em;
+}
+
+input[type="submit"] {
+    background-color: var(--primary-accent-400);
+    color: white;
+    border: none;
+    width: 100%;
+    height: auto;
+    border-radius: 2vw;
+    padding: 2vh;
+    font-size: 1rem;
+    margin: 2vh 0;
+    cursor: pointer;
+}
+
+input[type="submit"]:hover {
+    background-color: var(--primary-accent-500) !important;
+}
+
+input[type="radio"] {
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    background-color: #ddd;
+    border-radius: 50%;
+    border: 2px solid var(--txt-color);
+    transition: all 0.3s ease;
+}
+
+input[type="radio"]:checked {
+    background-color: var(--primary-accent-400);
+}
+
+
+hr {
+    width: 100%;
+    filter: opacity(0.2);
+    margin: 5% 0;
+    border: 1px solid var(--txt-color);
+}
+

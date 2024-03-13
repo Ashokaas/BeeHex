@@ -3,17 +3,16 @@ var grid_size_out = document.getElementById('grid_size_out');
 
 // Transforme automatiquement la valeur de l'output en la valeur de l'input
 // (l'utilisateur peut taper '11' au lieu de taper '11x11)
-grid_size_in.addEventListener('input', function () {
+/*grid_size_in.addEventListener('input', function () {
     if (grid_size_in.value != '') {
         grid_size_out.innerText = grid_size_in.value;
     } else {
         grid_size_out.innerText = '11';
     }
-});
+});*/
 
 
-document.getElementById("start").addEventListener("click", function (event) {
-    console.log("start");
+function startGameWithSettings() {
     const form = document.forms.startGameWithSettings
     const formData = {};
 
@@ -50,4 +49,3 @@ document.getElementById("start").addEventListener("click", function (event) {
 
 
 }
-);

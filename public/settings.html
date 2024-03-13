@@ -17,14 +17,14 @@
         <p>Il vous permettent de créer des presets de jeu afin de pouvoir lancer des parties plus rapidement.</p>
 
 
-        <div id="new_preset">
+        <div id="settings_form">
             <form name="startGameWithSettings" id="startGameWithSettings">
                 <!--<div>
                     <label for="nom">Nom du preset :</label><br>
                     <input type="text" name="nom" id="nom" placeholder="preset 1" required>
-                </div>-->
+                </div>
 
-                <hr>
+                <hr>-->
 
                 <div>
                     <label for="j1_name">Pseudo du Joueur 1 :</label><br>
@@ -32,7 +32,7 @@
                     <br>
 
                     <label for="bot1">Bot</label>
-                    <input type="radio" name="j1_type" value="bot" id="bot1">
+                    <input type="radio" name="j1_type" value="bot" id="bot1"><br>
                     <label for="human1">Humain</label>
                     <input type="radio" name="j1_type" id="human1" value="human" checked>
                 </div>
@@ -43,7 +43,7 @@
                     <input type="text" name="j2_name" id="j2_name" placeholder="Cassoulet">
                     <br>
                     <label for="bot2">Bot</label>
-                    <input type="radio" name="j2_type" value="bot" id="bot2">
+                    <input type="radio" name="j2_type" value="bot" id="bot2"><br>
                     <label for="human2">Humain</label>
                     <input type="radio" name="j2_type" value="human" id="human2" checked>
                 </div>
@@ -52,17 +52,18 @@
                     <label for="grid_size_in">Taille de la grille :</label>
                     <input type="text" name="grid_size_in" id="grid_size_in" pattern="[0-9]{1,2}" placeholder="11"
                         size="2">
-                    <span>x</span>
-                    <output name="grid_size_out" id="grid_size_out">11</output>
+                    <!--<span>x</span>
+                    <output name="grid_size_out" id="grid_size_out">11</output>-->
                 </div>
                 <hr>
                 <div>
                     <label for="timer">Timer (0 pour durée illimitée) :</label>
                     <input type="text" name="timer" id="timer" placeholder="2:30" size="2">
-                    <span>min</span>
+                    <!--<span>min</span>-->
                 </div>
-                <hr>
-                <!--
+
+                <!--<hr>
+                
                 <div>
                     <p>Mode spécial :</p>
                     <label for="aucun">Aucun</label>
@@ -70,13 +71,9 @@
                     <label for="invisible">Invisible</label>
                     <input type="radio" name="special_mode" id="invisible">
                 </div>-->
-
-                
-
-
-
+                <input type="submit" onClick="startGameWithSettings()" value="Démarrer" id="start">
             </form>
-            <button id="start">Démarrer</button>
+            
             <!--
                 Nouveau preset
                 Joueur 1 : "nomdujoueur"
