@@ -107,13 +107,13 @@ body {
     white-space: nowrap;
 }
 .noselect {
--webkit-touch-callout: none; /* iOS Safari */
-    -webkit-user-select: none; /* Safari */
-    -khtml-user-select: none; /* Konqueror HTML */
-        -moz-user-select: none; /* Firefox */
-        -ms-user-select: none; /* Internet Explorer/Edge */
-            user-select: none; /* Non-prefixed version, currently
-                                supported by Chrome and Opera */
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
   
 #game_interface {
@@ -157,6 +157,7 @@ body {
     background-color: rgba(60, 60, 60, 0.3);
     max-width: 600px;
     min-width: 390px;
+    height: 100%;
     box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 }
 
@@ -223,7 +224,7 @@ body {
     color: white;
 }
 
-#victory_screen button {
+#victory_screen button, #revert-button {
     background-color: var(--primary-accent-400);
     color: white;
     border: none;
@@ -240,24 +241,33 @@ body {
     background-color: var(--primary-accent-500) !important;
 }
 
-#revert-button {
+#revert {
     display: flex;
-    color : lightgray;
-    position: sticky;
-    font-family: Roboto, sans-serif;
-    font-size: 2.5em;
-    width: 100%;
-    height: 10%;
-    align-self:flex-end;
-    bottom: 0%;
-    justify-content: center;
-    text-align: center;
+    flex-direction: column;
     align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+#revert button {
+    background-color: var(--primary-accent-400);
+    color: white;
+    border: none;
+    height: auto;
     border-radius: 2vw;
+    width: 60%;
+    padding: 2vh;
+    font-size: 1rem;
+    margin: 2vh;
+    cursor: pointer;
 }
 
-#revert-button:hover {
-    background-color: rgb(85, 85, 85) !important;
+#revert button:hover {
+    background-color: var(--primary-accent-500) !important;
+    
+}
+
+#revert-button:hover, #revert-button:focus {
+    outline: none !important;
 }
 
 @media screen and (orientation: portrait) {
@@ -282,7 +292,7 @@ body {
         width: 100%;
     }
     #revert-button {
-        height: 80px;
+        height: auto;
         width: 100%;
     }
 

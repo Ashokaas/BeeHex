@@ -60,7 +60,7 @@ body {
 #home_content #buttons {
     display: flex;
     justify-content: space-evenly;
-    flex-flow: row wrap;
+    flex-flow: row;
 }
 
 #home_content #buttons button {
@@ -105,8 +105,20 @@ a:hover {
 
 #logos img {
     transition: transform 0.3s;
+    width: 10rem;
+    height: 10rem;
 }
 
 #logos img:hover {
     transform: scale(1.05);
+}
+
+@media screen and (max-width: 640px) {
+    #logos {
+        flex-direction: column;
+    }
+
+    #logos img {
+        margin: 1vh 0;
+    }
 }
