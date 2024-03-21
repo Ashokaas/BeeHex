@@ -298,7 +298,6 @@ body {
 
 
 
-
 }
 .hexagon:hover {
     background-color: rgb(54, 54, 54);
@@ -326,4 +325,9 @@ body {
 
 .active-timer {
     color: lightgray;
+}
+
+.no_timer {
+    overflow: hidden;
+    height: 10px;
 }

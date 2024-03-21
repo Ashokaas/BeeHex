@@ -3,6 +3,13 @@ let currentGame;
 
 var unsavedChanges = false;
 
+var grid_size = 9
+var j1_name = "Joueur 1";
+var j2_name = "Joueur 2";
+var j1_type = "human";
+var j2_type = "human";
+var timer = "0:00";
+
 const hexagonStates = {
     0 : "empty",
     1 : "player1",
@@ -88,13 +95,23 @@ function startGame(gridSize, j1_name, j2_name, j1_type, j2_type, timer) {
     document.getElementById("player1-name").innerText = j1_name;
     document.getElementById("player2-name").innerText = j2_name;
     clearGrid();
-    currentGame = new Game(gridSize);
+    currentGame = new Game(gridSize, timer);
     unsavedChanges = true;
     // document.getElementById(`player1_status`).classList.add("current_player");
     document.getElementById('victory_screen').style.display = "none";
     document.getElementById('revert').style.display = "flex";
+    
     applyTimerStatus(1, true);
+    applyTimerStatus(2, false);
+    if (convertTimerToMs(timer) === 0) {
+        document.getElementById('player1-timer').classList.add("no_timer")
+        document.getElementById('player2-timer').classList.add("no_timer")
+    }
     generateGrid(gridSize);
+}
+
+function restartGame() {
+    startGame(grid_size, j1_name, j2_name, j1_type, j2_type, timer);
 }
 
 function clearGrid() {
@@ -110,16 +127,6 @@ function clickEventHexagon(hex) {
     hex.classList.add(currentGame.placePiece(x, y))
 }
 
-function generateRandomGrid(n) {
-    if (n >= 20) {
-        n = 1
-    }
-    generateGrid(n);
-    setTimeout(() => {
-        generateRandomGrid(n+1);
-    }, 500);
-}
-
 function applyTimerStatus(player, status) {
     if (status) {
         document.getElementById(`player${player}-timer`).classList.add("active-timer");
@@ -130,18 +137,53 @@ function applyTimerStatus(player, status) {
     }
 }
 
+function convertTimerToMs(timer) {
+    try {
+        if (timer.includes("-")) { return 0 }
+        let time = timer.split(":");
+        return parseInt(time[0]) * 60000 + parseInt(time[1]) * 1000;
+    } catch (e) {
+        return 0;
+    }
+}
 
+function convertMsToTimer(ms) {
+    if (ms >= 60000) {
+        let minutes = Math.floor(ms / 60000);
+        let seconds = Math.floor((ms % 60000) / 1000);
+        return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+    } else {
+        let seconds = Math.floor(ms / 1000);
+        let deciseconds = Math.floor((ms % 1000) / 100);
+        return `${seconds}.${deciseconds}`;
+    }
+}
 // Hexagon states : Empty = 0 | Player 1 = 1 | Player 2 = 2 | Wall = 3 
 class Game {
-    constructor(size) {
+    constructor(size, timer) {
         this.board = new Board(size);
         this.previousBoards = [];
         this.turn = 1
         this.turns = 0;
         this.player1Color = "red";
         this.player2Color = "blue";
-        generateGrid(size)
-        
+        generateGrid(size);
+        let time = convertTimerToMs(timer);
+        if (time > 0) {
+            this.timed = true;
+        }
+        else {
+            this.timed = false;
+        }
+        if (this.timed) {
+            this.player1Timer = time;
+            this.player2Timer = time;
+            document.getElementById(`player1-timer`).innerText = convertMsToTimer(time);
+            document.getElementById(`player2-timer`).innerText = convertMsToTimer(time);
+            
+            this.turnTime = Date.now()
+            setTimeout(() => {this.updateTimer()}, 80);
+        }
     }
     
     clickHexagon(hexagon) {
@@ -150,10 +192,12 @@ class Game {
         let y = parseInt(coords[1]);
         //console.log(this.board.grid);
         if (this.board.isValidPlacementXY(x, y) && (this.turns > 0  || this.board.size % 2 === 0 || x  != Math.floor(this.board.size / 2) || y != Math.floor(this.board.size / 2))) {
+            if (this.timed) {
+                this.updateTimer(false)
+            }
             this.previousBoards.push(this.board.copy());
             this.board.applyMoveXY(x, y, this.turn);
             this.updateVisualHexagon(hexagon, this.turn)
-            
             let result = this.board.checkForWinnerXY(x, y);
             if (result.winner) {
                 unsavedChanges = false;
@@ -173,6 +217,37 @@ class Game {
             
             
         }
+    }
+
+    updateTimer(cycle = true) {
+        if (currentGame === undefined) {
+            return;
+        }
+        let time = Date.now();
+        let timeElapsed = time - this.turnTime;
+        let playerTimer = this.turn === 1 ? this.player1Timer : this.player2Timer;
+        playerTimer -= timeElapsed;
+        this.turnTime = time;
+        if (playerTimer <= 0) {
+            unsavedChanges = false;
+            document.getElementById('victory_screen').style.display = "flex";
+            document.getElementById('revert').style.display = "none";
+            document.getElementById('victory_screen').getElementsByTagName('span')[0].innerText = `Joueur ${this.turn === 1 ? 2 : 1}`;
+            applyTimerStatus(1, false);
+            currentGame = undefined;
+            return;
+        }
+        if (this.turn === 1) {
+            this.player1Timer = playerTimer;
+        } else {
+            this.player2Timer = playerTimer;
+        }
+        document.getElementById(`player${this.turn}-timer`).innerText = convertMsToTimer(playerTimer);
+        if (cycle) {
+            setTimeout(() => {this.updateTimer()}, 80);
+        }
+        
+    
     }
 
     revertMove() {
@@ -359,10 +434,8 @@ function scaleHexagonGrid() {
         setTimeout(scaleHexagonGrid, 100);
         return;
     }
-    console.log((1/(gridSize * 2)))
     const width_ratio = Math.min((1/(outerWidth/parentOuterWidth)*0.94), 4)
     const height_ratio =  Math.min((1/(outerHeight/parentOuterHeight)*0.94), 4)
-    console.log(width_ratio, height_ratio)
     hexagonGrid.css('transform', `scale(${Math.min(width_ratio, height_ratio)})`)
     if (screen_width >= screen_height) {
         hexagonParent.css('width', `0px`)
@@ -406,11 +479,14 @@ $(document).ready(function() {
 
             }
         }
-
-        startGame(parsedData.grid_size_in, parsedData.j1_name, parsedData.j2_name, parsedData.j1_type, parsedData.j2_type, parsedData.timer);
-    } else {
-        startGame(9, "Joueur 1", "Joueur 2", "human", "human", false);
-    }
+        grid_size = parsedData.grid_size_in;
+        j1_name = parsedData.j1_name;
+        j2_name = parsedData.j2_name;
+        j1_type = parsedData.j1_type;
+        j2_type = parsedData.j2_type;
+        timer = parsedData.timer;
+    } 
+    startGame(grid_size, j1_name, j2_name, j1_type, j2_type, timer);
 
     localStorage.removeItem("data");
 
