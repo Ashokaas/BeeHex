@@ -95,18 +95,6 @@ function startGame(gridSize, j1_name, j2_name, j1_type, j2_type, timer) {
     document.getElementById('revert').style.display = "flex";
     applyTimerStatus(1, true);
     generateGrid(gridSize);
-    TEMPcycleGrid(gridSize)
-}
-
-function TEMPcycleGrid(n) {
-    generateGrid(n)
-    currentGame.board.size = n
-    scaleHexagonGrid()
-    if (n >= 20) {
-        setTimeout(() => {TEMPcycleGrid(1)}, 1000)
-    } else {
-        setTimeout(() => {TEMPcycleGrid(n+1)}, 1000)
-    }
 }
 
 function clearGrid() {
