@@ -10,9 +10,15 @@ var grid_size_out = document.getElementById('grid_size_out');
         grid_size_out.innerText = '11';
     }
 });*/
+console.log("settings.js");
 
+
+document.getElementById("start").addEventListener("click", function () {
+    startGameWithSettings();
+});
 
 function startGameWithSettings() {
+    console.log("startGameWithSettings");
     const form = document.forms.startGameWithSettings
     const formData = {};
 
@@ -39,6 +45,8 @@ function startGameWithSettings() {
             dataToSend[key] = formData[key];
         }
     }
+
+    console.log(dataToSend);
 
     // Conversion de l'objet en chaîne JSON et stockage dans localStorage
     localStorage.setItem("data", JSON.stringify(dataToSend));

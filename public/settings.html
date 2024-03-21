@@ -7,6 +7,7 @@
     <title>BeeHex - Paramètres</title>
     <script src="../dependencies/jquery-3.7.1/dist/jquery.min.js"></script>
     <script src="../src/js/utils.js"></script>
+    <script type="module" src="../src/js/settings.js"></script>
 
 </head>
 
@@ -28,7 +29,7 @@
 
                 <div>
                     <label for="j1_name">Pseudo du Joueur 1 :</label><br>
-                    <input type="text" name="j1_name" id="j1_name" placeholder="Beurre" required>
+                    <input type="text" name="j1_name" id="j1_name" value="Beurre" required>
                     <br>
 
                     <label for="bot1">Bot</label>
@@ -40,7 +41,7 @@
                 <div>
                     <label for="j2_name">Pseudo du Joueur 2 :</label>
                     <br>
-                    <input type="text" name="j2_name" id="j2_name" placeholder="Cassoulet">
+                    <input type="text" name="j2_name" id="j2_name" value="Cassoulet">
                     <br>
                     <label for="bot2">Bot</label>
                     <input type="radio" name="j2_type" value="bot" id="bot2"><br>
@@ -50,7 +51,7 @@
                 <hr>
                 <div>
                     <label for="grid_size_in">Taille de la grille :</label>
-                    <input type="text" name="grid_size_in" id="grid_size_in" pattern="[0-9]{1,2}" placeholder="11"
+                    <input type="text" name="grid_size_in" id="grid_size_in" pattern="[0-9]{1,2}" value="11"
                         size="2">
                     <!--<span>x</span>
                     <output name="grid_size_out" id="grid_size_out">11</output>-->
@@ -58,7 +59,7 @@
                 <hr>
                 <div>
                     <label for="timer">Timer (0 pour durée illimitée) :</label>
-                    <input type="text" name="timer" id="timer" placeholder="2:30" size="2">
+                    <input type="text" name="timer" id="timer" value="2:30" size="2">
                     <!--<span>min</span>-->
                 </div>
 
@@ -71,9 +72,9 @@
                     <label for="invisible">Invisible</label>
                     <input type="radio" name="special_mode" id="invisible">
                 </div>-->
-                <input type="submit" onClick="startGameWithSettings()" value="Démarrer" id="start">
             </form>
-            
+            <button id="start">Démarrer</button>
+
             <!--
                 Nouveau preset
                 Joueur 1 : "nomdujoueur"
@@ -103,7 +104,7 @@
 
     <br><br><br><br><br><br><br><br><br>
 
-    <script type="module" src="../src/js/settings.js"></script>
+    
 
     <div id="bottom_nav_bar_parent"></div>
 </body>

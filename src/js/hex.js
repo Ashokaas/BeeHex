@@ -479,7 +479,8 @@ $(document).ready(function() {
 
             }
         }
-        grid_size = parsedData.grid_size_in;
+        
+        grid_size = parseInt(parsedData.grid_size_in);
         j1_name = parsedData.j1_name;
         j2_name = parsedData.j2_name;
         j1_type = parsedData.j1_type;
