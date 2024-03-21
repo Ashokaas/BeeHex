@@ -46,22 +46,40 @@
     filter: invert(100%);
 }
 
+/* Le deuxième effet permet de remettre la couleur blanche sur l'icone lorsque il est survolé
+peu importe la page sur laquelle on est affet d'eviter d'avoir du jaune sur jaun par exemple
+On est pas obligé de spécifier la page puisque si on applique un 'invert(100%)' sur un icone
+qui est déjà blanc, il ne changera pas de couleur (car il est noir à la base) */
+
 /* Accueil : jaune */
 #bottom_nav_bar a:nth-child(1):hover {
     background-color: var(--primary-light-400);
+}
+#bottom_nav_bar a:nth-child(1):hover img {
+    filter: invert(100%) !important;
 }
 /* Jouer : vert */ 
 #bottom_nav_bar a:nth-child(2):hover {
     background-color: var(--secondary-light-500);
 }
+#bottom_nav_bar a:nth-child(2):hover img {
+    filter: invert(100%) !important;
+}
 /* TBD : bleu*/
 #bottom_nav_bar a:nth-child(3):hover {
     background-color: var(--blue-300);
+}
+#bottom_nav_bar a:nth-child(3):hover img {
+    filter: invert(100%) !important;
 }
 /* Paramètres : gris */
 #bottom_nav_bar a:nth-child(4):hover {
     background-color: #5f5f5f;
 }
+#bottom_nav_bar a:nth-child(4):hover img {
+    filter: invert(100%) !important;
+}
+
 
 #bottom_nav_bar a:focus {
     outline: none !important;
@@ -77,6 +95,7 @@
     }
 
     /* Utilisation de https://codepen.io/sosuke/pen/Pjoqqp pour convertir le hex afin de l'appliquer sur un filter */
+    /*
     #bottom_nav_bar a:nth-child(1):hover img, #bottom_nav_bar a:nth-child(1):focus img {
         filter: invert(82%) sepia(27%) saturate(7392%) hue-rotate(17deg) brightness(103%) contrast(91%);
     }
@@ -92,4 +111,6 @@
     #bottom_nav_bar a:nth-child(4):hover img, #bottom_nav_bar a:nth-child(4):focus img {
         filter: invert(40%) sepia(14%) saturate(0%) hue-rotate(160deg) brightness(89%) contrast(95%);
     }
+    */
 }
+
