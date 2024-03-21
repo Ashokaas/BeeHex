@@ -92,9 +92,21 @@ function startGame(gridSize, j1_name, j2_name, j1_type, j2_type, timer) {
     unsavedChanges = true;
     // document.getElementById(`player1_status`).classList.add("current_player");
     document.getElementById('victory_screen').style.display = "none";
-    document.getElementById('revert-button').style.display = "flex";
+    document.getElementById('revert').style.display = "flex";
     applyTimerStatus(1, true);
     generateGrid(gridSize);
+    TEMPcycleGrid(gridSize)
+}
+
+function TEMPcycleGrid(n) {
+    generateGrid(n)
+    currentGame.board.size = n
+    scaleHexagonGrid()
+    if (n >= 20) {
+        setTimeout(() => {TEMPcycleGrid(1)}, 1000)
+    } else {
+        setTimeout(() => {TEMPcycleGrid(n+1)}, 1000)
+    }
 }
 
 function clearGrid() {
@@ -158,7 +170,7 @@ class Game {
             if (result.winner) {
                 unsavedChanges = false;
                 document.getElementById('victory_screen').style.display = "flex";
-                document.getElementById('revert-button').style.display = "none";
+                document.getElementById('revert').style.display = "none";
                 document.getElementById('victory_screen').getElementsByTagName('span')[0].innerText = `Joueur ${this.turn}`;
                 applyTimerStatus(1, false);
                 currentGame = undefined;
@@ -341,38 +353,47 @@ class Board {
     }
 
 }
-
+function scaleHexagonGrid() {
+    const gridSize = currentGame.board.size 
+    const hexagonGrid = $('#hexagon-grid');
+    const hexagonParent = $('#hex_parent');
+    const playerPanel = $('#players');
+    const gameInterface = $('#game_interface');
+    const playerPanelWidth = playerPanel.outerWidth();
+    const outerWidth = hexagonGrid.outerWidth();
+    const parentOuterWidth = hexagonParent.outerWidth();
+    const outerHeight = hexagonGrid.outerHeight();
+    const parentOuterHeight = hexagonParent.outerHeight();
+    const gameInterfaceHeight = gameInterface.innerHeight();
+    const screen_width = Math.min(screen.availWidth, window.innerWidth)
+    const screen_height =  Math.min(screen.availHeight, window.innerHeight)
+    if (outerWidth === 0) {
+        setTimeout(scaleHexagonGrid, 100);
+        return;
+    }
+    console.log((1/(gridSize * 2)))
+    const width_ratio = Math.min((1/(outerWidth/parentOuterWidth)*0.94), 4)
+    const height_ratio =  Math.min((1/(outerHeight/parentOuterHeight)*0.94), 4)
+    console.log(width_ratio, height_ratio)
+    hexagonGrid.css('transform', `scale(${Math.min(width_ratio, height_ratio)})`)
+    if (screen_width >= screen_height) {
+        hexagonParent.css('width', `0px`)
+        hexagonParent.css('width', `${screen_width - playerPanelWidth}px`)
+        hexagonParent.css('height', `${gameInterfaceHeight}px`)
+        playerPanel.css('height', `${screen_height}px`)
+       
+    }  else {
+        hexagonParent.css('max-width', `${screen_height}px`);
+        hexagonParent.css('width', `100%`);
+        hexagonParent.css('height', ``)
+        playerPanel.css('height', `fit-content`)
+        //hexagonGrid.css('margin', `0`)
+    }
+    //console.log(screen_width, outerWidth);
+}
 
 $(document).ready(function() {
-    function scaleHexagonGrid() {
-        const hexagonGrid = $('#hexagon-grid');
-        const hexagonParent = $('#hex_parent');
-        const playerPanel = $('#players');
-        const playerPanelWidth = playerPanel.outerWidth();
-        const outerWidth = hexagonGrid.outerWidth();
-        const parentOuterWidth = hexagonParent.outerWidth();
-        const outerHeight = hexagonGrid.outerHeight();
-        const parentOuterHeight = hexagonParent.outerHeight();
-        const screen_width = Math.min(screen.availWidth, window.innerWidth)
-        const screen_height =  Math.min(screen.availHeight, window.innerHeight)
-        if (outerWidth === 0) {
-            setTimeout(scaleHexagonGrid, 100);
-            return;
-        }
-        
-        const width_ratio = 1/(outerWidth/parentOuterWidth)*0.92    
-        const height_ratio = 1/(outerHeight/parentOuterHeight)*0.92
-        hexagonGrid.css('transform', `scale(${Math.min(width_ratio, height_ratio)})`)
-        if (screen_width >= screen_height) {
-            hexagonParent.css('width', `${screen_width - playerPanelWidth}px`)
-           
-        }  else {
-            hexagonParent.css('max-width', `100%`);
-            hexagonParent.css('width', `100%`);
-            //hexagonGrid.css('margin', `0`)
-        }
-        //console.log(screen_width, outerWidth);
-    }
+    
     const resizeObserver = new ResizeObserver(entries => {
         scaleHexagonGrid();
     });
