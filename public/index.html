@@ -1,31 +1,44 @@
 <html lang="fr">
 
 <head>
+    <!-- Encodage des caractères, zoom initial -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Manifest de la PWA -->
     <link rel="manifest" href="/pwa.webmanifest">
+
+    <!-- Titre, icone-->
     <title>BeeHex - Accueil</title>
     <link rel="icon" href="../src/icons/icon-128.png">
+
+    <!-- CSS -->
     <link rel="stylesheet" href="../src/css/index.css">
+
+    <!-- JS : jQuery, Utilitaires, fonction pour l'accueil, enregistrement du service worker -->
+    <script src="../dependencies/jquery-3.7.1/dist/jquery.min.js"></script>
+    <script src="../src/js/utils.js"></script>
+    <script src="../src/js/accueil.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register("/sw.js");
+        }
+    </script>
 
 </head>
 
-<script src="../dependencies/jquery-3.7.1/dist/jquery.min.js"></script>
-<script src="../src/js/utils.js"></script>
-<script src="../src/js/accueil.js"></script>
-<script>
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register("/sw.js");
-    }
-</script>
 
 <body>
+    <!-- Conteneur principal de la page d'accueil -->
     <div id="home_content">
+        <!-- Titre et description du jeu -->
         <h1>Bienvenue sur BeeHex</h1>
         <p>
             Sur ce site vous pourrez jouer au jeu de Hex. C'est un jeu de société qui est un jeu de société. Lorem Ipsum
             ?
         </p>
+
+        <!-- Règles du jeu -->
         <div id="rules">
             <h2>Règles du jeu :</h2>
             <ul>
@@ -40,15 +53,16 @@
                 </li>
             </ul>
         </div>
-        <br>
-        <br>
+        <br><br>
         
+        <!-- Boutons pour démarrer une partie avec des paramètres préenregistrés -->
         <div id="buttons">
             <button onclick="startGameFromIndexPage(9, 'Joueur 1', 'human', 'Joueur 2', 'human', '1:30')">Joueur contre Joueur<br>Timer : 1min 30<br>Grille : 9x9</button>
             <button onclick="startGameFromIndexPage(5, 'Joueur', 'human', 'Bot', 'bot', '0')">Joueur contre Bot<br>Pas de temps<br>Grille : 5x5</button>
             <button onclick="startGameFromIndexPage(7, 'Joueur 1', 'human', 'Joueur 2', 'human', '0')">Joueur contre Joueur<br>Pas de temps<br>Grille : 7x7</button>
         </div>
 
+        <!-- Logo BeeHex -->
         <img src="../src/svgs/logo.svg" alt="Logo">
 
         
@@ -56,6 +70,7 @@
 
     <br><br><br>
 
+    <!-- Conteneur pour la barre de navigation en bas -->
     <div id="bottom_nav_bar_parent"></div>
 
 </body>

@@ -1,3 +1,13 @@
+/**
+ * Démarre le jeu à partir de la page d'accueil.
+ * 
+ * @param {number} grid_size_in - La taille de la grille.
+ * @param {string} j1_name - Le nom du joueur 1.
+ * @param {string} j1_type - Le type du joueur 1.
+ * @param {string} j2_name - Le nom du joueur 2.
+ * @param {string} j2_type - Le type du joueur 2.
+ * @param {string} timer - La valeur du minuteur.
+ */
 function startGameFromIndexPage(grid_size_in, j1_name, j1_type, j2_name, j2_type, timer) {
     // Création d'un objet JSON pour stocker les informations
     var formData = {grid_size_in, j1_name, j1_type, j2_name, j2_type, timer};
