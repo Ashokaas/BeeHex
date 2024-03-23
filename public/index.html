@@ -12,6 +12,7 @@
 
 <script src="../dependencies/jquery-3.7.1/dist/jquery.min.js"></script>
 <script src="../src/js/utils.js"></script>
+<script src="../src/js/accueil.js"></script>
 <script>
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register("/sw.js");
@@ -30,18 +31,22 @@
             <ul>
                 <li>Deux joueurs s'affrontent sur un tablier hexagonal.
                 </li>
-                <li>Chaque joueur a une couleur (rouge ou bleu).
+                <li>Chaque joueur possède un camp/couleur (rouge ou bleu).
                 </li>
                 <li>Les joueurs placent chacun leur tour une pièce de leur couleur sur une case grise du tablier.
                 </li>
-                <li>Le premier joueur à relier les deux cotés du tablier gagne la partie.
+                <li>Le but est de relier les deux cotés de sa couleur avec une chaine ininterrompu (pas necessairement droite) de pièces de sa couleur.
+                <li>Le premier joueur à relier les deux cotés de sa couleur gagne la partie.
                 </li>
             </ul>
         </div>
         <br>
         <br>
         
-        <div>
+        <div id="buttons">
+            <button onclick="startGameFromIndexPage(9, 'Joueur 1', 'human', 'Joueur 2', 'human', '1:30')">Joueur contre Joueur<br>Timer : 1min 30<br>Grille : 9x9</button>
+            <button onclick="startGameFromIndexPage(5, 'Joueur', 'human', 'Bot', 'bot', '0')">Joueur contre Bot<br>Pas de temps<br>Grille : 5x5</button>
+            <button onclick="startGameFromIndexPage(7, 'Joueur 1', 'human', 'Joueur 2', 'human', '0')">Joueur contre Joueur<br>Pas de temps<br>Grille : 7x7</button>
         </div>
 
         <img src="../src/svgs/logo.svg" alt="Logo">

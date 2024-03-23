@@ -100,7 +100,7 @@ function startGame(gridSize, j1_name, j2_name, j1_type, j2_type, timer) {
     // document.getElementById(`player1_status`).classList.add("current_player");
     document.getElementById('victory_screen').style.display = "none";
     document.getElementById('revert').style.display = "flex";
-    
+
     applyTimerStatus(1, true);
     applyTimerStatus(2, false);
     if (convertTimerToMs(timer) === 0) {
@@ -203,20 +203,38 @@ class Game {
                 unsavedChanges = false;
                 document.getElementById('victory_screen').style.display = "flex";
                 document.getElementById('revert').style.display = "none";
-                document.getElementById('victory_screen').getElementsByTagName('span')[0].innerText = `Joueur ${this.turn}`;
+                if (this.turn === 1) {
+                    document.getElementById('victory_screen').getElementsByTagName('span')[0].innerText = j1_name;
+                } else {
+                    document.getElementById('victory_screen').getElementsByTagName('span')[0].innerText = j2_name;
+                }
                 applyTimerStatus(1, false);
                 currentGame = undefined;
                 return;
             }
+            
          //   document.getElementById(`player${this.turn}_status`).classList.remove("current_player");
             applyTimerStatus(this.turn, false);
             this.turn = this.turn === 1 ? 2 : 1;
             this.turns++;
-         //   document.getElementById(`player${this.turn}_status`).classList.add("current_player");
             applyTimerStatus(this.turn, true);
-            
+
+
+            if (this.turn === 2 && j2_type === 'bot') {
+                this.bot_turn();
+            } 
             
         }
+    }
+
+    bot_turn() {
+        const availableMoves = this.board.getAvailableMoves();
+        const randomIndex = Math.floor(Math.random() * availableMoves.length);
+        const [randomX, randomY] = availableMoves[randomIndex];
+        this.clickHexagon(document.getElementsByClassName(`${randomX}-${randomY}`)[0]);
+        
+    //   document.getElementById(`player${this.turn}_status`).classList.add("current_player");
+    
     }
 
     updateTimer(cycle = true) {
@@ -289,6 +307,18 @@ class Board {
         this.grid = new Array(size).fill().map(() => Array(size).fill(0));
     }
 
+    getAvailableMoves() {
+        const moves = [];
+        for (let i = 0; i < this.size; i++) {
+          for (let j = 0; j < this.size; j++) {
+            if (this.isValidPlacementXY(i, j)) {
+              moves.push([i, j]);
+            }
+          }
+        }
+        return moves;
+      }
+      
     isValidPlacementXY(x, y) {
         return this.grid[y][x] === 0;
     }
@@ -417,7 +447,7 @@ class Board {
 
 }
 function scaleHexagonGrid() {
-    const gridSize = currentGame.board.size 
+    //const gridSize = currentGame.board.size 
     const hexagonGrid = $('#hexagon-grid');
     const hexagonParent = $('#hex_parent');
     const playerPanel = $('#players');
@@ -453,6 +483,50 @@ function scaleHexagonGrid() {
     //console.log(screen_width, outerWidth);
 }
 
+function save() {
+    localStorage.setItem('savedGame', JSON.stringify(currentGame))
+
+    localStorage.setItem('grid_size', grid_size.toString());
+    localStorage.setItem('j1_name', j1_name);
+    localStorage.setItem('j2_name', j2_name);
+    localStorage.setItem('j1_type', j1_type);
+    localStorage.setItem('j2_type', j2_type);
+    localStorage.setItem('timer', timer);
+
+    let pDataStatus = document.getElementById('p_data_status');
+    pDataStatus.innerText = "Partie sauvegardée";
+    
+}
+
+function load() {
+    loadedValues = JSON.parse(localStorage.getItem('savedGame'))
+    
+    grid_size = parseInt(localStorage.getItem('grid_size'));
+    j1_name = localStorage.getItem('j1_name');
+    j2_name = localStorage.getItem('j2_name');
+    j1_type = localStorage.getItem('j1_type');
+    j2_type = localStorage.getItem('j2_type');
+    timer = localStorage.getItem('timer');
+
+    clearGrid()
+    startGame(grid_size, j1_name, j2_name, j1_type, j2_type, timer)
+
+    currentGame.board.size = loadedValues.board.size
+    currentGame.board.grid = loadedValues.board.grid
+
+    currentGame.player1Color = loadedValues.player1Color
+    currentGame.player2Color = loadedValues.player2Color
+    currentGame.previousBoards = loadedValues.previousBoards
+    currentGame.timed = loadedValues.timed
+    currentGame.turn = loadedValues.turn
+    currentGame.turns = loadedValues.turns
+    currentGame.updateAllVisualHexagons()
+    scaleHexagonGrid()
+
+    let pDataStatus = document.getElementById('p_data_status');
+    pDataStatus.innerText = "Partie chargée";
+}
+
 $(document).ready(function() {
     
     const resizeObserver = new ResizeObserver(entries => {
@@ -486,6 +560,9 @@ $(document).ready(function() {
         j1_type = parsedData.j1_type;
         j2_type = parsedData.j2_type;
         timer = parsedData.timer;
+        if (j1_type === 'bot' || j2_type === 'bot') {
+            timer = "0:00";
+        }
     } 
     startGame(grid_size, j1_name, j2_name, j1_type, j2_type, timer);
 

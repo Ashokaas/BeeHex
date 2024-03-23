@@ -94,3 +94,22 @@ hr {
     border: 1px solid var(--txt-color);
 }
 
+#start {
+    background-color: var(--blue-400);
+    color: white;
+    border: none;
+    width: 15vw;
+    min-width: 30%;
+    flex-shrink: 0;
+    height: auto;
+    border-radius: 2vw;
+    padding: 2vh;
+    font-size: 1rem;
+    margin: 2vh;
+    text-align: center;
+    cursor: pointer;
+}
+
+#start:hover {
+    background-color: var(--blue-500) !important;
+}

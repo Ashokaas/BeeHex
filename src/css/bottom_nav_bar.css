@@ -34,7 +34,7 @@
     justify-content: center;
     height: 10vh;
     width: 100%;
-    transition: all 0.2s ease-out;
+    transition: background-color 0.2s ease-out;
     border-radius: 2vw;
     -webkit-tap-highlight-color: transparent;
 }

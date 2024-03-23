@@ -274,15 +274,15 @@ body {
     #game_interface {
         display: flex;
         flex-direction: column !important;
-        justify-content: center;
-        align-items: center;
-        width: 100%;
+        justify-content: space-between !important;
+        align-items: normal !important;
+        width: 100vw;
+        height: 100vh;
         padding: 0%;
     }
     #players {
         max-width: 100%;
         width: 100%;
-        height: auto;
     }
     #hex_parent {
         padding: 0;
@@ -295,6 +295,12 @@ body {
         height: auto;
         width: 100%;
     }
+
+    body {
+        padding-bottom: 20vh;
+    }
+
+
 
 
 
@@ -329,5 +335,57 @@ body {
 
 .no_timer {
     overflow: hidden;
-    height: 10px;
+    height: 7px;
+}
+
+
+#save_load {
+    display: flex;
+    flex-direction: row;
+    justify-content:space-evenly;
+    width: 100%;
+}
+
+#save_load div {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+#save_load div div {
+    display: flex;
+    flex-direction: column;
+    justify-self: center;
+    align-items: center;
+    color: #fff;
+    width: 90%;
+    height: 100%;
+    padding: 10% 10%;
+    border-radius: 1vw;
+    cursor: pointer;
+    transition: background-color 0.1s;
+}
+
+#save_load img {
+    width: 30%;
+    height: auto;
+    cursor: pointer;
+    filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(93deg) brightness(103%) contrast(103%);
+
+}
+
+#save_load div div:hover {
+    background-color: var(--primary-accent-400);
+}
+
+#save_load div div:active {
+    background-color: var(--primary-accent-500);
+}
+
+#p_data_status {
+    color: lightgray;
+    text-align: center;
+    margin: 5%;
 }

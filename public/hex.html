@@ -35,12 +35,27 @@
                 </div>
             </div>
             <div id="victory_screen">
-                <h1 id="victory_text" class="noselect">Victoire du <span>Joueur 1</span></h1>
+                <h1 id="victory_text" class="noselect">Victoire de <span>Joueur 1</span></h1>
                 <button onclick="restartGame()">Rejouer</button>
             </div>
             <div id="revert">
                 <button class="noselect" onclick="currentGame.revertMove()">⬅ Annuler</button>
             </div>
+            <div id="save_load">
+                <div onclick="save()">
+                    <div>
+                        <img src="../src/svgs/save.svg" alt="Sauvegarder">
+                        <p>Sauvegarder</p>
+                    </div>
+                </div>
+                <div onclick="load()">
+                    <div>
+                        <img src="../src/svgs/load.svg" alt="Charger">
+                        <p>Charger</p>
+                    </div>
+                </div>
+            </div>
+            <p id="p_data_status"></p>
 
         </div>
         
