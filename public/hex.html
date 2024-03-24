@@ -1,9 +1,11 @@
 <html lang="fr">
 
 <head>
-    <!-- Encodage des caractères, zoom initial -->
+    <!-- Encodage des caractères, zoom initial, manifest -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="/pwa.webmanifest">
+
 
     <!-- Titre, icone-->
     <title>Partie locale</title>
@@ -17,8 +19,6 @@
     <script src="../src/js/utils.js"></script>
     <script src="../src/js/hex.js"></script>
 
-
-
 </head>
 
 <body>
@@ -31,6 +31,8 @@
 
         <!-- Informations de la partie -->
         <div id="players">
+
+            <!-- Statut des joueurs -->
             <div id="game-status">
                 <div id="player1-status" class="player-status">
                     <h1 id="player1-name" class="player-name">Joueur 1</h1>
@@ -41,13 +43,19 @@
                     <h1 id="player2-timer" class="player-timer">X:XX</h1>
                 </div>
             </div>
+
+            <!-- Ecran de victoire -->
             <div id="victory_screen">
                 <h1 id="victory_text" class="noselect">Victoire de <span>Joueur 1</span></h1>
                 <button onclick="restartGame()">Rejouer</button>
             </div>
+
+            <!-- Bouton pour annuler le dernier coup -->
             <div id="revert">
                 <button class="noselect" onclick="currentGame.revertMove()">⬅ Annuler</button>
             </div>
+
+            <!-- Boutons sauvegarde/chargement -->
             <div id="save_load">
                 <div onclick="save()">
                     <div>
@@ -62,6 +70,8 @@
                     </div>
                 </div>
             </div>
+            
+            <!-- Statut de la sauvegarde -->
             <p id="p_data_status"></p>
 
         </div>
@@ -70,7 +80,6 @@
 
     <!-- Conteneur pour la barre de navigation en bas -->
     <div id="bottom_nav_bar_parent"></div>
-
 
 </body>
 
