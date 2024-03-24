@@ -9,6 +9,7 @@ var j2_name = "Joueur 2";
 var j1_type = "human";
 var j2_type = "human";
 var timer = "0:00";
+var game_UUID = 0; 
 
 const hexagonStates = {
     0 : "empty",
@@ -17,6 +18,10 @@ const hexagonStates = {
     3 : "wall"
 }
 
+
+function updateGameUID() {
+    game_UUID = Date.now()
+}
 
 function generateGrid(n) {
     let hexSection = document.querySelector("#hexagon-grid");
@@ -92,6 +97,7 @@ function generateGrid(n) {
 }
 
 function startGame(gridSize, j1_name, j2_name, j1_type, j2_type, timer) {
+    updateGameUID()
     document.getElementById("player1-name").innerText = j1_name;
     document.getElementById("player2-name").innerText = j2_name;
     clearGrid();
@@ -182,7 +188,7 @@ class Game {
             document.getElementById(`player2-timer`).innerText = convertMsToTimer(time);
             
             this.turnTime = Date.now()
-            setTimeout(() => {this.updateTimer()}, 80);
+            setTimeout(() => {this.updateTimer(game_UUID)}, 80);
         }
     }
     
@@ -190,7 +196,6 @@ class Game {
         let coords = hexagon.classList[1].split("-");
         let x = parseInt(coords[0]);
         let y = parseInt(coords[1]);
-        //console.log(this.board.grid);
         if (this.board.isValidPlacementXY(x, y) && (this.turns > 0  || this.board.size % 2 === 0 || x  != Math.floor(this.board.size / 2) || y != Math.floor(this.board.size / 2))) {
             if (this.timed) {
                 this.updateTimer(false)
@@ -237,8 +242,8 @@ class Game {
     
     }
 
-    updateTimer(cycle = true) {
-        if (currentGame === undefined) {
+    updateTimer(cycle = false) {
+        if (currentGame === undefined || cycle != game_UUID) {
             return;
         }
         let time = Date.now();
@@ -261,8 +266,8 @@ class Game {
             this.player2Timer = playerTimer;
         }
         document.getElementById(`player${this.turn}-timer`).innerText = convertMsToTimer(playerTimer);
-        if (cycle) {
-            setTimeout(() => {this.updateTimer()}, 80);
+        if (cycle == game_UUID) {
+            setTimeout(() => {this.updateTimer(cycle)}, 80);
         }
         
     
@@ -470,6 +475,7 @@ function scaleHexagonGrid() {
     if (screen_width >= screen_height) {
         hexagonParent.css('width', `0px`)
         hexagonParent.css('width', `${screen_width - playerPanelWidth}px`)
+        hexagonParent.css('max-width', ``);
         hexagonParent.css('height', `${gameInterfaceHeight}px`)
         playerPanel.css('height', `${screen_height}px`)
        
@@ -520,6 +526,11 @@ function load() {
     currentGame.timed = loadedValues.timed
     currentGame.turn = loadedValues.turn
     currentGame.turns = loadedValues.turns
+    if (currentGame.timed) {
+        currentGame.player1Timer = loadedValues.player1Timer
+        currentGame.player2Timer = loadedValues.player2Timer
+        currentGame.turnTime = Date.now()
+    }   
     currentGame.updateAllVisualHexagons()
     scaleHexagonGrid()
 
