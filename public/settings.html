@@ -1,10 +1,18 @@
 <html lang="fr">
 
 <head>
+    <!-- Encodage des caractères, zoom initial -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../src/css/settings.css">
+
+    <!-- Titre, icone -->
     <title>BeeHex - Paramètres</title>
+    <link rel="icon" href="../src/icons/icon-128.png">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="../src/css/settings.css">
+
+    <!-- JS : jQuery, Utilitaires, code pour démarrer une partie personnalisée -->
     <script src="../dependencies/jquery-3.7.1/dist/jquery.min.js"></script>
     <script src="../src/js/utils.js"></script>
     <script type="module" src="../src/js/settings.js"></script>
@@ -12,32 +20,31 @@
 </head>
 
 <body>
+    <!-- Conteneur principal de la page des paramètres -->
     <div id="settings_content">
+
+        <!-- Titre et description des paramètres -->
         <h1>Paramètres</h1>
         <h2>A quoi servent les paramètres ?</h2>
         <p>Il vous permettent de lancer une partie en choisissant vous même vos préférences.</p>
 
-
+        <!-- Formulaire de paramètres, ce formulaire est simplement utilisé à titre indicatif, il ne foncitonne en rien comme un formulaire 'classique' car tout est
+             géré en JS, la requête n'est pas envoyé à un quelconque serveur 
+        -->
         <div id="settings_form">
             <form name="startGameWithSettings" id="startGameWithSettings">
-                <!--<div>
-                    <label for="nom">Nom du preset :</label><br>
-                    <input type="text" name="nom" id="nom" placeholder="preset 1" required>
-                </div>
 
-                <hr>-->
-
+                <!-- Joueur 1 -->
                 <div>
                     <label for="j1_name">Pseudo du Joueur 1 :</label><br>
                     <input type="text" name="j1_name" id="j1_name" value="Beurre" required>
                     <br>
-
-                    <!--<label for="bot1">Bot</label>
-                    <input type="radio" name="j1_type" value="bot" id="bot1"><br>-->
                     <label for="human1">Humain</label>
                     <input type="radio" name="j1_type" id="human1" value="human" checked>
                 </div>
                 <hr>
+
+                <!-- Joueur 2 -->
                 <div>
                     <label for="j2_name">Pseudo du Joueur 2 :</label>
                     <br>
@@ -49,64 +56,34 @@
                     <input type="radio" name="j2_type" value="human" id="human2" checked>
                 </div>
                 <hr>
+
+                <!-- Taille de la grille -->
                 <div>
                     <label for="grid_size_in">Taille de la grille :</label>
-                    <input type="text" name="grid_size_in" id="grid_size_in" pattern="[0-9]{1,2}" value="11"
-                        size="2">
-                    <!--<span>x</span>
-                    <output name="grid_size_out" id="grid_size_out">11</output>-->
+                    <input type="text" name="grid_size_in" id="grid_size_in" pattern="[0-9]{1,2}" value="11" size="2">
                 </div>
                 <hr>
+
+                <!-- Chronomètre -->
                 <div>
-                    <label for="timer">Timer (0 pour durée illimitée) :</label>
+                    <label for="timer">Chronomètre (0 pour durée illimitée) :</label>
                     <input type="text" name="timer" id="timer" value="2:30" size="2">
-                    <!--<span>min</span>-->
                 </div>
 
-                <!--<hr>
-                
-                <div>
-                    <p>Mode spécial :</p>
-                    <label for="aucun">Aucun</label>
-                    <input type="radio" name="special_mode" id="aucun" checked>
-                    <label for="invisible">Invisible</label>
-                    <input type="radio" name="special_mode" id="invisible">
-                </div>-->
+                <!-- Bouton -->
+                <input type="submit" id="start">
+
             </form>
-            <button id="start">Démarrer</button>
 
-            <!--
-                Nouveau preset
-                Joueur 1 : "nomdujoueur"
-                Joueur/Bot
-                Joueur 2 : "nomdujoueur2"
-                Joueur/Bot
-
-                Si bot, sélectionner sa difficulté
-
-                Couleur du joueur 2 : rouge (default)
-                Couleur du joueur 1 : bleu (default)
-
-                Taille de la grille : "11x11" (default)
-
-                Timer : Activer/désactiver, 5min
-
-                Mode spécial : Activer/Desactiver
-
-                Nom du preset : "preset1"
-
-                (ENREGISTRER)
-
-            -->
         </div>
 
     </div>
 
     <br><br><br><br><br><br><br><br><br>
 
-    
-
+    <!-- Barre de navigation -->
     <div id="bottom_nav_bar_parent"></div>
+    
 </body>
 
 </html>
