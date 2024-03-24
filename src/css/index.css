@@ -1,10 +1,13 @@
+/* Importation des variables CSS */
 @import url("variables.css");
 
+/* Définition de la police Roboto */
 @font-face {
     font-family: Roboto;
     src: url('../fonts/Roboto/Roboto-Medium.ttf')  format('truetype');
 }
 
+/* Réinitialisation des styles */
 * {
     margin: 0;
     padding: 0;
@@ -17,6 +20,7 @@ body {
     color: var(--txt-color);
 }
 
+/* Conteneur principal */
 #home_content {
     display: flex;
     flex-direction: column;
@@ -24,8 +28,6 @@ body {
     justify-content: center;
     margin: 0 10% 10% 10%;
 }
-
-
 
 #home_content h1 {
     font-size: 3rem;
@@ -41,7 +43,6 @@ body {
     box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 
 }
-
 
 #home_content p {
     font-size: 1.5rem;
@@ -85,7 +86,6 @@ body {
     background-color: var(--blue-500) !important;
 }
 
-
 #home_content img {
     width: 15rem;
     height: 15rem;
@@ -118,6 +118,8 @@ a:hover {
     transform: scale(1.05);
 }
 
+
+/* RESPONSIVE */
 @media screen and (max-width: 640px) {
     #logos {
         flex-direction: column;

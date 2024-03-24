@@ -1,8 +1,11 @@
+/* Récupération du nom de la page actuelle */
 var path = window.location.pathname;
 var page = path.split("/").pop();
 
-/* Utilisation de https://codepen.io/sosuke/pen/Pjoqqp pour convertir le hex afin de l'appliquer sur un filter */
 
+/* Affichage de la couleur de la page actuelle dans la bar de navigation
+   Utilisation de https://codepen.io/sosuke/pen/Pjoqqp pour convertir le hex afin de l'appliquer sur un filter 
+*/
 if (page == "index.html") {
     let imgElement = document.querySelector('#bottom_nav_bar a:nth-child(1) img');
     imgElement.style.filter = "invert(82%) sepia(27%) saturate(7392%) hue-rotate(17deg) brightness(103%) contrast(91%)";

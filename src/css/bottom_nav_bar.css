@@ -21,7 +21,6 @@
     position: fixed;
     bottom: 0;
     width: 100%;
-    /*border-radius: 2vw 2vw 0 0;*/
 }
 
 /* MENUS de la nav bar*/
@@ -58,6 +57,7 @@ qui est déjà blanc, il ne changera pas de couleur (car il est noir à la base)
 #bottom_nav_bar a:nth-child(1):hover img {
     filter: invert(100%) !important;
 }
+
 /* Jouer : vert */ 
 #bottom_nav_bar a:nth-child(2):hover {
     background-color: var(--secondary-light-500);
@@ -65,14 +65,16 @@ qui est déjà blanc, il ne changera pas de couleur (car il est noir à la base)
 #bottom_nav_bar a:nth-child(2):hover img {
     filter: invert(100%) !important;
 }
-/* TBD : bleu*/
+
+/* Partie avancée : bleu*/
 #bottom_nav_bar a:nth-child(3):hover {
     background-color: var(--blue-300);
 }
 #bottom_nav_bar a:nth-child(3):hover img {
     filter: invert(100%) !important;
 }
-/* Paramètres : gris */
+
+/* A propos : gris */
 #bottom_nav_bar a:nth-child(4):hover {
     background-color: #5f5f5f;
 }
@@ -85,32 +87,18 @@ qui est déjà blanc, il ne changera pas de couleur (car il est noir à la base)
     outline: none !important;
 }
 
+/* Responsive */
 @media only screen and (max-device-width: 640px) {
+    
+    /* on cache les textes des menus sur mobile */
     #bottom_nav_bar p {
         display: none;
     }
 
+    /* on enlève le background-color des menus lorsqu'on survole sur mobile */
     #bottom_nav_bar >*:hover {
         background-color: transparent !important;
     }
 
-    /* Utilisation de https://codepen.io/sosuke/pen/Pjoqqp pour convertir le hex afin de l'appliquer sur un filter */
-    /*
-    #bottom_nav_bar a:nth-child(1):hover img, #bottom_nav_bar a:nth-child(1):focus img {
-        filter: invert(82%) sepia(27%) saturate(7392%) hue-rotate(17deg) brightness(103%) contrast(91%);
-    }
-
-    #bottom_nav_bar a:nth-child(2):hover img, #bottom_nav_bar a:nth-child(2):focus img {
-        filter: invert(76%) sepia(8%) saturate(3065%) hue-rotate(41deg) brightness(89%) contrast(87%);
-    }
-
-    #bottom_nav_bar a:nth-child(3):hover img, #bottom_nav_bar a:nth-child(3):focus img {
-        filter: invert(53%) sepia(50%) saturate(1509%) hue-rotate(201deg) brightness(102%) contrast(119%);
-    }
-
-    #bottom_nav_bar a:nth-child(4):hover img, #bottom_nav_bar a:nth-child(4):focus img {
-        filter: invert(40%) sepia(14%) saturate(0%) hue-rotate(160deg) brightness(89%) contrast(95%);
-    }
-    */
 }
 

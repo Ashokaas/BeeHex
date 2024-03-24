@@ -1,10 +1,13 @@
+/* Importation des variables CSS */
 @import url("variables.css");
 
+/* Définition de la police Roboto */
 @font-face {
     font-family: Roboto;
     src: url('../fonts/Roboto/Roboto-Medium.ttf')  format('truetype');
 }
 
+/* Réinitialisation des styles */
 * {
     margin: 0;
     padding: 0;
@@ -16,7 +19,7 @@ body {
     background-color: var(--bg-color);
     color: var(--txt-color);
 }
-
+/* Conteneur principal */
 #settings_content {
     display: flex;
     align-items: center;
@@ -24,14 +27,13 @@ body {
     flex-direction: column;
 }
 
+/* Séparation des éléments */
 #settings_content > * {
     margin: 1vh;
 }
 
-
-
 form > div {
-    margin:  0;
+    margin: 0;
 }
 
 form > div > * {
@@ -40,11 +42,13 @@ form > div > * {
 
 form hr {
     width: 100%;
+    filter: opacity(0.2);
     margin: 5% 0;
     border: 1px solid var(--txt-color);
-
 }
 
+
+/* Input text */
 input[type="text"] {
     width: 100%;
     padding: 1vh;
@@ -55,6 +59,7 @@ input[type="text"] {
     font-size: 1em;
 }
 
+/* Bouton submit */
 input[type="submit"] {
     background-color: var(--primary-accent-400);
     color: white;
@@ -72,25 +77,33 @@ input[type="submit"]:hover {
     background-color: var(--primary-accent-500) !important;
 }
 
+/* Style du bouton radio venant de https://codepen.io/Noeh-l/pen/QWVxdNr */
 input[type="radio"] {
-    display: inline-block;
-    width: 15px;
-    height: 15px;
-    background-color: #ddd;
-    border-radius: 50%;
-    border: 2px solid var(--txt-color);
-    transition: all 0.3s ease;
+	appearance: none;
+	-webkit-appearance: none;
+	width: 20px;
+	height: 20px;
+	border: 1px solid var(--txt-color);
+	border-radius: 50%;
+	background-color: transparent;
+	position: relative;
+	top: 6px;
+    margin: 0 0 0 10px;
 }
 
-input[type="radio"]:checked {
-    background-color: var(--primary-accent-400);
+input[type="radio"]:checked::before {
+	content: "";
+	display: block;
+	width: 12px;
+	height: 12px;
+	background-color: var(--primary-accent-400);
+	border-radius: 50%;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	animation: appear 0.8s;
 }
 
 
-hr {
-    width: 100%;
-    filter: opacity(0.2);
-    margin: 5% 0;
-    border: 1px solid var(--txt-color);
-}
 
