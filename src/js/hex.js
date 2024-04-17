@@ -165,6 +165,423 @@ function convertMsToTimer(ms) {
     }
 }
 // Hexagon states : Empty = 0 | Player 1 = 1 | Player 2 = 2 | Wall = 3 
+
+
+function checkIfHexagonsAreConnected(board, hex1, hex2, player) {
+    let hexagonsToCheck = [hex1];
+    let checkedHexagons = [];
+    while (hexagonsToCheck.length > 0) {
+        let hexagon = hexagonsToCheck.pop();
+        checkedHexagons.push(hexagon);
+        let surroundingHexagons = board.getSurroundingHexagons(hexagon[0], hexagon[1]);
+        let ownSurroundingHexagons = board.filterHexagons(surroundingHexagons, player);
+        if (ownSurroundingHexagons.some(hex => hex[0] === hex2[0] && hex[1] === hex2[1])) {
+            return true;
+        }
+        for (let ownHexagon of ownSurroundingHexagons) {
+            if (!isCoordinateInArray(checkedHexagons, ownHexagon)) {
+                hexagonsToCheck.push(ownHexagon);
+            }
+        }
+    }
+    return false;
+}
+
+
+
+function isCoordinateInArray(array, coord) {
+    for (let i = 0; i < array.length; i++) {
+        if (array[i][0] === coord[0] && array[i][1] === coord[1]) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function simpleBot(board, player) {
+    function getBridgeHexagons(board, x, y) {
+        let surroundingHexagons = [];
+        if (x < board.size - 1 && y > 1) {
+            surroundingHexagons.push([x + 1, y - 2]);
+        }
+        if (x < board.size - 2 && y > 0) {
+            surroundingHexagons.push([x + 2, y - 1]);
+        }
+        if (x > 0 && y > 0) {
+            surroundingHexagons.push([x - 1, y - 1]);
+        } 
+        if (x < board.size - 1 && y < board.size - 1) {
+            surroundingHexagons.push([x + 1, y + 1]);
+        }
+        if (x > 1 && y < board.size - 1) {
+            surroundingHexagons.push([x - 2, y + 1]);
+        }
+        if (x > 0 && y < board.size - 2) {
+            surroundingHexagons.push([x - 1, y + 2]);
+        }
+        //console.log(surroundingHexagons)
+        return surroundingHexagons;
+    }
+
+    function checkIfHexagonsAreBridged(board, hex1, hex2, player) {
+        let hexagonsToCheck = [hex1];
+        let checkedHexagons = [];
+        while (hexagonsToCheck.length > 0) {
+            let hexagon = hexagonsToCheck.pop();
+            //console.log(hexagonsToCheck)
+            checkedHexagons.push(hexagon);
+            let surroundingHexagons = board.getSurroundingHexagons(hexagon[0], hexagon[1]);
+            let ownSurroundingHexagons = board.filterHexagons(surroundingHexagons, player);
+    
+            if (ownSurroundingHexagons.some(hex => hex[0] === hex2[0] && hex[1] === hex2[1])) {
+                return true;
+            }
+            for (let ownHexagon of ownSurroundingHexagons) {
+                if (!isCoordinateInArray(checkedHexagons, ownHexagon) && !isCoordinateInArray(hexagonsToCheck, ownHexagon)) {
+                    hexagonsToCheck.push(ownHexagon);
+                }
+            }
+            for (let innerHexagon of surroundingHexagons) {
+                
+                candidates = getOuterBridgeHexagons(hexagon, innerHexagon).filter(hexa => board.isInBounds(hexa)).filter(hexa => board.getHexagon(hexa[0], hexa[1])  === player);
+                candidates = candidates.filter(hexa => getInnerBridgeHexagons(hexagon, hexa).every(hexaa => board.getHexagon(hexaa[0], hexaa[1])  === 0))
+                for (candidate of candidates) {
+                    if (!isCoordinateInArray(checkedHexagons, candidate) && !isCoordinateInArray(hexagonsToCheck, candidate)) {
+                        hexagonsToCheck.push(candidate);
+                    }
+                }
+            }
+        }
+        return false;
+    }
+    
+    function getInnerBridgeHexagons(hex1, hex2) { 
+        diffX = hex2[0] - hex1[0];
+        diffY = hex2[1] - hex1[1];
+        x = hex2[0];
+        y = hex2[1];
+        //console.log(x, y, hex2[0], hex2[1], diffX, diffY)
+        if (diffX === 1 && diffY === 1) {
+            return [[x - 1, y], [x, y - 1]];
+        }
+        if (diffX === -1 && diffY === 2) {
+            return [[x, y - 1], [x + 1, y - 1]];
+        }
+        if (diffX === -2 && diffY === 1) {
+            return [[x + 1, y - 1], [x + 1, y]];
+        }
+        if (diffX === -1 && diffY === -1) {
+            return [[x + 1, y], [x, y + 1]];
+        }
+        if (diffX === 1 && diffY === -2) {
+            return [[x, y + 1], [x - 1, y + 1]];
+        }
+        if (diffX === 2 && diffY === -1) {
+            return [[x - 1, y + 1], [x - 1, y]];
+        }
+        
+        console.warn("Invalid hexagons for inner bridge hexagons.");
+    }
+
+    function getBridgeHexagonsWithBorders(board, player, x, y) {
+        let surroundingHexagons = [];
+        if (player === 1) {
+            if (x < board.size  && y > 1) {
+                surroundingHexagons.push([x + 1, y - 2]);
+            }
+            if (x < board.size - 1 && y > 0) {
+                surroundingHexagons.push([x + 2, y - 1]);
+            }
+            if (x > -1 && y > 0) {
+                surroundingHexagons.push([x - 1, y - 1]);
+            } 
+            if (x < board.size  && y < board.size - 1) {
+                surroundingHexagons.push([x + 1, y + 1]);
+            }
+            if (x > 0 && y < board.size - 1) {
+                surroundingHexagons.push([x - 2, y + 1]);
+            }
+            if (x > -1 && y < board.size - 2) {
+                surroundingHexagons.push([x - 1, y + 2]);
+            }
+        } else {
+            if (x < board.size - 1 && y > 0) {
+                surroundingHexagons.push([x + 1, y - 2]);
+            }
+            if (x < board.size - 2 && y > -1) {
+                surroundingHexagons.push([x + 2, y - 1]);
+            }
+            if (x > 0 && y > -1) {
+                surroundingHexagons.push([x - 1, y - 1]);
+            } 
+            if (x < board.size - 1 && y < board.size) {
+                surroundingHexagons.push([x + 1, y + 1]);
+            }
+            if (x > 1 && y < board.size) {
+                surroundingHexagons.push([x - 2, y + 1]);
+            }
+            if (x > 0 && y < board.size - 1) {
+                surroundingHexagons.push([x - 1, y + 2]);
+            }
+        }
+        //console.log(surroundingHexagons)
+        return surroundingHexagons;
+    }
+
+
+    function getOuterBridgeHexagons(outer, inner) {
+        diffX = outer[0] - inner[0]
+        diffY = outer[1] - inner[1];
+        x = outer[0];
+        y = outer[1];
+        if (diffX === 1 && diffY === 0) {
+            return [[x - 2, y + 1], [x - 1, y - 1]];
+        }
+        if (diffX === 0 && diffY === 1) {
+            return [[x - 1, y - 1], [x + 1, y - 2]];
+        }
+        if (diffX === -1 && diffY === 1) {
+            return [[x + 1, y - 2], [x + 2, y - 1]];
+        }
+        if (diffX === -1 && diffY === 0) {
+            return [[x + 2, y - 1], [x + 1, y + 1]];
+        }
+        if (diffX === 0 && diffY === -1) {
+            return [[x + 1, y + 1], [x - 1, y + 2]];
+        }
+        if (diffX === 1 && diffY === -1) {
+            return [[x - 1, y + 2], [x - 2, y + 1]];
+        }
+        console.warn("Invalid hexagons for outer bridge hexagons.", [outer, inner]);
+    }
+
+    function playMove(board, player) {
+        // Identifier les coups nécessaires pour conserver un pont, attribuer un score à ce coupV
+        //   - Identifier les hexagones de pont existants
+        //   - Vérifier qu'ils ne sont pas déjà connectésV
+        //   - Vérifier qu'ils sont menace d'être bloqués
+        //   - Attribuer un score en fonction de la conservation du chemin
+        // Vérifier s'il existe déjà un chemin de coût 0 (avec uniquement des ponts à compléter) - 
+        //   - Si oui, compléter le chemin (attribuer 0.5 aux coups de ponts à compléter)
+        // Identifier les coups de construction de pont possibles, attribuer un score à ce coup 
+        //  - Identifier les hexagones de pont possibles V
+        //  - Éliminer ceux qui sont en directe menace de blocage V
+        //  - Attribuer un score en fonction de la création du pont (avec un +0.75)
+
+        // Dans l'algorithme de score, attribuer 0 aux cases du joueur ou les cases vides faisant partie d'un pont
+        //                             attribuer 1 aux cases vides classiques
+        //                             attribuer 2 aux cases vides adjacentes à une case ennemie
+
+        threatenedBridges = identifyThreatenedBridges(board, player);
+        newBridges = identifyNewBridges(board, player);
+        otherHexagons = identifyAllOtherHexagons(board, player);
+        allHexagons = threatenedBridges.concat(newBridges);
+        allHexagons = allHexagons.concat(otherHexagons);
+
+        allHexagons = allHexagons.filter((hex) => board.isValidPlacementXY(hex[0][0], hex[0][1]));
+
+        allHexagons.sort((a, b) => a[1] - b[1]);
+    //    //console.log(allHexagons)
+        if (allHexagons.length > 0) {
+            currentGame.clickHexagon(document.getElementsByClassName(`${allHexagons[0][0][0]}-${allHexagons[0][0][1]}`)[0]);
+        } else {
+            let randomX = -1; 
+            let randomY = -1;
+            while (!board.isInBoundsXY(randomX, randomY) || !board.isValidPlacementXY(randomX, randomY)) {
+                randomIndexX = Math.floor(Math.random() * 2);
+                randomIndexY = Math.floor(Math.random() * 2);
+                randomX = Math.floor(board.size / 2) - 1 + randomIndexX;
+                randomY = Math.floor(board.size / 2) - 1 + randomIndexY;
+                console.log(randomX, randomY, board.isInBoundsXY(randomX, randomY), board.isValidPlacementXY(randomX, randomY))
+            }
+            currentGame.clickHexagon(document.getElementsByClassName(`${randomX}-${randomY}`)[0]);
+        }
+
+    }
+    
+    function identifyThreatenedBridges(board, player) {
+        ownHexagons = getAllOwnHexagons(board, player);
+        threatenedBridges = [];
+        for (let hex of ownHexagons) {
+            outerHexagons = getBridgeHexagonsWithBorders(board, player, hex[0], hex[1]);
+            
+            for (let outerHex of outerHexagons) {
+    //            //console.log(outerHex, hex, board, board.grid[outerHex[1]])
+                if (board.isInBounds(outerHex) && (board.getHexagon(outerHex[0], outerHex[1]) !== player || checkIfHexagonsAreBridged(board, hex, outerHex, player))) { continue;}
+                innerHexagon = getInnerBridgeHexagons(hex, outerHex);
+                if (board.isInBounds(innerHexagon[0]) && board.isInBounds(innerHexagon[1]) && board.getHexagon(innerHexagon[0][0], innerHexagon[0][1])  === 0 && board.getHexagon(innerHexagon[1][0], innerHexagon[1][1])  === 3 - player) {
+                    threatenedBridges.push([innerHexagon[0], attributeScore(board, innerHexagon[0], player)]);
+                    //console.log(innerHexagon[0], attributeScore(board, innerHexagon[0], player))
+                } else if (board.isInBounds(innerHexagon[0]) && board.isInBounds(innerHexagon[1]) && board.getHexagon(innerHexagon[1][0], innerHexagon[1][1])  === 0 && board.getHexagon(innerHexagon[0][0], innerHexagon[0][1])  === 3 - player) {
+                    threatenedBridges.push([innerHexagon[1], attributeScore(board, innerHexagon[1], player)]);
+                    //console.log(innerHexagon[1], attributeScore(board, innerHexagon[1], player))
+                } else {
+                    if (board.isInBounds(innerHexagon[0])) {
+                        score1 = attributeScore(board, innerHexagon[0], player);
+                        score1 = score1 > 0.2 ? score1 + 0.85 : score1 + 0.2;
+                        threatenedBridges.push([innerHexagon[0], score1]);
+                    }
+                    if (board.isInBounds(innerHexagon[1])) {
+                        score2 = attributeScore(board, innerHexagon[1], player);
+                        score2 = score2 > 0.2 ? score2 + 0.85 : score2 + 0.2;
+                        threatenedBridges.push([innerHexagon[1], score2]);
+                    }
+                }
+            }
+        }
+        return threatenedBridges;
+    }
+
+    function identifyNewBridges(board, player) {
+        ownHexagons = getAllOwnHexagons(board, player);
+        newBridges = [];
+        for (let hex of ownHexagons) {
+            outerHexagons = getBridgeHexagons(board, hex[0], hex[1]);
+            for (let outerHex of outerHexagons) {
+                if (board.getHexagon(outerHex[0], outerHex[1])  === player) { continue;}
+                innerHexagon = getInnerBridgeHexagons(hex, outerHex);
+    //            //console.log(innerHexagon)
+                if (board.getHexagon(innerHexagon[0][0], innerHexagon[0][1])  === 0 && board.getHexagon(innerHexagon[1][0], innerHexagon[1][1])  === 0) {
+                    newBridges.push([outerHex, attributeScore(board, outerHex, player) + 0.75]);
+                    //console.log(outerHex, attributeScore(board, outerHex, player) + 0.75)
+                }
+            }
+        }
+        return newBridges;
+    }
+
+    function getAllOwnHexagons(board, player) {
+        let hexagons = [];
+        for (let i = 0; i < board.size; i++) {
+            for (let j = 0; j < board.size; j++) {
+                if (board.grid[j][i] === player) {
+                    hexagons.push([i, j]);
+                }
+            }
+        }
+    //    //console.log(hexagons)
+        return hexagons;
+    }
+    
+    function identifyAllOtherHexagons(board, player) {
+        let hexagons = [];
+        let checkedHexagons = [];
+        let ownHexagons = getAllOwnHexagons(board, player);
+        for (ownHexagon of ownHexagons) {
+            surroundingHexagons = board.getSurroundingHexagons(ownHexagon[0], ownHexagon[1]);
+            for (surroundingHexagon of surroundingHexagons) {
+                if (!isCoordinateInArray(checkedHexagons, surroundingHexagon) && board.getHexagon(surroundingHexagon[0], surroundingHexagon[1])  === 0) {
+                    score = attributeScore(board, surroundingHexagon, player);
+                    score = score === 0 ? score : score + 0.9;
+                    hexagons.push([surroundingHexagon, score]);
+                    checkedHexagons.push(surroundingHexagon);
+                }
+            }
+        }
+        return hexagons;
+    }
+    
+
+    function attributeScore(board, hex, player) {
+        let hexagonToCheck = [[hex, 0]];
+        let checkedHexagons = [];
+        let lowerBoundPath = undefined;
+        let higherBoundPath = undefined;
+        if (player == 1) {
+            boundCheck = hex[0];
+        } else {
+            boundCheck = hex[1];
+        }
+        if (boundCheck === 0) {
+            lowerBoundPath = 0;
+        }
+        if (boundCheck === board.size - 1) {
+            higherBoundPath = 0;
+        }
+        
+
+        while (hexagonToCheck.length > 0) {
+        //    //console.log(hexagonToCheck)
+            hexagonToCheck.sort((a, b) => b[1] - a[1]);
+            let hexagon = hexagonToCheck.pop();
+            checkedHexagons.push(hexagon[0]);
+            let surroundingHexagons = board.getSurroundingHexagons(hexagon[0][0], hexagon[0][1]);
+            let availableHexagons = board.filterAntiHexagons(surroundingHexagons, 3 - player);
+        //    //console.log(availableHexagons)
+            for (let innerHexagon of availableHexagons) {
+                if (!isCoordinateInArray(checkedHexagons, innerHexagon)) {
+                    let score;
+                    if (player == 1) {
+                        boundCheck = innerHexagon[0];
+                    } else {
+                        boundCheck = innerHexagon[1];
+                    }
+                    if (board.getHexagon(innerHexagon[0], innerHexagon[1])  === player) {
+                        score = hexagon[1] + 0;
+                 //       //console.log(score)
+                    }
+                    else if (board.getHexagon(hexagon[0][0], hexagon[0][1])  === player || (hexagon[0][0] === hex[0] && hexagon[0][1] === hex[1])) {
+                        if (boundCheck === board.size - 1 || boundCheck === 0) {
+                            score = hexagon[1] + 0.01;
+                        } else {
+                            candidates = getOuterBridgeHexagons(hexagon[0], innerHexagon).filter(hexa => board.isInBounds(hexa)).filter(hexa => board.getHexagon(hexa[0], hexa[1])  === player);
+                            if (candidates.length > 0) {
+                                candidates = candidates.filter(hexa => getInnerBridgeHexagons(hexagon[0], hexa).every(hexaa => board.getHexagon(hexaa[0], hexaa[1])  === 0))
+                                if (candidates.length > 0) {
+                                    score = hexagon[1] + 0.01;
+                                    //console.log(candidates, score)
+                                } else {
+                                    score = hexagon[1] + 4;
+                                    //console.log(score)
+                                }
+                            } else if (board.getSurroundingHexagons(innerHexagon[0], innerHexagon[1]).filter(hexa => board.getHexagon(hexa[0], hexa[1]) === 3 - player).length > 0) {
+                                score = hexagon[1] + 2;
+                            } else {
+                                score = hexagon[1] + 1;
+                       //         //console.log(score)
+                            }
+                        }
+                    } else if (board.getSurroundingHexagons(innerHexagon[0], innerHexagon[1]).filter(hexa => board.getHexagon(hexa[0], hexa[1]) === 3 - player).length > 0) {
+                        score = hexagon[1] + 2;
+                    } else {
+                        score = hexagon[1] + 1.25;
+               //         //console.log(score)
+                    }
+                    
+                    if (boundCheck === 0 && (lowerBoundPath === undefined || score < lowerBoundPath)) {
+                        lowerBoundPath = score;
+                //        //console.log(score)
+                        if (lowerBoundPath !== undefined && higherBoundPath !== undefined) {
+                            return lowerBoundPath + higherBoundPath;
+                        }
+                    }
+                    else if (boundCheck === board.size - 1 && (higherBoundPath === undefined || score < higherBoundPath)) {
+                        higherBoundPath = score;
+                //        //console.log(score)
+                        if (lowerBoundPath !== undefined && higherBoundPath !== undefined) {
+                            return lowerBoundPath + higherBoundPath;
+                        }
+                    } else {
+                        existingHexs = hexagonToCheck.filter(hex => hex[0][0] == innerHexagon[0] && hex[0][1] == innerHexagon[1])
+                        if (existingHexs.length > 0) {
+                        //    //console.log(existingHexs[0][1], score)
+                            existingHexs[0][1] = existingHexs[0][1] > score ? score : existingHexs[0][1]
+                        //    //console.log(existingHexs[0][1])
+                        } else {
+                  //      //console.log(innerHexagon, score)
+                        hexagonToCheck.push([innerHexagon, score])
+                        }
+                    }
+                }
+            }
+            
+        }
+    }
+    testattributescore = attributeScore
+
+    playMove(board, player);
+}
+
 class Game {
     constructor(size, timer) {
         this.board = new Board(size);
@@ -226,7 +643,7 @@ class Game {
 
 
             if (this.turn === 2 && j2_type === 'bot') {
-                this.bot_turn();
+                simpleBot(this.board, this.turn);
             } 
             
         }
@@ -243,7 +660,7 @@ class Game {
     }
 
     updateTimer(cycle = false) {
-        if (currentGame === undefined || cycle != game_UUID) {
+        if (currentGame === undefined || (cycle != game_UUID && cycle != false)) {
             return;
         }
         let time = Date.now();
@@ -312,6 +729,14 @@ class Board {
         this.grid = new Array(size).fill().map(() => Array(size).fill(0));
     }
 
+    getHexagon(x, y) {
+        if (this.isInBoundsXY(x, y)) {
+            return this.grid[y][x];
+        } else {
+            console.error(`Hexagon ${x}, ${y} is out of bounds.`);
+        }
+    }
+
     getAvailableMoves() {
         const moves = [];
         for (let i = 0; i < this.size; i++) {
@@ -329,6 +754,13 @@ class Board {
     }
     isValidPlacement(hexagon) {
         return this.isValidPlacementXY(hexagon[0], hexagon[1]);
+    }
+    
+    isInBoundsXY(x, y) {
+        return x >= 0 && x < this.size && y >= 0 && y < this.size;
+    }
+    isInBounds(hexagon) {
+        return this.isInBoundsXY(hexagon[0], hexagon[1]);
     }
 
     applyMoveXY(x, y, type) {
@@ -426,6 +858,15 @@ class Board {
         }
         return filteredHexagons
     }
+    filterAntiHexagons(hexagons, state) {
+        let filteredHexagons = []
+        for (let hexagon of hexagons) {
+            if (this.grid[hexagon[1]][hexagon[0]] != state) {
+                filteredHexagons.push(hexagon);
+            }
+        }
+        return filteredHexagons
+    }
 
     getSurroundingHexagons(x, y) {
         let surroundingHexagons = [];
@@ -486,7 +927,7 @@ function scaleHexagonGrid() {
         playerPanel.css('height', `fit-content`)
         //hexagonGrid.css('margin', `0`)
     }
-    //console.log(screen_width, outerWidth);
+    ////console.log(screen_width, outerWidth);
 }
 
 function save() {
@@ -560,7 +1001,7 @@ $(document).ready(function() {
         for (var key in parsedData) {
             if (parsedData.hasOwnProperty(key)) {
                 var value = parsedData[key];
-                console.log(key + ": " + value);
+                //console.log(key + ": " + value);
 
             }
         }
