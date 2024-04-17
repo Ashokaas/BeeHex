@@ -411,6 +411,55 @@ body {
     background-color: var(--primary-accent-500);
 }
 
+#highlightMove {
+    display: flex;
+    flex-direction: row;
+    justify-content:space-evenly;
+    width: 100%;
+}
+
+#highlightMove div {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+#highlightMove div div {
+    display: flex;
+    flex-direction: column;
+    justify-self: center;
+    align-items: center;
+    color: #fff;
+    width: 90%;
+    height: 75%;
+    padding: 10% 10%;
+    border-radius: 1vw;
+    cursor: pointer;
+    transition: background-color 0.1s;
+}
+
+#highlightMove img {
+    width: 25%;
+    height: auto;
+    cursor: pointer;
+}
+
+#highlightMove div div:hover {
+    background-color: var(--primary-accent-400);
+}
+
+#highlightMove div div:active {
+    background-color: var(--primary-accent-500);
+}
+
+.bot_highlight {
+    background-color: white;
+    transition: background-color 0.5s ease-in-out;
+    
+}
+
 #p_data_status {
     color: lightgray;
     text-align: center;

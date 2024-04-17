@@ -383,7 +383,8 @@ function simpleBot(board, player) {
         allHexagons.sort((a, b) => a[1] - b[1]);
     //    //console.log(allHexagons)
         if (allHexagons.length > 0) {
-            currentGame.clickHexagon(document.getElementsByClassName(`${allHexagons[0][0][0]}-${allHexagons[0][0][1]}`)[0]);
+            return allHexagons[0][0];
+           // currentGame.clickHexagon(document.getElementsByClassName(`${allHexagons[0][0][0]}-${allHexagons[0][0][1]}`)[0]);
         } else {
             let randomX = -1; 
             let randomY = -1;
@@ -394,7 +395,8 @@ function simpleBot(board, player) {
                 randomY = Math.floor(board.size / 2) - 1 + randomIndexY;
                 console.log(randomX, randomY, board.isInBoundsXY(randomX, randomY), board.isValidPlacementXY(randomX, randomY))
             }
-            currentGame.clickHexagon(document.getElementsByClassName(`${randomX}-${randomY}`)[0]);
+            return [randomX, randomY];
+            //currentGame.clickHexagon(document.getElementsByClassName(`${randomX}-${randomY}`)[0]);
         }
 
     }
@@ -577,9 +579,20 @@ function simpleBot(board, player) {
             
         }
     }
-    testattributescore = attributeScore
+    
+    return playMove(board, player);
+}
 
-    playMove(board, player);
+function highlightBotMoveButton() {
+    if (currentGame !== undefined) {
+        highlightBotMove(currentGame.board, currentGame.turn);
+    }
+}
+
+function highlightBotMove(board, player) {
+    botmove = simpleBot(board, player);
+    document.getElementsByClassName(`${botmove[0]}-${botmove[1]}`)[0].classList.add("bot_highlight");
+    setTimeout(() => {document.getElementsByClassName(`${botmove[0]}-${botmove[1]}`)[0].classList.remove("bot_highlight")}, 1000);
 }
 
 class Game {
@@ -643,7 +656,9 @@ class Game {
 
 
             if (this.turn === 2 && j2_type === 'bot') {
-                simpleBot(this.board, this.turn);
+
+                botmove = simpleBot(this.board, this.turn);
+                currentGame.clickHexagon(document.getElementsByClassName(`${botmove[0]}-${botmove[1]}`)[0]);
             } 
             
         }
