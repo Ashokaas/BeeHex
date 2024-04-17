@@ -1,24 +1,32 @@
-<html lang="en">
+<html lang="fr">
 
 <head>
+    <!-- Encodage des caractères, zoom initial, manifest -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="manifest" href="/pwa.webmanifest">
+
+    <!-- Titre, icone -->
     <title>BeeHex - À propos</title>
     <link rel="icon" href="../src/icons/icon-128.png">
+
+    <!-- CSS -->
     <link rel="stylesheet" href="../src/css/index.css">
+
+    <!-- JS : jQuery, Utilitaires, enregistrement du service worker -->
+    <script src="../dependencies/jquery-3.7.1/dist/jquery.min.js"></script>
+    <script src="../src/js/utils.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register("/sw.js");
+        }
+    </script>
 
 </head>
 
-<script src="../dependencies/jquery-3.7.1/dist/jquery.min.js"></script>
-<script src="../src/js/utils.js"></script>
-<script>
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register("/sw.js");
-    }
-</script>
 
 <body>
+    <!-- Conteneur principal -->
     <div id="home_content">
         <h1>À propos</h1>
         <p>
@@ -27,10 +35,8 @@
             Le code du projet est disponible sur <a href="https://github.com/Ashokaas/BeeHex">Github</a> et est open source.
         </p>
         
-        <br>
-        <br>
+        <br><br>
         
-
         <div id="logos">
             <a href="https://beehex.fr"><img src="../src/svgs/logo.svg" alt="Logo Beehex"></a>
             <a href="https://polytech.univ-tours.fr/" target="_blank"><img src="../src/img/logo_polytech.png" alt="Logo Polytech Tours"></a>
@@ -40,6 +46,7 @@
 
     <br><br>
     
+    <!-- Bar de navugation -->
     <div id="bottom_nav_bar_parent"></div>
 
 </body>

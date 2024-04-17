@@ -1,11 +1,26 @@
+/* Importation des variables CSS */
 @import url("variables.css");
+
+/* Définition de la police Roboto */
+@font-face {
+    font-family: Roboto;
+    src: url('../fonts/Roboto/Roboto-Medium.ttf')  format('truetype');
+}
 
 body {
     background-color: var(--bg-color);
     overflow-x: hidden;
 }
 
+/* Réinitialisation des styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Roboto;
+}
 
+/* Style d'un hexgagone */
 .hexagon {
     /* width: calc(70px * calc(6 / 7)); */
     aspect-ratio: 6 / 7;
@@ -19,6 +34,8 @@ body {
     clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
     
 }
+
+/* Bordure d'un hexagone (ce qui est affiché sur les bords pour affiché la couleur rouge ou bleu du coté */
 .hexagon_border {
     aspect-ratio: 6 / 7;
     height: 70px;
@@ -33,6 +50,8 @@ body {
 
     
 }
+
+/* Couleur des bords (en fonction de la position de l'hexagone) */
 .hexagon_w_border {
     background: conic-gradient(
         transparent 0deg 180deg,
@@ -92,6 +111,7 @@ body {
       );
 }
 
+/* Séparateur de chaque hexagone */
 .spacer {
     width: calc(70px * calc(6 / 14) + 3px);
     height: 0px;
@@ -99,6 +119,7 @@ body {
     position: relative;
     display: inline-block;
 }
+/* Pas de saut de ligne et positionnement absolu pour la grille */
 .hexagon-grid {
     white-space: nowrap;
     position: absolute;
@@ -106,6 +127,7 @@ body {
 .hexagon-row {
     white-space: nowrap;
 }
+/* Empêche la selection des hexagones pour éviter des selectionner du vide avec le curseur */
 .noselect {
     -webkit-tap-highlight-color: transparent;
     -webkit-touch-callout: none;
@@ -115,7 +137,8 @@ body {
     -ms-user-select: none;
     user-select: none;
 }
-  
+
+/* Style de l'interface */
 #game_interface {
     display: grid;
     height: 90vh;
@@ -143,12 +166,13 @@ body {
     padding: 2vh;
 }
 #hex_parent {
-    width : 100%;
+    width: 100%;
 }
 #game_interface #hex_parent > * {
     margin: 1vh 0;
 }
 
+/* Joueurs */
 #players {
     grid-column: 2;
     display: flex;
@@ -216,6 +240,7 @@ body {
     border-radius: 50%;
 }
 
+/* Ecran de victoire */
 #victory_screen {
     margin-top: 10%;
     flex-direction: column;
@@ -224,7 +249,7 @@ body {
     color: white;
 }
 
-#victory_screen button, #revert-button {
+#victory_screen button {
     background-color: var(--primary-accent-400);
     color: white;
     border: none;
@@ -241,6 +266,7 @@ body {
     background-color: var(--primary-accent-500) !important;
 }
 
+/* Bouton d'annulation de coup */
 #revert {
     display: flex;
     flex-direction: column;
@@ -248,6 +274,7 @@ body {
     justify-content: center;
     width: 100%;
 }
+
 #revert button {
     background-color: var(--primary-accent-400);
     color: white;
@@ -270,6 +297,8 @@ body {
     outline: none !important;
 }
 
+
+/* RESPONSIVE */
 @media screen and (orientation: portrait) {
     #game_interface {
         display: flex;
@@ -300,11 +329,9 @@ body {
         padding-bottom: 20vh;
     }
 
-
-
-
-
 }
+
+/* Style supplémentaire pour les hexagones */
 .hexagon:hover {
     background-color: rgb(54, 54, 54);
 }
@@ -329,6 +356,7 @@ body {
     background-color: var(--red-side);
 }
 
+/* CHRONOMETRE */
 .active-timer {
     color: lightgray;
 }
@@ -338,7 +366,7 @@ body {
     height: 7px;
 }
 
-
+/* Style du bouton de sauvegarde et de chargement */
 #save_load {
     display: flex;
     flex-direction: row;
@@ -373,7 +401,6 @@ body {
     height: auto;
     cursor: pointer;
     filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(93deg) brightness(103%) contrast(103%);
-
 }
 
 #save_load div div:hover {
