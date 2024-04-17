@@ -590,7 +590,7 @@ function highlightBotMoveButton() {
 }
 
 function highlightBotMove(board, player) {
-    botmove = simpleBot(board, player);
+    let botmove = simpleBot(board, player);
     document.getElementsByClassName(`${botmove[0]}-${botmove[1]}`)[0].classList.add("bot_highlight");
     setTimeout(() => {document.getElementsByClassName(`${botmove[0]}-${botmove[1]}`)[0].classList.remove("bot_highlight")}, 1000);
 }
@@ -657,7 +657,7 @@ class Game {
 
             if (this.turn === 2 && j2_type === 'bot') {
 
-                botmove = simpleBot(this.board, this.turn);
+                let botmove = simpleBot(this.board, this.turn);
                 currentGame.clickHexagon(document.getElementsByClassName(`${botmove[0]}-${botmove[1]}`)[0]);
             } 
             
