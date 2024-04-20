@@ -455,9 +455,17 @@ body {
 }
 
 .bot_highlight {
-    background-color: white;
-    transition: background-color 0.5s ease-in-out;
-    
+    animation: animate_highlight_move 1s;  
+}
+
+@keyframes animate_highlight_move {
+    0% {
+    }
+    50% {
+        background-color: white;
+    }
+    100% {
+    }
 }
 
 #p_data_status {
