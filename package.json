@@ -1,0 +1,29 @@
+{
+  "name": "beehex_v2",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@fontsource/noto-sans": "^5.0.22",
+    "axios": "^1.7.2",
+    "material-symbols": "^0.20.0",
+    "next": "14.2.3",
+    "react": "^18",
+    "react-dom": "^18",
+    "socket.io-client": "^4.7.5"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "@types/react-helmet": "^6.1.11",
+    "eslint": "^8",
+    "eslint-config-next": "14.2.3",
+    "typescript": "^5"
+  }
+}

@@ -1,0 +1,98 @@
+/* NAV BAR */
+#bottom_nav_bar {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background: linear-gradient(to right, #2b2b2b, #3a3a3a);
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+
+/* MENUS de la nav bar*/
+#bottom_nav_bar a {
+    text-decoration: none;
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 10vh;
+    width: 100%;
+    transition: background-color 0.2s ease-out;
+    border-radius: 2vw;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* LOGOS des menus */
+#bottom_nav_bar a img {
+    width: 100%;
+    max-height: 50%;
+    filter: invert(100%);
+}
+
+/* Le deuxième effet permet de remettre la couleur blanche sur l'icone lorsque il est survolé
+peu importe la page sur laquelle on est affet d'eviter d'avoir du jaune sur jaun par exemple
+On est pas obligé de spécifier la page puisque si on applique un 'invert(100%)' sur un icone
+qui est déjà blanc, il ne changera pas de couleur (car il est noir à la base) */
+
+/* Accueil : jaune */
+#bottom_nav_bar a:nth-child(1):hover {
+    background-color: var(--primary-light-400);
+}
+#bottom_nav_bar a:nth-child(1):hover img {
+    filter: invert(100%) !important;
+}
+
+/* Jouer : vert */ 
+#bottom_nav_bar a:nth-child(2):hover {
+    background-color: var(--secondary-light-500);
+}
+#bottom_nav_bar a:nth-child(2):hover img {
+    filter: invert(100%) !important;
+}
+
+/* Partie avancée : bleu*/
+#bottom_nav_bar a:nth-child(3):hover {
+    background-color: var(--blue-300);
+}
+#bottom_nav_bar a:nth-child(3):hover img {
+    filter: invert(100%) !important;
+}
+
+/* A propos : gris */
+#bottom_nav_bar a:nth-child(4):hover {
+    background-color: #5f5f5f;
+}
+#bottom_nav_bar a:nth-child(4):hover img {
+    filter: invert(100%) !important;
+}
+
+/* Login/register : rouge */
+#bottom_nav_bar a:nth-child(5):hover {
+    background-color: rgb(182, 58, 58);
+}
+#bottom_nav_bar a:nth-child(5):hover img {
+    filter: invert(100%) !important;
+}
+
+
+#bottom_nav_bar a:focus {
+    outline: none !important;
+}
+
+/* Responsive */
+@media only screen and (max-device-width: 640px) {
+    
+    /* on cache les textes des menus sur mobile */
+    #bottom_nav_bar p {
+        display: none;
+    }
+
+    /* on enlève le background-color des menus lorsqu'on survole sur mobile */
+    #bottom_nav_bar >*:hover {
+        background-color: transparent !important;
+    }
+
+}
+

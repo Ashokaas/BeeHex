@@ -1,0 +1,442 @@
+/* Style d'un hexgagone */
+.hexagon {
+    /* width: calc(70px * calc(6 / 7)); */
+    aspect-ratio: 6 / 7;
+    height: 70px;
+    background-color: rgb(85, 85, 85);
+    position: relative;
+    display: inline-block;
+    margin: -6px 0.02em;
+    margin-left: 6px;
+    -webkit-clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    
+}
+
+/* Bordure d'un hexagone (ce qui est affiché sur les bords pour affiché la couleur rouge ou bleu du coté */
+.hexagon_border {
+    aspect-ratio: 6 / 7;
+    height: 70px;
+    display: inline-block;
+    margin: -6px 0.02em;
+    margin-left: 6px;
+    -webkit-clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+
+    position: absolute;
+    transform: scale(1.5);
+
+    
+}
+.hexagon_grid {
+    white-space: nowrap;
+    position: absolute;
+}
+.hexagon_row {
+    white-space: nowrap;
+}
+
+/* Couleur des bords (en fonction de la position de l'hexagone) */
+.hexagon_w_border {
+    background: conic-gradient(
+        transparent 0deg 180deg,
+        var(--red-side-secondary) 180deg 300deg,
+        transparent 300deg 360deg
+      );
+}
+.hexagon_n_border {
+    background: conic-gradient(
+        var(--blue-side-secondary) 0deg 60deg,
+        transparent 60deg 300deg,
+        var(--blue-side-secondary) 300deg 360deg
+      );
+}
+.hexagon_e_border {
+    background: conic-gradient(
+        var(--red-side-secondary) 0deg 120deg,
+        transparent 120deg 360deg
+      );
+}
+.hexagon_s_border {
+    background: conic-gradient(
+        transparent 0deg 120deg,
+        var(--blue-side-secondary) 120deg 240deg,
+        transparent 240deg 360deg
+      );
+}
+.hexagon_nw_border {
+    background: conic-gradient(
+        var(--blue-side-secondary) 0deg 60deg,
+        transparent 60deg 180deg,
+        var(--red-side-secondary) 180deg 300deg,
+        var(--blue-side-secondary) 300deg 360deg
+      );
+}
+.hexagon_ne_border {
+    background: conic-gradient(
+        var(--blue-side-secondary) 0deg 30deg,
+        var(--red-side-secondary) 30deg 120deg,
+        transparent 120deg 300deg,
+        var(--blue-side-secondary) 300deg 360deg
+      );
+}
+.hexagon_se_border {
+    background: conic-gradient(
+        var(--red-side-secondary) 0deg 120deg,
+        var(--blue-side-secondary) 120deg 240deg,
+        transparent 240deg 360deg
+      );
+}
+.hexagon_sw_border {
+    background: conic-gradient(
+        transparent 0deg 120deg,
+        var(--blue-side-secondary) 120deg 210deg,
+        var(--red-side-secondary) 210deg 300deg,
+        transparent 300deg 360deg
+      );
+}
+
+/* Séparateur de chaque hexagone */
+.spacer {
+    width: calc(70px * calc(6 / 14) + 3px);
+    height: 0px;
+    opacity: 0%;
+    position: relative;
+    display: inline-block;
+}
+/* Pas de saut de ligne et positionnement absolu pour la grille */
+.hexagon_grid {
+    white-space: nowrap;
+    position: absolute;
+}
+.hexagon_row {
+    white-space: nowrap;
+}
+
+
+/* Style de l'interface */
+.game_interface {
+    display: grid;
+    height: 90vh;
+    grid-template-columns: 4fr 2fr;
+    background-color: var(--bg-color);
+}
+
+.game_interface h3 {
+    color: var(--txt-color);
+    font-size: 2em;
+}
+
+.game_interface .hex_parent {
+    grid-column: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2vh;
+}
+.hex_parent {
+    width: 100%;
+}
+.game_interface .hex_parent > * {
+    margin: 1vh 0;
+}
+
+/* Joueurs */
+.players {
+    grid-column: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: rgba(60, 60, 60, 0.3);
+    max-width: 600px;
+    min-width: 390px;
+    height: 100%;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+
+.game_status {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin: 4%;
+    width: 95%;
+}
+
+.player_timer {
+    padding: 10px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    margin-top: 5px;
+    font-size: 3em;
+    background-color: var(--bg-color);
+    color: gray;
+
+}
+
+.player_status {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 50%;
+    height: 100%;
+}
+
+.player1_name {
+    color: var(--red-side);
+}
+
+.player2_name {
+    color: var(--blue-side);
+}
+
+.players_title {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.players_title > * {
+    margin: 0 2%;
+    text-wrap: nowrap;
+}
+
+.players_title > div {
+    width: 2vh;
+    height: 2vh;
+    background-color: grey;
+    border-radius: 50%;
+}
+
+/* Ecran de victoire */
+.victory_screen {
+    margin-top: 10%;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.victory_screen button {
+    background-color: var(--primary-accent-400);
+    color: white;
+    border: none;
+    height: auto;
+    border-radius: 2vw;
+    width: 90%;
+    padding: 2vh;
+    font-size: 1rem;
+    margin: 2vh;
+    cursor: pointer;
+}
+
+.victory_screen button:hover {
+    background-color: var(--primary-accent-500) !important;
+}
+
+/* Bouton d'annulation de coup */
+.revert {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.revert button {
+    background-color: var(--primary-accent-400);
+    color: white;
+    border: none;
+    height: auto;
+    border-radius: 2vw;
+    width: 60%;
+    padding: 2vh;
+    font-size: 1rem;
+    margin: 2vh;
+    cursor: pointer;
+}
+
+.revert button:hover {
+    background-color: var(--primary-accent-500) !important;
+    
+}
+
+.revert_button:hover, .revert_button:focus {
+    outline: none !important;
+}
+
+
+/* RESPONSIVE */
+@media screen and (orientation: portrait) {
+    .game_interface {
+        display: flex;
+        flex-direction: column !important;
+        justify-content: space-between !important;
+        align-items: normal !important;
+        width: 100vw;
+        height: 100vh;
+        padding: 0%;
+    }
+    .players {
+        max-width: 100%;
+        width: 100%;
+    }
+    .hex_parent {
+        padding: 0;
+        margin-bottom: 2.5%;
+        margin-top: 2.5%;
+        max-height: 60%;
+        width: 100%;
+    }
+    .revert-button {
+        height: auto;
+        width: 100%;
+    }
+
+
+
+}
+
+/* Style supplémentaire pour les hexagones */
+.hexagon:hover {
+    background-color: rgb(54, 54, 54);
+}
+
+.blue:hover {
+    background-color: var(--blue-side);
+}
+
+.wall {
+    background-color: rgb(20, 20, 20);
+}
+
+.blue {
+    background-color: var(--blue-side);
+}
+
+.red {
+    background-color: var(--red-side);
+}
+
+.red:hover {
+    background-color: var(--red-side);
+}
+
+/* CHRONOMETRE */
+.active_timer {
+    color: lightgray;
+}
+
+.no_timer {
+    overflow: hidden;
+    height: 7px;
+}
+
+/* Style du bouton de sauvegarde et de chargement */
+.save_load {
+    display: flex;
+    flex-direction: row;
+    justify-content:space-evenly;
+    width: 100%;
+}
+
+.save_load div {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.save_load div div {
+    display: flex;
+    flex-direction: column;
+    justify-self: center;
+    align-items: center;
+    color: #fff;
+    width: 90%;
+    height: 100%;
+    padding: 10% 10%;
+    border-radius: 1vw;
+    cursor: pointer;
+    transition: background-color 0.1s;
+}
+
+.save_load img {
+    width: 30%;
+    height: auto;
+    cursor: pointer;
+    filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(93deg) brightness(103%) contrast(103%);
+}
+
+.save_load div div:hover {
+    background-color: var(--primary-accent-400);
+}
+
+.save_load div div:active {
+    background-color: var(--primary-accent-500);
+}
+
+.highlightMove {
+    display: flex;
+    flex-direction: row;
+    justify-content:space-evenly;
+    width: 100%;
+}
+
+.highlightMove div {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.highlightMove div div {
+    display: flex;
+    flex-direction: column;
+    justify-self: center;
+    align-items: center;
+    color: #fff;
+    width: 90%;
+    height: 75%;
+    padding: 10% 10%;
+    border-radius: 1vw;
+    cursor: pointer;
+    transition: background-color 0.1s;
+}
+
+.highlightMove img {
+    width: 25%;
+    height: auto;
+    cursor: pointer;
+}
+
+.highlightMove div div:hover {
+    background-color: var(--primary-accent-400);
+}
+
+.highlightMove div div:active {
+    background-color: var(--primary-accent-500);
+}
+
+.bot_highlight {
+    animation: animate_highlight_move 1s;  
+}
+
+@keyframes animate_highlight_move {
+    0% {
+    }
+    50% {
+        background-color: white;
+    }
+    100% {
+    }
+}
+
+.p_data_status {
+    color: lightgray;
+    text-align: center;
+    margin: 5%;
+}

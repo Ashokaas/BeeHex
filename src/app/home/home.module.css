@@ -1,0 +1,121 @@
+/* Conteneur principal */
+.home_content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.home_content h1 {
+    font-size: 3rem;
+    font-weight: 500;
+    text-align: center;
+    margin: 2rem 0;
+}
+
+.home_content .rules {
+    background-image: linear-gradient(to bottom, var(--bg-color-secondary) 0%, rgba(255, 212, 0, 0.05) 100%);
+    padding: 4vh;
+    border-radius: 30px;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+
+}
+
+.home_content p {
+    font-size: 1.5rem;
+    font-weight: 300;
+    text-align: center;
+    margin: 2rem 0;
+}
+
+.home_content ul {
+    list-style-type: disc;
+}
+.home_content li {
+    margin: 1rem;
+}
+
+.home_content .buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-flow: row;
+    width: 100%;
+}
+
+.home_content .buttons button {
+    background-color: var(--blue-400);
+    color: white;
+    border: none;
+    width: 15vw;
+    min-width: 30%;
+    flex-shrink: 0;
+    height: auto;
+    border-radius: 2vw;
+    padding: 2vh;
+    font-size: 1rem;
+    margin: 2vh;
+    text-align: center;
+    cursor: pointer;
+}
+
+.home_content button:hover {
+    background-color: var(--blue-500) !important;
+}
+
+.home_content img {
+    width: 15rem;
+    height: 15rem;
+}
+
+.home_content a {
+    color: rgb(57, 57, 255);
+    text-decoration: none;
+}
+
+.home_content a:hover {
+    color: rgb(231, 42, 42);
+    text-decoration: underline;
+}
+
+.logos {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logos img {
+    transition: transform 0.3s;
+    width: 10rem;
+    height: 10rem;
+}
+
+.logos img:hover {
+    transform: scale(1.05);
+}
+
+
+/* RESPONSIVE */
+@media screen and (max-width: 640px) {
+    .logos {
+        flex-direction: column;
+    }
+
+    .logos img {
+        margin: 1vh 0;
+    }
+
+    .home_content .buttons {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .home_content .buttons button {
+        flex-direction: column;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+}
