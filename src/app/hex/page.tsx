@@ -9,9 +9,9 @@ import io from 'socket.io-client';
 import axios from "axios";
 
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, use } from 'react';
 
-function PlayerStats(props: {name: string, timer: string}) {
+function PlayerStats(props: { name: string, timer: string }) {
   return (
     <div className={styles.player_status}>
       <h1 className={styles.player_name}>{props.name}</h1>
@@ -20,7 +20,7 @@ function PlayerStats(props: {name: string, timer: string}) {
   );
 }
 
-function VictoryScreen(props: {winner: string}) {
+function VictoryScreen(props: { winner: string }) {
   return (
     <div className={styles.victory_screen}>
       <h1 className={styles.victory_text}>Victoire de <span>{props.winner}</span></h1>
@@ -37,7 +37,7 @@ function RevertButton() {
   );
 }
 
-function GenerateGrid(props: {sizeStr: string, socket: any}) {
+function GenerateGrid(props: { sizeStr: string, socket: any }) {
   const size = parseInt(props.sizeStr);
   const rows = [];
   for (let i = 0; i < size; i++) {
@@ -72,11 +72,11 @@ function GenerateGrid(props: {sizeStr: string, socket: any}) {
       } else if (i === size - 1 && j === size - 1) {
         greenHex.props.className += " hexagon_se_border";
       }*/
-     /*classname {`hexagon ${j}-${i}`}*/
-     const handleClick = () => {
-      console.log(`Hexagon clicked: ${j}-${i}`);
-      props.socket.emit('hexagonClicked', {x: j, y: i});
-    }
+      /*classname {`hexagon ${j}-${i}`}*/
+      const handleClick = () => {
+        console.log(`Hexagon clicked: ${j}-${i}`);
+        props.socket.emit('hexagonClicked', { x: j, y: i });
+      }
       const hex = (
         <div
           className={styles.hexagon}
@@ -103,47 +103,45 @@ export default function Home() {
     player2: { name: "En attente...", timer: "X:XX" }
   });
 
+
+  const socket = io('ws://192.168.1.28:3002');
+
+  const fetchUser = async () => {
+    try {
+      const user = await axios.post('http://192.168.1.28:3001/me', {}, {
+        headers: { 'Authorization': localStorage.getItem('token') }
+      });
+      return user.data.username;
+    } catch (error) {
+      console.error('Error fetching user:', error);
+    }
+  };
   
-  const [isSecondPlayerConnected, setIsSecondPlayerConnected] = useState(false);
-
-  const socket = io('ws://localhost:3002');
   useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const user = await axios.post('http://192.168.1.30:3001/me', {}, {
-          headers: { 'Authorization': localStorage.getItem('token') }
-        });
-        setPlayers({player1: {name: user.data.username, timer: "X:XX"}, player2: {name: "En attente...", timer: "X:XX"}});
-      } catch (error) {
-        console.error('Error fetching user:', error);
+    const initializeSocket = async () => {
+      const username = await fetchUser();
+      console.log(username);
+      if (username) {
+        socket.emit('searchGame', username);
       }
+
+      socket.on('mise_en_relation', (data) => {
+        console.log(data.message);
+        console.log(data.room);
+        console.log(data.clients);
+      });
     };
 
-    fetchUser();
+    initializeSocket();
+
     
-    socket.on('updatePlayers', (updatedPlayers) => {
-      // Vérifier si le deuxième joueur est présent
-      if (updatedPlayers.player2 && updatedPlayers.player2.name !== "En attente...") {
-        setIsSecondPlayerConnected(true);
-        setPlayers(updatedPlayers);
-      }
-    });
-
-    socket.on('mise_en_relation', (data) => {
-      console.log(data.message);
-      console.log(data.salle);
-    });
-
-    return () => {
-      socket.disconnect();
-    };
   }, []);
   return (
     <>
       <div className={styles.game_interface}>
         <div className={styles.hex_parent}>
-          <section className={styles.hexagon_grid}> 
-          <GenerateGrid sizeStr="9" socket={socket} />
+          <section className={styles.hexagon_grid}>
+            <GenerateGrid sizeStr="9" socket={socket} />
           </section>
         </div>
 
@@ -154,7 +152,7 @@ export default function Home() {
             <PlayerStats name={players.player2.name} timer={players.player2.timer} />
           </div>
 
-          
+
 
           <div className={styles.highlightMove}>
             <div>

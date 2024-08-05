@@ -23,7 +23,7 @@ export default function Login() {
   const handleSubmit = async (e: { preventDefault: () => void; }) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://192.168.1.30:3001/login', { username, password });
+      const response = await axios.post('http://192.168.1.28:3001/login', { username, password });
       // Store the token in local storage or a state management library
       localStorage.setItem('token', response.data.token);
       // Redirect the user to a protected page
@@ -31,7 +31,7 @@ export default function Login() {
       console.log(response);
       setError('Login successful');
 
-      const user = await axios.post('http://192.168.1.30:3001/me', {}, {headers: {'Authorization':localStorage.getItem('token')}} );
+      const user = await axios.post('http://192.168.1.28:3001/me', {}, {headers: {'Authorization':localStorage.getItem('token')}} );
       console.log(user.data);
     } catch (error) {
       console.error(error);
