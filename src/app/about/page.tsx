@@ -13,7 +13,7 @@ export default function Home() {
         <div id="rules">
             <h2>Règles du jeu :</h2>
             <ul>
-                <li>Deux joueurs s'affrontent sur un tablier hexagonal.
+                <li>Deux joueurs s affrontent sur un tablier hexagonal.
                 </li>
                 <li>Chaque joueur possède un camp/couleur (rouge ou bleu).
                 </li>
@@ -35,7 +35,6 @@ export default function Home() {
 
         <img src="../src/svgs/logo.svg" alt="Logo"/>
 
-        <BottomNavBar />
         
     </>
   );

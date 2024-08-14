@@ -8,6 +8,7 @@ import styles from "./hex.module.css";
 import io from 'socket.io-client';
 import axios from "axios";
 
+import Cookies from 'js-cookie';
 
 import React, { useState, useEffect, use } from 'react';
 
@@ -109,7 +110,7 @@ export default function Home() {
   const fetchUser = async () => {
     try {
       const user = await axios.post('http://192.168.1.28:3001/me', {}, {
-        headers: { 'Authorization': localStorage.getItem('token') }
+        headers: { 'Authorization': Cookies.get('token') }
       });
       return user.data.username;
     } catch (error) {
@@ -168,7 +169,6 @@ export default function Home() {
 
       </div>
 
-      <BottomNavBar />
     </>
   );
 }

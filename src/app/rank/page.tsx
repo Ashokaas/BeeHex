@@ -1,6 +1,5 @@
-import BottomNavBar from '../../components/bottom_navbar/bottom_navbar';
 import BeautifulButton from '@/components/button/button';
-import styles from './home.module.css';
+import styles from './rank.module.css';
 
 
 export default function Home() {

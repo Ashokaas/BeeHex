@@ -1,0 +1,14 @@
+.body_2 {
+    display: flex;
+    flex-direction: row;
+    background-color: var(--bg-color);
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100%;
+}

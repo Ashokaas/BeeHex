@@ -7,6 +7,11 @@ import styles from "./login_register.module.css";
 import React, { useState } from 'react';
 import axios from 'axios';
 
+import Cookies from 'js-cookie';
+import { Cookie } from 'next/font/google';
+require('dotenv').config()
+
+
 function Error(props: {text: string}) {
   return (
     <div>
@@ -25,6 +30,9 @@ export default function Login() {
     try {
       const response = await axios.post('http://192.168.1.28:3001/login', { username, password });
       // Store the token in local storage or a state management library
+      Cookies.set('token', response.data.token);
+      Cookies.set('username', response.data.user.username);
+      window.dispatchEvent(new Event('cookieChange'));
       localStorage.setItem('token', response.data.token);
       // Redirect the user to a protected page
       // window.location.href = '/dashboard';
@@ -59,7 +67,6 @@ export default function Login() {
 
       <Error text={error} />
 
-      <BottomNavBar />
     </>
   );
 };
