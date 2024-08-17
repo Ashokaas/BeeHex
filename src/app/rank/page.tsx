@@ -1,43 +1,34 @@
 import BeautifulButton from '@/components/button/button';
+import Title_h1 from '@/components/Title_h1/title_h1';
+
 import styles from './rank.module.css';
+import axios from 'axios';
 
-
-export default function Home() {
+export default async function Home() {
+	const response = await axios.get('http://192.168.1.28:3001/get_all_users');
 	return (
 		<>
-			<div className={styles.home_content}>
-				<h1>Bienvenue sur BeeHex</h1>
-				<p>
-					Vous pouvez ici jouer au Jeu de Hex ! Cliquez sur les boutons ci-dessous pour commencer une partie.
-				</p>
-
-				<div id="rules">
-					<h2>Règles du jeu :</h2>
-					<ul>
-						<li>Deux joueurs s affrontent sur un tablier hexagonal.
-						</li>
-						<li>Chaque joueur possède un camp/couleur (rouge ou bleu).
-						</li>
-						<li>Les joueurs placent chacun leur tour une pièce de leur couleur sur une case grise du tablier.
-						</li>
-						<li>Le but est de relier les deux cotés de sa couleur avec une chaine ininterrompu (pas necessairement droite) de pièces de sa couleur
-						</li>.
-						<li>Le premier joueur à relier les deux cotés de sa couleur gagne la partie.
-						</li>
-					</ul>
-				</div>
-				<br /><br />
-
-				<div id="buttons">
-					<BeautifulButton text="Joueur contre grosse patate bleue" icon="people" link="" />
-				</div>
-
-				<img src="../src/svgs/logo.svg" alt="Logo" />
-
-
-
+			<div className={styles.rank_container}>
+				<Title_h1 title="Classement" icon="leaderboard" />
+				<table>
+					<thead>
+						<tr>
+							<th>Position</th>
+							<th>Username</th>
+							<th>MMR</th>
+						</tr>
+					</thead>
+					<tbody>
+						{response.data.map((user: { username: string; mmr: number }, index: number) => (
+							<tr key={index}>
+								<td>{index + 1}</td>
+								<td>{user.username}</td>
+								<td>{user.mmr}</td>
+							</tr>
+						))}
+					</tbody>
+				</table>
 			</div>
-
 		</>
 	);
 }

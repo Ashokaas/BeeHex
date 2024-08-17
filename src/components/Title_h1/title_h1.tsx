@@ -1,17 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import styles from './bottom_navbar.module.css';
+import styles from './title_h1.module.css';
 import 'material-symbols';
 
-
-
-
-
-
-export default function Title_h1() {
+export default function Title_h1(props: {title: string, icon: string}) {
   return (
-    <div id={styles.title_h1}>
-      <span className="material-symbols-rounded">home</span>
-      <h1>Classement</h1>
+    <div className={styles.title_h1}>
+      <h1><span className="material-symbols-rounded">{props.icon}</span>{props.title}</h1>
     </div>
   );
 }

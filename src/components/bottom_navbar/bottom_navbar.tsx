@@ -73,9 +73,6 @@ const BottomNavBar = () => {
       <span className="material-symbols-rounded">replay</span>
     </a>
     <ShowLoginOrMyAccount />
-    <a href="#">
-      <span className="material-symbols-rounded">keyboard_backspace</span>
-    </a>
   </div>
   );
 };

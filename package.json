@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@font/nunito": "^1.0.3",
     "@fontsource/noto-sans": "^5.0.22",
     "axios": "^1.7.2",
     "dotenv": "^16.4.5",

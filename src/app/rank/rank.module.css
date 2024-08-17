@@ -1,0 +1,38 @@
+.rank_container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.rank_container table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  overflow: hidden;
+}
+
+.rank_container table thead {
+  background-color: var(--bg-color-secondary);
+  color: var(--txt-color);
+}
+
+.rank_container table thead th {
+  padding: 10px 15px;
+  text-align: center;
+}
+
+.rank_container table tbody tr:nth-child(2n) {
+  background-color: var(--bg-color-secondary);
+  color: var(--txt-color);
+}
+
+.rank_container table tbody tr:nth-child(2n + 1) {
+  background-color: #424242;
+  color: var(--txt-color);
+}
+
+
+.rank_container table tbody tr td {
+  padding: 10px 40px;
+}

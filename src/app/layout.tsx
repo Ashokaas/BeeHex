@@ -27,9 +27,9 @@ export default function RootLayout({
   return (
     <>
       <html lang="en">
-        <body className={`${inter.className} ${styles.body_2}`}>
+        <body className={`${inter.className}`}>
+          <div>{children}</div>
           <BottomNavBar />
-          <div className={styles.content}>{children}</div>
           
         </body>
       </html>
