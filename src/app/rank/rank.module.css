@@ -36,3 +36,46 @@
 .rank_container table tbody tr td {
   padding: 10px 40px;
 }
+
+.content {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 30px;
+}
+
+.content .separator {
+  width: 1px;
+  height: 70vh;
+  background-color: grey;
+}
+
+.all_ranks img {
+  width: 200px;
+}
+
+.all_ranks {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-gap: 20px;
+  align-items: center;
+  justify-content: center;
+}
+
+.all_ranks > div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.content tbody img {
+  width: 50px;
+}
+
+.leaderboard_buttons {
+  background-color: var(--bg-color-secondary);
+  display: flex;
+  flex-direction: row;
+  padding: 20px;
+}
