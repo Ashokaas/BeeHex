@@ -105,11 +105,11 @@ export default function Home() {
   });
 
 
-  const socket = io('ws://192.168.1.28:3002');
+  const socket = io('ws://localhost:3002');
 
   const fetchUser = async () => {
     try {
-      const user = await axios.post('http://192.168.1.28:3001/me', {}, {
+      const user = await axios.post('http://localhost:3001/me', {}, {
         headers: { 'Authorization': Cookies.get('token') }
       });
       return user.data.username;

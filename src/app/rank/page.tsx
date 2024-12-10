@@ -1,6 +1,6 @@
 "use client";
 import BeautifulButton from '@/components/button/button';
-import Title_h1 from '@/components/Title_h1/title_h1';
+import Title_h1 from '@/components/title_h1/title_h1';
 
 
 import styles from './rank.module.css';
@@ -28,7 +28,7 @@ export default function Home() {
 	const [users, setUsers] = useState([]);
 
 	const fetchUsers = async (first: number, last: number) => {
-		const response = await axios.get(`http://192.168.1.28:3001/get_all_users?first=${first}&last=${last}`);
+		const response = await axios.get(`http://localhost:3001/get_all_users?first=${first}&last=${last}`);
 		setUsers(response.data);
 	};
 
