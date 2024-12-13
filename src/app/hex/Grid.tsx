@@ -6,6 +6,7 @@ interface GridProps {
   grid_array: Array<Array<number>>;
   updateGrid: (newGrid: Array<Array<number>>) => void;
   socket: any;
+  room: string;
 }
 
 interface GridState {
@@ -22,7 +23,7 @@ export default class ShowGrid extends Component<GridProps, GridState> {
 
   handleHexagonClick(i: number, j: number) {
     console.log("hexagon clicked");
-    this.props.socket.emit("hexagonClicked", { i, j });
+    this.props.socket.emit("hexagonClicked", { x: i, y: j, room: this.props.room });
 
     const newGrid = this.state.grid_array.map((row, rowIndex) =>
       row.map((cell, cellIndex) =>
@@ -35,16 +36,11 @@ export default class ShowGrid extends Component<GridProps, GridState> {
   }
 
   render() {
-    this.props.socket.on('refreshGameState', (data: { currentGame:Array<Array<number>> }) => {
-      //const dataParsed = JSON.parse(data.gameStateJSON);
-      //console.log(dataParsed);
-      if (true) {
-        const newGrid = data.currentGame;
-        this.setState({ grid_array: newGrid });
-        this.props.updateGrid(newGrid);
-      } else {
-        console.error('currentGame is not an array');
-      }
+    this.props.socket.on('refreshGameState', (data: { currentGame: Array<Array<number>> }) => {
+      const newGrid = data.currentGame;
+      this.setState({ grid_array: newGrid });
+      this.props.updateGrid(newGrid);
+      console.log(newGrid);
     });
     return (
       <div className={styles.grid_container}>

@@ -68,6 +68,8 @@ export default function Home() {
   const [game, setGame] = useState(new Game(5));
   const [grid, setGrid] = useState(game.getGridArray());
   
+  const [room, setRoom] = useState("");
+
   const updateGrid = (newGrid: Array<Array<number>>) => {
     setGrid(newGrid);
     game.setGridArray(newGrid);
@@ -88,6 +90,7 @@ export default function Home() {
         console.log(data.message);
         console.log(data.room);
         console.log(data.clients);
+        setRoom(data.room);
         setPlayers({
           player1: { name: data.clients[0], timer: "X:XX" },
           player2: { name: data.clients[1], timer: "X:XX" }
@@ -103,7 +106,7 @@ export default function Home() {
       <div className={styles.game_interface}>
         <div className={styles.hex_parent}>
           <section className={styles.hexagon_grid}>
-            <ShowGrid grid_array={grid} updateGrid={updateGrid} socket={socket} />
+            <ShowGrid grid_array={grid} updateGrid={updateGrid} socket={socket} room={room} />
           </section>
         </div>
 
