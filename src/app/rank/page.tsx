@@ -8,6 +8,7 @@ import axios from 'axios';
 
 import { useEffect, useState } from 'react';
 
+import getEnv from '@/env/env';
 
 function mmr_to_rank(mmr: number) {
 	if (mmr < 200) return 0
@@ -28,7 +29,7 @@ export default function Home() {
 	const [users, setUsers] = useState([]);
 
 	const fetchUsers = async (first: number, last: number) => {
-		const response = await axios.get(`http://localhost:3001/get_all_users?first=${first}&last=${last}`);
+		const response = await axios.get(`http://${getEnv()['IP_HOST']}:3001/get_all_users?first=${first}&last=${last}`);
 		setUsers(response.data);
 	};
 
@@ -60,7 +61,7 @@ export default function Home() {
 		<>
 			<div className={styles.rank_container}>
 				<div>
-					<Title_h1 title="WIP : Classement" icon="leaderboard" />
+					<Title_h1 text="WIP : Classement" icon="leaderboard" />
 				</div>
 				<div className={styles.content}>
 					<div className={styles.leaderboard_container}>

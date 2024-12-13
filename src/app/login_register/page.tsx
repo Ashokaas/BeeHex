@@ -8,16 +8,13 @@ import React, { useState } from 'react';
 import axios from 'axios';
 
 import Cookies from 'js-cookie';
-import { Cookie } from 'next/font/google';
 import { Online, Offline } from 'react-detect-offline';
-require('dotenv').config()
 
 import BeautifulButton from '@/components/button/button';
 import Spacer from '@/components/spacer/spacer';
 import InputText from '@/components/input_text/input_text';
 import Title_h1 from '@/components/title_h1/title_h1';
-import { text } from 'stream/consumers';
-
+import getEnv from '@/env/env';
 
 function StatusText(props: { text: string }) {
   const style = {
@@ -36,11 +33,16 @@ export default function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setStatus] = useState('');
+  console.log(getEnv());
 
-  const handleLoginSubmit = async (e: { preventDefault: () => void; }) => {
+  
+  const handleSubmit = async (e: { preventDefault: () => void; }, type: 'login' | 'register') => {
     e.preventDefault();
+    const url = type === 'login' ? `http://${getEnv()["IP_HOST"]}:3001/login` : `http://${getEnv()["IP_HOST"]}:3001/register`;
+
     try {
-      const response = await axios.post('http://localhost:3001/login', { username, password });
+      const response = await axios.post(url, { username, password });
+
       // Store the token in local storage or a state management library
       Cookies.set('token', response.data.token);
       Cookies.set('username', response.data.user.username);
@@ -49,34 +51,20 @@ export default function Login() {
       // Redirect the user to a protected page
       // window.location.href = '/dashboard';
       console.log(response);
-      setStatus('Login successful');
+      setStatus(type === 'login' ? 'Login successful' : 'Registration successful');
 
-      const user = await axios.post('http://localhost:3001/me', {}, { headers: { 'Authorization': localStorage.getItem('token') } });
-      console.log(user.data);
+      if (type === 'login') {
+        const user = await axios.post(`http://${getEnv()["IP_HOST"]}:3001/me`, {}, { headers: { 'Authorization': localStorage.getItem('token') } });
+        console.log(user.data);
+      }
     } catch (error) {
       console.error(error);
-      setStatus('Invalid username or password');
+      setStatus(type === 'login' ? 'Invalid username or password' : 'Username already taken');
     }
   };
 
-  const handleRegisterSubmit = async (e: { preventDefault: () => void; }) => {
-    e.preventDefault();
-    try {
-      const response = await axios.post('http://localhost:3001/register', { username, password });
-      // Store the token in local storage or a state management library
-      Cookies.set('token', response.data.token);
-      Cookies.set('username', response.data.user.username);
-      window.dispatchEvent(new Event('cookieChange'));
-      localStorage.setItem('token', response.data.token);
-      // Redirect the user to a protected page
-      // window.location.href = '/dashboard';
-      console.log(response);
-      setStatus('Registration successful');
-    } catch (error) {
-      console.error(error);
-      setStatus('Username already taken');
-    }
-  }
+  const handleLoginSubmit = (e: { preventDefault: () => void; }) => handleSubmit(e, 'login');
+  const handleRegisterSubmit = (e: { preventDefault: () => void; }) => handleSubmit(e, 'register');
 
   return (
     <div className={styles.container}>
@@ -101,7 +89,7 @@ export default function Login() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          <Spacer direction="H" spacing={2} />
+          <Spacer direction="H" spacing={3} />
 
           <div className={styles.buttons_parent}>
             <BeautifulButton text="Login" icon="login" onClick={handleLoginSubmit} />
@@ -110,11 +98,12 @@ export default function Login() {
           </div>
         </form>
 
+        <Spacer direction="H" spacing={2} />
         <StatusText text={error} />
         
       </Online>
 
-      <Offline>
+      <Offline suppressHydrationWarning>
         <StatusText text="You are offline" />
       </Offline>
     </div>
