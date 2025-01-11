@@ -47,6 +47,10 @@ function RevertButton() {
 
 
 export default function Home() {
+  const token = Cookies.get('token');
+  if (!token) {
+    window.location.href = '/login_register';
+  }
   const [players, setPlayers] = useState({
     player1: { name: "En attente...", timer: "X:XX" },
     player2: { name: "En attente...", timer: "X:XX" }
@@ -57,7 +61,7 @@ export default function Home() {
   const fetchUser = async () => {
     try {
       const user = await axios.post(`http://${getEnv()['IP_HOST']}:3001/me`, {}, {
-        headers: { 'Authorization': Cookies.get('token') }
+        headers: { 'Authorization': token }
       });
       return user.data.username;
     } catch (error) {

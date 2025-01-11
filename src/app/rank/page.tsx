@@ -25,27 +25,36 @@ function mmr_to_rank(mmr: number) {
 
 export default function Home() {
 	const [first, setFirst] = useState(0);
-	const [last, setLast] = useState(5);
+	const [limit, setLimit] = useState(5);
 	const [users, setUsers] = useState([]);
+	const [total, setTotal] = useState(0);
 
 	const fetchUsers = async (first: number, last: number) => {
-		const response = await axios.get(`http://${getEnv()['IP_HOST']}:3001/get_all_users?first=${first}&last=${last}`);
-		setUsers(response.data);
+		const response = await axios.get(`http://${getEnv()['IP_HOST']}:3001/get_all_users?first=${first}&limit=${limit}`);
+		while (response.data.rows.length < 5) {
+			response.data.rows.push({ username: "", mmr: "" });
+		}
+		console.log(response.data.rows.length);
+		setUsers(response.data.rows);
+		setTotal(response.data.total);
+
 	};
 
 	useEffect(() => {
-		fetchUsers(first, last);
-	}, [first, last]);
+		fetchUsers(first, limit);
+	}, [first, limit]);
 
 	const handleNext = () => {
-		setFirst(first + 5);
-		setLast(last + 5);
+		if (first + 5 < total) {
+			setFirst(first + 5);
+			fetchUsers(first, limit);
+		};
 	};
 
 	const handlePrevious = () => {
 		if (first > 0) {
 			setFirst(first - 5);
-			setLast(last - 5);
+			fetchUsers(first, limit);
 		}
 	}
 
@@ -61,7 +70,7 @@ export default function Home() {
 		<>
 			<div className={styles.rank_container}>
 				<div>
-					<Title_h1 text="WIP : Classement" icon="leaderboard" />
+					<Title_h1 text="Classement" icon="leaderboard" />
 				</div>
 				<div className={styles.content}>
 					<div className={styles.leaderboard_container}>
@@ -77,7 +86,7 @@ export default function Home() {
 							<tbody>
 								{users.map((user: { username: string; mmr: number }, index: number) => (
 									<tr key={index}>
-										<td>{index + 1}</td>
+										<td>{first + index + 1}</td>
 										<td>{user.username}</td>
 										<td>{user.mmr}</td>
 										<td>
@@ -89,13 +98,15 @@ export default function Home() {
 						</table>
 
 						<div className={styles.leaderboard_buttons}>
-							<button onClick={handlePrevious}>
-								<span className="material-symbols-rounded">chevron_left</span>
+							<div>
+								<button onClick={handlePrevious}>
+									<span className="material-symbols-rounded">chevron_left</span>
 								</button>
-							<button onClick={handleNext}>
-								<span className="material-symbols-rounded">chevron_right</span>
-							</button>
-							<p>Showing {first + 1} to {last} of ? entries</p>
+								<button onClick={handleNext}>
+									<span className="material-symbols-rounded">chevron_right</span>
+								</button>
+							</div>
+							<p>Showing {first + 1} to {first + 5} of {total} players</p>
 						</div>
 
 					</div>

@@ -77,5 +77,28 @@
   background-color: var(--bg-color-secondary);
   display: flex;
   flex-direction: row;
+  align-items: center;
+  gap: 20px;
   padding: 20px;
+}
+
+.leaderboard_buttons > div {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+
+.leaderboard_buttons > div button {
+  background-color: var(--bg-color-secondary);
+  color: var(--txt-color);
+  border: 1px solid var(--txt-color);
+  padding: 8px;
+  border-radius: 5px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+
 }
