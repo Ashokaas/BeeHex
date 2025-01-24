@@ -1,0 +1,44 @@
+.main_container {
+  display: grid;
+  height: 90vh;
+  grid-template-columns: 4fr 2fr;
+  background-color: var(--bg-color);
+}
+
+
+/* Joueurs */
+.right_container {
+  grid-column: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: rgba(60, 60, 60, 0.3);
+  max-width: 600px;
+  min-width: 390px;
+  height: 100%;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+
+.radio_buttons {
+  display: flex;
+  flex-direction: row;
+  border-radius: 50%;
+}
+
+.radio_buttons > div:first-child {
+  border-radius: 20px 0 0 20px;
+}
+
+.radio_buttons > div:last-child {
+  border-radius: 0 20px 20px 0;
+}
+
+.radio_buttons > div {
+  padding: 10px;
+  background-color: red;
+  border-radius: 20px;
+}
+
+.radio_buttons > div:hover {
+  background-color: rgba(255, 0, 0, 0.5);
+}
