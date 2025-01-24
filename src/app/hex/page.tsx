@@ -45,7 +45,6 @@ function RevertButton() {
 }
 
 
-
 export default function Home() {
   const token = Cookies.get('token');
   if (!token) {
@@ -99,6 +98,8 @@ export default function Home() {
           player1: { name: data.clients[0], timer: "X:XX" },
           player2: { name: data.clients[1], timer: "X:XX" }
         });
+        game.setPlayers(data.clients[0], data.clients[1]);
+        game.setMe(username);
       });
     };
 
@@ -110,7 +111,7 @@ export default function Home() {
       <div className={styles.game_interface}>
         <div className={styles.hex_parent}>
           <section className={styles.hexagon_grid}>
-            <ShowGrid grid_array={grid} updateGrid={updateGrid} socket={socket} room={room} />
+            <ShowGrid grid_array={grid} updateGrid={updateGrid} socket={socket} room={room} game={game} />
           </section>
         </div>
 
