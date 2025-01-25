@@ -1,10 +1,10 @@
 .beautiful_button {
-    background-color: var(--blue-400);
+    background-color: var(--blue-500-op-01);
+    border: 1px solid var(--blue-500);
     color: white;
-    border: none;
     flex-shrink: 0;
-    border-radius: 2vw;
-    padding: 1vh;
+    border-radius: 20px;
+    padding: 15px 20px;
     text-align: center;
     cursor: pointer;
 
@@ -12,9 +12,10 @@
     flex-direction: row;
     justify-content: center;
     align-items: center;
-
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.1s;
     
-    max-width: 20vw; /* change to your preferences */
 
 }
 
@@ -24,5 +25,5 @@
 }
 
 .beautiful_button:hover {
-    background-color: var(--blue-500) !important;
+    background-color: var(--blue-500);
 }
