@@ -6,7 +6,7 @@ import styles from './spacer.module.css';
  * Create a horizontal or vertical space of a given size
  *
  * @param props - The properties for the Spacer component.
- * @param {string} props.type - The type of space to create. Can be H||horizontal or V||vertical.
+ * @param {string} props.direction - The type of space to create. Can be H||horizontal or V||vertical.
  * @param {number} props.spacing - The size of the space to create.
  *
  * @returns The Spacer component.
