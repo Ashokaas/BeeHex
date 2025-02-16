@@ -18,11 +18,12 @@ export default function BeautifulButton(
     text: string, 
     icon?: string, 
     link?: string, 
+    type?: "submit" | "reset" | "button",
     onClick?: (e: { preventDefault: () => void; }) => Promise<void> 
   }) {
 
   return (
-    <button className={styles.beautiful_button} onClick={props.onClick}>
+    <button className={styles.beautiful_button} onClick={props.onClick} type={props.type}>
       {props.icon && (
         <span className="material-symbols-rounded">{props.icon}</span>
       )}

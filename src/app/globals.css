@@ -73,6 +73,8 @@
   --secondary-300: #455e1f;
   --secondary-400: #5c7d2a;
   --secondary-500: #749e35;
+  --secondary-500-op-01: rgba(116, 158, 53, 0.1);
+  --secondary-500-op-05: rgba(116, 158, 53, 0.2);
   --secondary-600: #93c34a;
   --secondary-700: #aed278;
   --secondary-800: #c9e1a5;
