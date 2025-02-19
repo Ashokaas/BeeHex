@@ -9,6 +9,7 @@ import BeautifulButton from '@/components/button/button';
 import * as echarts from 'echarts';
 import styles from './account.module.css'
 import Spacer from '@/components/spacer/spacer';
+import Swal from 'sweetalert2'
 
 // LineChart component to display a line chart using ECharts
 const LineChart = () => {
@@ -116,31 +117,45 @@ export default function Page() {
           onSubmit={async (e) => {
             e.preventDefault();
             const formData = new FormData(e.currentTarget);
-            const oldPassword = formData.get('oldPassword');
-            const newPassword = formData.get('newPassword');
+            const current_password = formData.get('current_password');
+            const new_password = formData.get('new_password');
 
             try {
               const token = Cookies.get('token');
               await axios.post(
-                `http://${getEnv()['IP_HOST']}:3001/update_password`,
-                { oldPassword, newPassword },
+                `http://${getEnv()['IP_HOST']}:3001/edit_password`,
+                { current_password, new_password },
                 { headers: { 'Authorization': token } }
               );
-              alert('Password updated successfully');
+              Swal.fire({
+                title: 'Password updated',
+                text: 'Your password has been successfully updated',
+                icon: 'success',
+                confirmButtonText: 'Ok',
+                color: '#ffffff',
+                background: '#363636'
+              });
             } catch (error) {
               console.error('Error updating password:', error);
-              alert('Failed to update password');
+              Swal.fire({
+                title: 'Failed to update password',
+                text: 'Please check your current password',
+                icon: 'error',
+                confirmButtonText: 'Ok',
+                background: '#363636',
+                color: '#ffffff'
+              });
             }
           }}
         >
           <div className={styles.form_inputs}>
             <div>
-              <label htmlFor="oldPassword">Old Password:</label>
-              <input type="password" id="oldPassword" name="oldPassword" required />
+              <label htmlFor="current_password">Current password:</label>
+              <input type="password" id="current_password" name="current_password" required />
             </div>
             <div>
-              <label htmlFor="newPassword">New Password:</label>
-              <input type="password" id="newPassword" name="newPassword" required />
+              <label htmlFor="new_password">New password:</label>
+              <input type="password" id="new_password" name="new_password" required />
             </div>
           </div>
           <BeautifulButton

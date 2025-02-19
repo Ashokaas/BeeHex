@@ -15,6 +15,7 @@ import Spacer from '@/components/spacer/spacer';
 import InputText from '@/components/input_text/input_text';
 import Title_h1 from '@/components/title_h1/title_h1';
 import getEnv from '@/env/env';
+import Swal from 'sweetalert2';
 
 function StatusText(props: { text: string }) {
   const style = {
@@ -32,7 +33,6 @@ function StatusText(props: { text: string }) {
 export default function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setStatus] = useState('');
   console.log(getEnv());
 
   
@@ -51,7 +51,14 @@ export default function Login() {
       // Redirect the user to a protected page
       // window.location.href = '/dashboard';
       console.log(response);
-      setStatus(type === 'login' ? 'Login successful' : 'Registration successful');
+      Swal.fire({
+        title: 'Success',
+        text: 'You have successfully logged in',
+        icon: 'success',
+        confirmButtonText: 'Ok',
+        color: '#ffffff',
+        background: '#363636'
+      });
 
       if (type === 'login') {
         const user = await axios.post(`http://${getEnv()["IP_HOST"]}:3001/me`, {}, { headers: { 'Authorization': localStorage.getItem('token') } });
@@ -59,8 +66,15 @@ export default function Login() {
       }
     } catch (error) {
       console.error(error);
-      setStatus(type === 'login' ? 'Invalid username or password' : 'Username already taken');
-    }
+      Swal.fire({
+        title: 'Error',
+        text: 'An error occurred',
+        icon: 'error',
+        confirmButtonText: 'Ok',
+        color: '#ffffff',
+        background: '#363636'
+      });
+      }
   };
 
   const handleLoginSubmit = (e: { preventDefault: () => void; }) => handleSubmit(e, 'login');
@@ -99,7 +113,6 @@ export default function Login() {
         </form>
 
         <Spacer direction="H" spacing={2} />
-        <StatusText text={error} />
         
       </Online>
 
