@@ -1,45 +1,41 @@
-import React, { Component } from 'react';
+import React, { Component, useEffect, useState } from 'react';
 import styles from './hex.module.css';
-import Game from './Game';
+import GameInstance from './GameInstance';
 
 interface GridProps {
   grid_array: Array<Array<number>>;
-  updateGrid: (newGrid: Array<Array<number>>) => void;
-  socket: any;
-  room: string;
-  game: Game;
+  clickCallback: (i: number, j: number) => void;
+  hoverCallback: (i: number, j: number) => void;
 }
 
 interface GridState {
   grid_array: Array<Array<number>>;
 }
 
-export default class ShowGrid extends Component<GridProps, GridState> {
-  constructor(props: GridProps) {
-    super(props);
-    this.state = {
-      grid_array: props.grid_array
-    };
+export default function ShowGrid (props: GridProps) {
+  const [gridArray, setGridArray] = useState(props.grid_array);
+  const [clickCallback, setClickCallback] = useState<(i: number, j: number) => void>(() => () => {});
+  const [hoverCallback, setHoverCallback] = useState<(i: number, j: number) => void>(() => () => {});
+  useEffect(() => {
+    console.log(props);
+    setGridArray(props.grid_array);
+    setClickCallback(() => props.clickCallback);
+    setHoverCallback(() => props.hoverCallback);
+  }, [props.grid_array, props.clickCallback, props.hoverCallback]);
+  
+
+  function handleHexagonClick(i: number, j: number) {
+    console.log(`Clicked on hexagon ${i}-${j}`);
+    console.log(clickCallback)
+    clickCallback(i, j);
   }
 
-  handleHexagonClick(i: number, j: number) {
-    console.log("hexagon clicked");
-    
-    
-
-    this.props.socket.emit("hexagonClicked", { x: i, y: j, room: this.props.room, playerWhoClicked:this.props.game.getMe() });
-
-    const newGrid = this.state.grid_array.map((row, rowIndex) =>
-      row.map((cell, cellIndex) =>
-        rowIndex === i && cellIndex === j ? 1 : cell
-      )
-    );
-    this.setState({ grid_array: newGrid });
-    this.props.updateGrid(newGrid);
-    console.log(newGrid);
+  function handleHexagonHover(i: number, j: number) { // Non utilisé pour l'instant, boilerplate pour plus tard peut-être
+    console.log(`Hovered on hexagon ${i}-${j}`);
+    hoverCallback(i, j);
   }
 
-  generateGrid(n: number) {
+  function generateGrid(n: number) {
     const grid = [];
     for (let i = 0; i < n; i++) {
       const row = [];
@@ -82,9 +78,9 @@ export default class ShowGrid extends Component<GridProps, GridState> {
         );
 
         let newBackgroundColor = '';
-        if (this.state.grid_array[i][j] === 1) {
+        if (gridArray[i][j] === 1) {
           newBackgroundColor = 'red';
-        } else if (this.state.grid_array[i][j] === 2) {
+        } else if (gridArray[i][j] === 2) {
           newBackgroundColor = 'blue';
         }
 
@@ -92,7 +88,7 @@ export default class ShowGrid extends Component<GridProps, GridState> {
           <div
             key={`hex-${i}-${j}`}
             className={`${styles.hexagon} ${j}-${i}`}
-            onClick={() => this.handleHexagonClick(i, j)}
+            onClick={() => handleHexagonClick(i, j)}
             style={{ backgroundColor: newBackgroundColor }}
           ></div>
         );
@@ -108,20 +104,11 @@ export default class ShowGrid extends Component<GridProps, GridState> {
     return grid;
   }
 
-  componentDidMount() {
-    this.props.socket.on('refreshGameState', (data: { currentGame: Array<Array<number>> }) => {
-      const newGrid = data.currentGame;
-      this.setState({ grid_array: newGrid });
-      this.props.updateGrid(newGrid);
-      console.log(newGrid);
-    });
-  }
 
-  render() {
-    return (
-      <div className={styles.grid_container}>
-        {this.generateGrid(this.state.grid_array.length)}
-      </div>
-    );
-  }
+  return (
+    <div className={styles.grid_container}>
+      {generateGrid(gridArray.length)}
+    </div>
+  );
+  
 }

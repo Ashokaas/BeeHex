@@ -1,5 +1,5 @@
 export default function getEnv() {
   return {
-    'IP_HOST': '192.168.228.18',
+    'IP_HOST': '127.0.0.1',
   };
 }

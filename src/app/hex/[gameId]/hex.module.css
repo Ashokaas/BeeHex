@@ -1,3 +1,7 @@
+.hidden {
+    display: none;
+}
+
 /* Style d'un hexgagone */
 .hexagon {
     /* width: calc(70px * calc(6 / 7)); */
@@ -6,7 +10,7 @@
     background-color: rgb(85, 85, 85);
     position: relative;
     display: inline-block;
-    margin: -6px 0.02em;
+    margin: -8px 0.00em;
     margin-left: 6px;
     -webkit-clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
     clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
@@ -19,7 +23,7 @@
     aspect-ratio: 6 / 7;
     height: 70px;
     display: inline-block;
-    margin: -6px 0.02em;
+    margin: -8px 0.00em;
     margin-left: 6px;
     -webkit-clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
     clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
@@ -450,3 +454,5 @@
     background-color: red;
   }
   
+
+.loading_spinner {}

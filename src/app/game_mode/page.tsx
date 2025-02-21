@@ -8,6 +8,9 @@ import React, { use, useEffect, useState } from 'react';
 import InputText from "@/components/input_text/input_text";
 import styles from './game_mode.module.css'
 import Spacer from "@/components/spacer/spacer";
+import { Game, ServerBoundGameSearchPacket, ServerBoundPacketType } from "./definitions";
+import { WebsocketHandler } from "./WebsocketHandler";
+import { on } from "events";
 
 
 /*
@@ -98,7 +101,53 @@ export default function Home() {
     console.log("Game mode : " + gameMode);
     console.log("Game with : " + gameF);
     console.log("Game code : " + gameCode);
-  }
+
+    async function onlineSearchInitialize() {
+      
+      function errorCallback(message: string) {
+        console.error(message);
+      }
+      
+      function gameSearchCallback(game_parameters: any, player_count: number, elo_range: [number, number]) {
+        console.log(game_parameters, player_count, elo_range);
+      }
+      
+      function gameFoundCallback(game_id: any) {
+        window.location.href = `/hex/${game_id}`;
+      }
+      
+      function joinGameCallback(game_details: Game) {}
+      
+      function movePlayedCallback(x: number, y: number, turn: number, grid_array: Array<Array<number>>) {}
+    
+      function connectionEndedCallback() {
+        console.error('Connection ended');
+        onlineSearchInitialize();
+      }
+
+      function clickCallback(i: number, j: number) {}
+
+      function hoverCallback(i: number, j: number) {}
+
+      let websocketHandler = await new WebsocketHandler({
+        errorCallback,
+        gameSearchCallback,
+        gameFoundCallback,
+        joinGameCallback,
+        movePlayedCallback,
+        connectionEndedCallback
+      }).awaitConnection();
+      
+      websocketHandler.sendPacket({
+        type: ServerBoundPacketType.GAME_SEARCH,
+        game_parameters: {
+          time_limit: 0,
+          board_size: 7,
+          ranked: gameType === "Classé",
+        }} as ServerBoundGameSearchPacket);
+    }
+    onlineSearchInitialize();
+}
 
   return (
     <div className={styles.main_container}>
