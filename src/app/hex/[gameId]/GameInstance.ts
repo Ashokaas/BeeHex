@@ -23,7 +23,7 @@ export default class GameInstance {
     return new GameInstance(
       game.game_id, 
       game.game_parameters, 
-      game.grid_array, 
+      game.grid, 
       game.first_player_id, 
       game.second_player_id, 
       game.turn, 

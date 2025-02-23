@@ -25,6 +25,8 @@ enum GameState {
   RECONNECTING
 }
 
+
+
 function PlayerStats(props: { name: string, timer: string }) {
   return (
     <div className={styles.player_status}>
@@ -72,6 +74,7 @@ export default function Home() {
     window.location.href = '/';
   }
   const [gameState, setGameState] = useState(GameState.LOADING);
+  let workingGameState: GameState = GameState.LOADING;
   let game: GameInstance|undefined = undefined;
   const [grid, setGrid] = useState([[0, 0], [0, 0]]);
 
@@ -127,8 +130,9 @@ export default function Home() {
         
         function joinGameCallback(game_details: Game) {
           setGameState(GameState.PLAYING);
+          workingGameState = GameState.PLAYING;
           game = GameInstance.fromGame(game_details, ownId);
-          setGrid(game_details.grid_array);
+          setGrid(game_details.grid);
           showGrid();
         }
         
@@ -139,15 +143,25 @@ export default function Home() {
             setGrid(grid_array);
           }
         }
+
+        function gameEndCallback(status: GameStatus, moves: string) {
+          console.log('Game ended', status, moves);
+          setGameState(GameState.REVIEWING);
+          workingGameState = GameState.REVIEWING;
+        }
       
         function connectionEndedCallback() {
-          console.error('Connection ended');
-          //onlineGameInitialize();
+          console.log('Connection ended');
+          if (workingGameState === GameState.PLAYING) {
+            setGameState(GameState.RECONNECTING);
+            workingGameState = GameState.RECONNECTING;
+            onlineGameInitialize();
+          }
         }
 
         function onlineClickCallback(i: number, j: number) {
           console.log('click', i, j, !!game, game?.isTurnOf(ownId), game?.isValidMove(i, j));
-          if (game && game.isTurnOf(ownId) && game.isValidMove(i, j)) {
+          if (workingGameState === GameState.PLAYING && game && game.isTurnOf(ownId) && game.isValidMove(i, j)) {
             websocketHandler.sendPacket({
               type: ServerBoundPacketType.PLAY_MOVE,
               x: i,
@@ -164,6 +178,7 @@ export default function Home() {
           gameFoundCallback,
           joinGameCallback,
           movePlayedCallback,
+          gameEndCallback,
           connectionEndedCallback
         }).awaitConnection();
         
@@ -194,6 +209,7 @@ export default function Home() {
         return;
       }
       setGameState(GameState.REVIEWING);
+      workingGameState = GameState.REVIEWING;
       console.error('NOT IMPLEMENTED');
       return;
     };

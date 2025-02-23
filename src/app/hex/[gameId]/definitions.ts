@@ -10,13 +10,12 @@ export interface DatabaseGame {
   gameDate: EpochTimeStamp;
   status: GameStatus;
   moves?: string;
-  winnerId?: UserId;
 }
 
 export interface Game {
 	game_id: string;
 	game_parameters: GameParameters;
-	grid_array: Array<Array<number>>;
+	grid: Array<Array<number>>;
 	first_player_id: string;
 	second_player_id: string;
 	turn: number;
@@ -96,6 +95,12 @@ export interface ClientBoundMovePlayedPacket {
   y: number;
   turn: number;
   grid_array: Array<Array<number>>;
+}
+
+export interface ClientBoundGameEndPacket {
+  type: ClientBoundPacketType.GAME_END;
+  status: GameStatus;
+  moves: string;
 }
 
 export interface ServerBoundGenericPacket {

@@ -6,7 +6,7 @@ interface WebsocketCallbacks {
 	gameFoundCallback: (game_id: packets.GameId) => void;
 	joinGameCallback: (game: packets.Game) => void;
 	movePlayedCallback: (x: number, y: number, turn: number, grid_array: Array<Array<number>>) => void;
-	//gameEndCallback: (winner: string) => void;
+	gameEndCallback: (status: packets.GameStatus, moves: string) => void;
 	connectionEndedCallback: () => void;
 }
 
@@ -68,9 +68,10 @@ export class WebsocketHandler {
 				const movePlayedPacket = packet as packets.ClientBoundMovePlayedPacket;
 				this.callbacks.movePlayedCallback(movePlayedPacket.x, movePlayedPacket.y, movePlayedPacket.turn, movePlayedPacket.grid_array);
 				break;
-			// case packets.ClientBoundPacketType.GAME_END:
-			// 	this.callbacks.gameEndCallback((packet as packets.ClientBoundGameEndPacket).winner);
-			// 	break;
+			case packets.ClientBoundPacketType.GAME_END:
+				const gameEndPacket = packet as packets.ClientBoundGameEndPacket;
+			 	this.callbacks.gameEndCallback(gameEndPacket.status, gameEndPacket.moves);
+			 	break;
 		}
 	}
 
