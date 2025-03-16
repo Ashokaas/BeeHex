@@ -17,6 +17,7 @@ import getEnv from "@/env/env";
 import { get } from "http";
 import { WebsocketHandler } from "./WebsocketHandler";
 import { DatabaseGame, Game, GameStatus, ServerBoundJoinGamePacket, ServerBoundPacketType, ServerBoundPlayMovePacket, UserId } from "./definitions";
+import { time } from 'console';
 
 enum GameState {
   LOADING,
@@ -67,10 +68,75 @@ function showGrid() {
   document.getElementsByClassName(styles.loading_spinner)[0].classList.add(styles.hidden);
 }
 
+function parseGameParameters(gameId: string) {
+  const parameters = gameId.split('_');
+  if (parameters.length != 2) {
+    return null;
+  }
+  const raw_time_limit = parameters[0];
+  const time_limit = parseInt(raw_time_limit);
+  const raw_board_size = parameters[1];
+  const board_size = parseInt(raw_board_size);
+  return { time_limit, board_size };
+}
+
+function parseGameParametersAndMoves(gameId: string) {
+  const mixed = gameId.split('_');
+  if (mixed.length != 3) {
+    return null;
+  }
+  const raw_time_limit = mixed[0];
+  const time_limit = parseInt(raw_time_limit);
+  const raw_board_size = mixed[1];
+  const board_size = parseInt(raw_board_size);
+  const raw_moves = mixed[2].split('-');
+  const game_parameters = { time_limit, board_size };
+  const moves = raw_moves.map((move) => {
+    const move_int = parseInt(move);
+    const y = Math.floor(move_int / board_size);
+    const x = move_int % board_size;
+    return [x, y];
+  });
+  return [game_parameters, moves];
+
+
+  
+}
+
 export default function Home() {
   const token = Cookies.get('token');
-  const gameId = useParams<{gameId: string}>().gameId;
-  if (!gameId) {
+  const rawGameId = useParams<{gameId: string}>().gameId;
+  if (rawGameId === undefined || rawGameId === null || rawGameId === '' || rawGameId.length < 3) {
+    window.location.href = '/';
+  }
+  const gameId = rawGameId.substring(2);
+  if (rawGameId.startsWith("o_")) {
+    //Online
+    const gameType = "online";
+    
+  }
+  else if (rawGameId.startsWith("l_")) {
+    //Local
+    const gameType = "local";
+    const gameParameters = parseGameParameters(gameId);
+    if (!gameParameters) {
+      window.location.href = '/';
+    }
+    
+  }
+  else if (rawGameId.startsWith("m_")) {
+    //From moves
+    const gameType = "moves";
+    const gameParametersAndMoves = parseGameParametersAndMoves(gameId);
+    if (!gameParametersAndMoves) {
+      window.location.href = '/';
+      
+    } else {
+      const [gameParameters, moves] = gameParametersAndMoves;
+    }
+  }
+  else {
+    //Error
     window.location.href = '/';
   }
   const [gameState, setGameState] = useState(GameState.LOADING);

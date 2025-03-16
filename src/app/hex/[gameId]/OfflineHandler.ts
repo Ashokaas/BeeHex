@@ -55,7 +55,7 @@ class GameInstance implements packets.Game {
 	}
   
 	endGame(status: packets.GameStatus) {
-	  
+	  this.handler.handlePacket({type: packets.ClientBoundPacketType.GAME_END, status: status, moves: this.exportMoves()} as packets.ClientBoundGameEndPacket);
 	}
   
 	exportGame(): packets.Game {
@@ -176,7 +176,10 @@ export class OfflineHandler {
 	}
 
 	sendPacket(packet: packets.ServerBoundGenericPacket) {
-		
+		if (packet.type === packets.ServerBoundPacketType.PLAY_MOVE) {
+			const playMovePacket = packet as packets.ServerBoundPlayMovePacket;
+			this.game.playMove(playMovePacket.x, playMovePacket.y);
+		}
 	}
 
 	handlePacket(packet: packets.ClientBoundGenericPacket) {
