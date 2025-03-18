@@ -1,9 +1,24 @@
+"use client";
+
 import BottomNavBar from '../../components/bottom_navbar/bottom_navbar';
 import BeautifulButton from '@/components/button/button';
 import styles from './home.module.css';
-
+import CustomAlert from '@/components/custom_alert/custom_alert';
+import { use } from 'react';
+import { useState } from 'react';
+import LoadingPage from '@/components/loading_page/loading_page';
 
 export default function Home() {
+	const [showAlert, setShowAlert] = useState(false);
+
+	const handleButtonClick = () => {
+		setShowAlert(true);
+	};
+
+	const handleCloseAlert = () => {
+		setShowAlert(false);
+	};
+
 	return (
 		<>
 			<div className={styles.home_content}>
@@ -35,7 +50,15 @@ export default function Home() {
 
 				<img src="../src/svgs/logo.svg" alt="Logo" />
 
-
+				{showAlert && (
+					<CustomAlert
+						text1="Alerte"
+						text2="Ceci est une alerte"
+						type="neutral"
+						onClick={handleCloseAlert}
+					/>
+				)}
+				<BeautifulButton text="Afficher une alerte" onClick={handleButtonClick} />
 
 			</div>
 

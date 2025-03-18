@@ -9,8 +9,9 @@ import BeautifulButton from '@/components/button/button';
 import * as echarts from 'echarts';
 import styles from './account.module.css'
 import Spacer from '@/components/spacer/spacer';
-import Swal from 'sweetalert2'
+import CustomAlert
 
+from '@/components/custom_alert/custom_alert';
 // LineChart component to display a line chart using ECharts
 const LineChart = () => {
   const chartRef = useRef(null);
@@ -84,6 +85,9 @@ const LineChart = () => {
 export default function Page() {
   const [username, setUsername] = useState<string | null>(null);
 
+  const [passwordEditSuccess, setPasswordEditSuccess] = useState(false);
+  const [passwordEditError, setPasswordEditError] = useState(false);
+
   // Function to fetch user data
   const fetchUser = async () => {
     const token = Cookies.get('token');
@@ -108,6 +112,26 @@ export default function Page() {
 
   return (
     <>
+      {passwordEditSuccess && (
+        <CustomAlert
+          icon='check'
+          text1="Password updated"
+          text2="Your password has been successfully updated"
+          type="good"
+          onClick={() => setPasswordEditSuccess(false)}
+        />
+      )}
+
+      {passwordEditError && (
+        <CustomAlert
+          icon='close'
+          text1="Failed to update password"
+          text2="Please check your current password"
+          type="bad"
+          onClick={() => setPasswordEditError(false)}
+        />
+      )}
+
       <Title_h1 text="My Account" icon='person' />
       <div className={styles.container}>
         <p>{username ? `Welcome, ${username} !` : 'Loading...'}</p>
@@ -127,24 +151,10 @@ export default function Page() {
                 { current_password, new_password },
                 { headers: { 'Authorization': token } }
               );
-              Swal.fire({
-                title: 'Password updated',
-                text: 'Your password has been successfully updated',
-                icon: 'success',
-                confirmButtonText: 'Ok',
-                color: '#ffffff',
-                background: '#363636'
-              });
+              setPasswordEditSuccess(true);
             } catch (error) {
               console.error('Error updating password:', error);
-              Swal.fire({
-                title: 'Failed to update password',
-                text: 'Please check your current password',
-                icon: 'error',
-                confirmButtonText: 'Ok',
-                background: '#363636',
-                color: '#ffffff'
-              });
+              setPasswordEditError(true);
             }
           }}
         >

@@ -19,14 +19,13 @@
     "material-symbols": "^0.20.0",
     "next": "^14.2.20",
     "next-cookie": "^2.8.0",
-    "next-cookies": "^2.0.3",
+    "next-cookies": "^1.1.3",
     "react": "^18",
     "react-detect-offline": "^2.4.5",
     "react-dom": "^18",
     "socket.io-client": "^4.7.5",
     "styled-components": "^6.1.13",
-    "sweetalert": "^2.1.2",
-    "sweetalert2": "^11.17.2"
+    "sweetalert": "^2.1.2"
   },
   "devDependencies": {
     "@types/js-cookie": "^3.0.6",

@@ -10,6 +10,8 @@ import styles from './game_mode.module.css'
 import Spacer from "@/components/spacer/spacer";
 import { BOARD_SIZES, Game, ServerBoundGameSearchPacket, ServerBoundPacketType, TIME_LIMITS } from "../definitions";
 import { WebsocketHandler } from "./WebsocketHandler";
+import LoadingPage from "@/components/loading_page/loading_page";
+
 
 
 /*
@@ -68,7 +70,7 @@ export default function Home() {
   const [gameCode, setGameCode] = useState("");
   const [showCodeInput, setShowCodeInput] = useState(false);
 
-  
+  const [isSearchingGame, setIsSearchingGame] = useState(false);
 
   /* convert letters to numbers */
   const numbers = {"&": 1, "é": 2, "\"": 3, "'": 4, "(": 5, "-": 6, "è": 7, "_": 8, "ç": 9, "à": 0};
@@ -114,6 +116,7 @@ export default function Home() {
       
       function errorCallback(message: string) {
         console.error(message);
+        setIsSearchingGame(false);
       }
       
       function gameSearchCallback(game_parameters: any, player_count: number, elo_range: [number, number]) {
@@ -130,6 +133,7 @@ export default function Home() {
     
       function connectionEndedCallback() {
         console.error('Connection ended');
+        setIsSearchingGame(false);
       }
 
       function clickCallback(i: number, j: number) {}
@@ -152,12 +156,16 @@ export default function Home() {
           board_size: parseInt(boardSize),
           ranked: gameType === "Classé",
         }} as ServerBoundGameSearchPacket);
+
+      // cherche une game
+      setIsSearchingGame(true);
     }
     onlineSearchInitialize();
 }
 
   return (
     <div className={styles.main_container}>
+      {isSearchingGame && <LoadingPage />}
       <div className={styles.left_container}>
         <Title_h1 text="Mode de jeu" icon="joystick" />
         <div>
