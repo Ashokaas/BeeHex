@@ -1,4 +1,4 @@
-import * as packets from "./definitions";
+import * as packets from "../definitions";
 
 interface WebsocketCallbacks {
 	errorCallback: (message: string) => void;

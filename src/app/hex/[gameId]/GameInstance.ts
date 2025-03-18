@@ -1,4 +1,4 @@
-import { GameParameters, UserId, GameId, Game, LocalGameParameters } from "./definitions";
+import { GameParameters, UserId, GameId, Game, LocalGameParameters } from "../../definitions";
 
 export default class GameInstance {
   private game_id: GameId;

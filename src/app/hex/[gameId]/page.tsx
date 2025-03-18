@@ -14,10 +14,8 @@ import ShowGrid from "./Grid";
 import GameInstance from "./GameInstance";
 
 import getEnv from "@/env/env";
-import { get } from "http";
 import { WebsocketHandler } from "./WebsocketHandler";
-import { DatabaseGame, Game, GameStatus, ServerBoundJoinGamePacket, ServerBoundPacketType, ServerBoundPlayMovePacket, UserId, LocalGameParameters } from "./definitions";
-import { time } from 'console';
+import { DatabaseGame, Game, GameStatus, ServerBoundJoinGamePacket, ServerBoundPacketType, ServerBoundPlayMovePacket, UserId, LocalGameParameters } from "../../definitions";
 import { OfflineHandler } from './OfflineHandler';
 
 enum GameState {
