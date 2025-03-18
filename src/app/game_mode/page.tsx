@@ -8,10 +8,10 @@ import React, { use, useEffect, useState } from 'react';
 import InputText from "@/components/input_text/input_text";
 import styles from './game_mode.module.css'
 import Spacer from "@/components/spacer/spacer";
-import { Game, ServerBoundGameSearchPacket, ServerBoundPacketType } from "./definitions";
+import { BOARD_SIZES, Game, ServerBoundGameSearchPacket, ServerBoundPacketType, TIME_LIMITS } from "../definitions";
 import { WebsocketHandler } from "./WebsocketHandler";
-import { on } from "events";
 import LoadingPage from "@/components/loading_page/loading_page";
+
 
 
 /*
@@ -25,6 +25,7 @@ import LoadingPage from "@/components/loading_page/loading_page";
   *
   * @returns The RadioButton component.
   */
+ 
 function RadioButton(props:
   {
     title: string,
@@ -59,8 +60,12 @@ function RadioButton(props:
 
 
 export default function Home() {
+  const time_limits_str = TIME_LIMITS.map((time) => {return time.toString() });
+  const board_sizes_str = BOARD_SIZES.map((size) => {return size.toString() });
   const [gameType, setGameType] = useState("Normal");
   const [gameMode, setGameMode] = useState("Normal");
+  const [timeLimit, setTimeLimit] = useState(time_limits_str[0]);
+  const [boardSize, setBoardSize] = useState(board_sizes_str[0]);
   const [gameF, setGameF] = useState("Chercher une partie");
   const [gameCode, setGameCode] = useState("");
   const [showCodeInput, setShowCodeInput] = useState(false);
@@ -102,6 +107,8 @@ export default function Home() {
     e.preventDefault();
     console.log("Game type : " + gameType);
     console.log("Game mode : " + gameMode);
+    console.log("Time limit : " + timeLimit);
+    console.log("Board size : " + boardSize);
     console.log("Game with : " + gameF);
     console.log("Game code : " + gameCode);
 
@@ -117,7 +124,7 @@ export default function Home() {
       }
       
       function gameFoundCallback(game_id: any) {
-        window.location.href = `/hex/${game_id}`;
+        window.location.href = `/hex/o_${game_id}`;
       }
       
       function joinGameCallback(game_details: Game) {}
@@ -127,7 +134,6 @@ export default function Home() {
       function connectionEndedCallback() {
         console.error('Connection ended');
         setIsSearchingGame(false);
-        onlineSearchInitialize();
       }
 
       function clickCallback(i: number, j: number) {}
@@ -146,8 +152,8 @@ export default function Home() {
       websocketHandler.sendPacket({
         type: ServerBoundPacketType.GAME_SEARCH,
         game_parameters: {
-          time_limit: 0,
-          board_size: 7,
+          time_limit: parseInt(timeLimit),
+          board_size: parseInt(boardSize),
           ranked: gameType === "Classé",
         }} as ServerBoundGameSearchPacket);
 
@@ -170,12 +176,30 @@ export default function Home() {
             setVar={setGameType}
           />
           <Spacer direction="H" spacing={3} />
+          
           <RadioButton
+            title="Temps limite (en secondes)"
+            varName={timeLimit}
+            values={time_limits_str}
+            setVar={setTimeLimit}
+          />
+
+          <Spacer direction="H" spacing={3} />
+          
+          <RadioButton
+            title="Taille du plateau"
+            varName={boardSize}
+            values={board_sizes_str}
+            setVar={setBoardSize}
+          />
+
+          {/* <RadioButton
             title="Mode de jeu"
             varName={gameMode}
             values={["Normal", "Bombe", "-1", "Invisible"]}
             setVar={setGameMode}
-          />
+          /> */}
+          
           <Spacer direction="H" spacing={3} />
           <RadioButton
             title="Avec qui jouer ?"

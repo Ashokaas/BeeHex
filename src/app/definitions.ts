@@ -1,3 +1,6 @@
+export const BOARD_SIZES = [5, 7, 9, 11, 13];
+export const TIME_LIMITS = [0, 180, 300, 600];
+
 export type UserId = string;
 export type RoomId = string;
 export type GameId = string;
@@ -14,7 +17,7 @@ export interface DatabaseGame {
 
 export interface Game {
 	game_id: string;
-	game_parameters: GameParameters;
+	game_parameters: GameParameters | LocalGameParameters;
 	grid: Array<Array<number>>;
 	first_player_id: string;
 	second_player_id: string;
@@ -26,6 +29,7 @@ export type GameParameters = {
 	board_size: number;
 	time_limit: number;
 }
+export type LocalGameParameters = { time_limit: number, board_size: number };
   
 
 export enum UserStatus {

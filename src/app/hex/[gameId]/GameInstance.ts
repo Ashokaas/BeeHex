@@ -1,15 +1,15 @@
-import { GameParameters, UserId, GameId, Game } from "./definitions";
+import { GameParameters, UserId, GameId, Game, LocalGameParameters } from "../../definitions";
 
 export default class GameInstance {
   private game_id: GameId;
-  private game_parameters: GameParameters;
+  private game_parameters: GameParameters|LocalGameParameters;
   private grid_array: Array<Array<number>>;
   private first_player_id: UserId;
   private second_player_id: UserId;
   private turn: number;
   private own_id: UserId;
 
-  constructor(game_id: GameId, game_parameters: GameParameters, grid_array: Array<Array<number>>, first_player_id: UserId, second_player_id: UserId, turn: number, own_id: UserId) {
+  constructor(game_id: GameId, game_parameters: LocalGameParameters|GameParameters, grid_array: Array<Array<number>>, first_player_id: UserId, second_player_id: UserId, turn: number, own_id: UserId) {
     this.game_id = game_id;
     this.game_parameters = game_parameters;
     this.grid_array = grid_array;
