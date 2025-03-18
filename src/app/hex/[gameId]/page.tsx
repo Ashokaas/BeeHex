@@ -16,8 +16,9 @@ import GameInstance from "./GameInstance";
 import getEnv from "@/env/env";
 import { get } from "http";
 import { WebsocketHandler } from "./WebsocketHandler";
-import { DatabaseGame, Game, GameStatus, ServerBoundJoinGamePacket, ServerBoundPacketType, ServerBoundPlayMovePacket, UserId } from "./definitions";
+import { DatabaseGame, Game, GameStatus, ServerBoundJoinGamePacket, ServerBoundPacketType, ServerBoundPlayMovePacket, UserId, LocalGameParameters } from "./definitions";
 import { time } from 'console';
+import { OfflineHandler } from './OfflineHandler';
 
 enum GameState {
   LOADING,
@@ -26,7 +27,7 @@ enum GameState {
   RECONNECTING
 }
 
-
+type moveArray = number[][];
 
 function PlayerStats(props: { name: string, timer: string }) {
   return (
@@ -68,7 +69,7 @@ function showGrid() {
   document.getElementsByClassName(styles.loading_spinner)[0].classList.add(styles.hidden);
 }
 
-function parseGameParameters(gameId: string) {
+function parseGameParameters(gameId: string) : LocalGameParameters | null {
   const parameters = gameId.split('_');
   if (parameters.length != 2) {
     return null;
@@ -80,7 +81,7 @@ function parseGameParameters(gameId: string) {
   return { time_limit, board_size };
 }
 
-function parseGameParametersAndMoves(gameId: string) {
+function parseGameParametersAndMoves(gameId: string) : [ LocalGameParameters, moveArray ] | null {
   const mixed = gameId.split('_');
   if (mixed.length != 3) {
     return null;
@@ -109,16 +110,19 @@ export default function Home() {
   if (rawGameId === undefined || rawGameId === null || rawGameId === '' || rawGameId.length < 3) {
     window.location.href = '/';
   }
+  let gameType: "online" | "local" | "moves";
+  let gameParameters: { time_limit: number, board_size: number } | undefined | null;
+  let moves: moveArray | undefined | null;
   const gameId = rawGameId.substring(2);
   if (rawGameId.startsWith("o_")) {
     //Online
-    const gameType = "online";
+    gameType = "online";
     
   }
   else if (rawGameId.startsWith("l_")) {
     //Local
-    const gameType = "local";
-    const gameParameters = parseGameParameters(gameId);
+    gameType = "local";
+    gameParameters = parseGameParameters(gameId);
     if (!gameParameters) {
       window.location.href = '/';
     }
@@ -126,13 +130,13 @@ export default function Home() {
   }
   else if (rawGameId.startsWith("m_")) {
     //From moves
-    const gameType = "moves";
+    gameType = "moves";
     const gameParametersAndMoves = parseGameParametersAndMoves(gameId);
     if (!gameParametersAndMoves) {
       window.location.href = '/';
       
     } else {
-      const [gameParameters, moves] = gameParametersAndMoves;
+      [gameParameters, moves] = gameParametersAndMoves;
     }
   }
   else {
@@ -180,8 +184,108 @@ export default function Home() {
   useEffect(() => {
     
     async function initialize() {
-      async function onlineGameInitialize() {
+      async function onlineGamePreInitialize() {
         
+        async function onlineGameInitialize() {
+          
+          function errorCallback(message: string) {
+            console.error(message);
+          }
+          
+          function gameSearchCallback(game_parameters: any, player_count: number, elo_range: [number, number]) { // Inutilisé ici, destiné à la page de recherche de jeu
+            console.log(game_parameters, player_count, elo_range);
+          }
+          
+          function gameFoundCallback(game_id: any) { 
+            // Inutilisé ici, destiné à la page de recherche de jeu
+          }
+          
+          function joinGameCallback(game_details: Game) {
+            setGameState(GameState.PLAYING);
+            workingGameState = GameState.PLAYING;
+            game = GameInstance.fromGame(game_details, ownId);
+            setGrid(game_details.grid);
+            showGrid();
+          }
+          
+          function movePlayedCallback(x: number, y: number, turn: number, grid_array: Array<Array<number>>) {
+            if (game) {
+              game.updateGameState(grid_array, turn);
+              setGrid(grid_array);
+            }
+          }
+
+          function gameEndCallback(status: GameStatus, moves: string) {
+            console.log('Game ended', status, moves);
+            setGameState(GameState.REVIEWING);
+            workingGameState = GameState.REVIEWING;
+          }
+        
+          function connectionEndedCallback() {
+            console.log('Connection ended');
+            if (workingGameState === GameState.PLAYING) {
+              setGameState(GameState.RECONNECTING);
+              workingGameState = GameState.RECONNECTING;
+              onlineGameInitialize();
+            }
+          }
+
+          function onlineClickCallback(i: number, j: number) {
+            if (workingGameState === GameState.PLAYING && game && game.isTurnOf(ownId) && game.isValidMove(i, j)) {
+              websocketHandler.sendPacket({
+                type: ServerBoundPacketType.PLAY_MOVE,
+                x: i,
+                y: j
+              } as ServerBoundPlayMovePacket);
+            }
+          }
+
+          function onlineHoverCallback(i: number, j: number) {}
+
+          let websocketHandler = await new WebsocketHandler({
+            errorCallback,
+            gameSearchCallback,
+            gameFoundCallback,
+            joinGameCallback,
+            movePlayedCallback,
+            gameEndCallback,
+            connectionEndedCallback
+          }).awaitConnection();
+          
+          websocketHandler.sendPacket({
+            type: ServerBoundPacketType.JOIN_GAME,
+            game_id: gameId
+          } as ServerBoundJoinGamePacket);
+
+          setClickCallback(() => onlineClickCallback);
+          setHoverCallback(() => onlineHoverCallback);
+        }
+        const [ownId, ownUsername, ownMMR, ownRegistrationDate] = token ? await fetchSelf() : [null, null, null, null] ; // non enfait
+        const gameData: DatabaseGame = await fetchGame(gameId);
+        if (!gameData) {
+          console.error('Game not found');
+          window.location.href = '/';
+        }
+
+        const [player1Id, player1Username, player1MMR, player1RegistrationDate] = await fetchUser(gameData.firstPlayerId);
+        const [player2Id, player2Username, player2MMR, player2RegistrationDate] = await fetchUser(gameData.secondPlayerId);
+
+        setPlayers({
+          player1: { name: player1Username, timer: "X:XX" },
+          player2: { name: player2Username, timer: "X:XX" }
+        });
+        if (gameData.status === GameStatus.IN_PROGRESS) {
+          onlineGameInitialize();
+          return;
+        }
+        setGameState(GameState.REVIEWING);
+        workingGameState = GameState.REVIEWING;
+        console.error('NOT IMPLEMENTED');
+        return;
+      };
+
+      async function localInitialize() {
+        const ownId = "1";
         function errorCallback(message: string) {
           console.error(message);
         }
@@ -190,8 +294,8 @@ export default function Home() {
           console.log(game_parameters, player_count, elo_range);
         }
         
-        function gameFoundCallback(game_id: any) { // Inutilisé ici, destiné à la page de recherche de jeu
-          window.location.href = `/hex/${game_id}`;
+        function gameFoundCallback(game_id: any) { 
+          // Inutilisé ici, destiné à la page de recherche de jeu
         }
         
         function joinGameCallback(game_details: Game) {
@@ -203,7 +307,6 @@ export default function Home() {
         }
         
         function movePlayedCallback(x: number, y: number, turn: number, grid_array: Array<Array<number>>) {
-          console.log(x, y, turn, game);
           if (game) {
             game.updateGameState(grid_array, turn);
             setGrid(grid_array);
@@ -217,18 +320,12 @@ export default function Home() {
         }
       
         function connectionEndedCallback() {
-          console.log('Connection ended');
-          if (workingGameState === GameState.PLAYING) {
-            setGameState(GameState.RECONNECTING);
-            workingGameState = GameState.RECONNECTING;
-            onlineGameInitialize();
-          }
+          // Inutilisé
         }
-
-        function onlineClickCallback(i: number, j: number) {
-          console.log('click', i, j, !!game, game?.isTurnOf(ownId), game?.isValidMove(i, j));
-          if (workingGameState === GameState.PLAYING && game && game.isTurnOf(ownId) && game.isValidMove(i, j)) {
-            websocketHandler.sendPacket({
+        
+        function localClickCallback(i: number, j: number) {
+          if (workingGameState === GameState.PLAYING && game && game.isValidMove(i, j)) {
+            offlineHandler.sendPacket({
               type: ServerBoundPacketType.PLAY_MOVE,
               x: i,
               y: j
@@ -236,9 +333,9 @@ export default function Home() {
           }
         }
 
-        function onlineHoverCallback(i: number, j: number) {}
-
-        let websocketHandler = await new WebsocketHandler({
+        function localHoverCallback(i: number, j: number) {}
+        
+        let offlineHandler = await new OfflineHandler({
           errorCallback,
           gameSearchCallback,
           gameFoundCallback,
@@ -246,38 +343,28 @@ export default function Home() {
           movePlayedCallback,
           gameEndCallback,
           connectionEndedCallback
-        }).awaitConnection();
-        
-        websocketHandler.sendPacket({
+        }, gameParameters!!).awaitConnection();
+
+        offlineHandler.sendPacket({
           type: ServerBoundPacketType.JOIN_GAME,
-          game_id: gameId
+          game_id: "offline"
         } as ServerBoundJoinGamePacket);
-
-        setClickCallback(() => onlineClickCallback);
-        setHoverCallback(() => onlineHoverCallback);
-      }
-      const [ownId, ownUsername, ownMMR, ownRegistrationDate] = token ? await fetchSelf() : [null, null, null, null] ; // non enfait
-      const gameData: DatabaseGame = await fetchGame(gameId);
-      if (!gameData) {
-        console.error('Game not found');
-        return;
+        setClickCallback(() => localClickCallback);
+        setHoverCallback(() => localHoverCallback);
+        setPlayers({
+          player1: { name: "Joueur 1", timer: "X:XX" },
+          player2: { name: "Joueur 2", timer: "X:XX" }
+        });
       }
 
-      const [player1Id, player1Username, player1MMR, player1RegistrationDate] = await fetchUser(gameData.firstPlayerId);
-      const [player2Id, player2Username, player2MMR, player2RegistrationDate] = await fetchUser(gameData.secondPlayerId);
 
-      setPlayers({
-        player1: { name: player1Username, timer: "X:XX" },
-        player2: { name: player2Username, timer: "X:XX" }
-      });
-      if (gameData.status === GameStatus.IN_PROGRESS) {
-        onlineGameInitialize();
-        return;
+      if (gameType === "online") {
+        onlineGamePreInitialize();
       }
-      setGameState(GameState.REVIEWING);
-      workingGameState = GameState.REVIEWING;
-      console.error('NOT IMPLEMENTED');
-      return;
+      else if (gameType === "local") {
+        localInitialize();
+      }
+
     };
 
     initialize();

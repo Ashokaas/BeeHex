@@ -17,7 +17,6 @@ export default function ShowGrid (props: GridProps) {
   const [clickCallback, setClickCallback] = useState<(i: number, j: number) => void>(() => () => {});
   const [hoverCallback, setHoverCallback] = useState<(i: number, j: number) => void>(() => () => {});
   useEffect(() => {
-    console.log(props);
     setGridArray(props.grid_array);
     setClickCallback(() => props.clickCallback);
     setHoverCallback(() => props.hoverCallback);

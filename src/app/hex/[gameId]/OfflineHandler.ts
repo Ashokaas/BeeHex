@@ -2,7 +2,7 @@ import * as packets from "./definitions";
 
 interface WebsocketCallbacks {
 	errorCallback: (message: string) => void;
-	gameSearchCallback: (game_parameters: packets.GameParameters, player_count: number, elo_range: [number, number]) => void;
+	gameSearchCallback: (game_parameters: packets.LocalGameParameters, player_count: number, elo_range: [number, number]) => void;
 	gameFoundCallback: (game_id: packets.GameId) => void;
 	joinGameCallback: (game: packets.Game) => void;
 	movePlayedCallback: (x: number, y: number, turn: number, grid_array: Array<Array<number>>) => void;
@@ -12,14 +12,14 @@ interface WebsocketCallbacks {
 class GameInstance implements packets.Game {
 	private handler: OfflineHandler;
 	public game_id: string;
-	public game_parameters: packets.GameParameters;
+	public game_parameters: packets.LocalGameParameters;
 	public grid: Array<Array<number>>;
 	public first_player_id: string;
 	public second_player_id: string;
 	private moves: Array<[number, number]> = [];
 	public turn: number;
   
-	constructor(handler: OfflineHandler, game_id: string, gameParameters: packets.GameParameters, firstPlayerId: string, secondPlayerId: string)
+	constructor(handler: OfflineHandler, game_id: string, gameParameters: packets.LocalGameParameters, firstPlayerId: string, secondPlayerId: string)
 	{
 		this.handler = handler;
 		this.game_id = game_id;
@@ -37,7 +37,7 @@ class GameInstance implements packets.Game {
 			x: x, 
 			y: y, 
 			turn: this.turn + 1,
-			grid_array: this.grid} as packets.ClientBoundMovePlayedPacket)
+			grid_array: [...this.grid]} as packets.ClientBoundMovePlayedPacket)
 		this.moves.push([x, y]);
 		let { winner, winningHexagons } = this.checkForWinnerXY(x, y);
 		if (winner) {
@@ -164,9 +164,9 @@ export class OfflineHandler {
 	private game: GameInstance
 	private callbacks: WebsocketCallbacks;
 
-	constructor(callbacks: WebsocketCallbacks, gameParameters: packets.GameParameters) {
+	constructor(callbacks: WebsocketCallbacks, gameParameters: packets.LocalGameParameters) {
 		this.callbacks = callbacks;
-		this.game = new GameInstance(this, "offline", gameParameters, "1", "2");
+		this.game = new GameInstance(this, "offline", gameParameters, "1", "1");
 	}
 
 	awaitConnection() {
@@ -179,6 +179,17 @@ export class OfflineHandler {
 		if (packet.type === packets.ServerBoundPacketType.PLAY_MOVE) {
 			const playMovePacket = packet as packets.ServerBoundPlayMovePacket;
 			this.game.playMove(playMovePacket.x, playMovePacket.y);
+		}
+		if (packet.type === packets.ServerBoundPacketType.FORFEIT_GAME) {
+			if (this.game.turn % 2 === 0) {
+				this.game.endGame(packets.GameStatus.SECOND_PLAYER_WIN);
+			}
+			else {
+				this.game.endGame(packets.GameStatus.FIRST_PLAYER_WIN);
+			}
+		}
+		if (packet.type === packets.ServerBoundPacketType.JOIN_GAME) {
+			this.callbacks.joinGameCallback(this.game.exportGame());
 		}
 	}
 

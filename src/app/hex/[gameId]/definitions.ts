@@ -14,7 +14,7 @@ export interface DatabaseGame {
 
 export interface Game {
 	game_id: string;
-	game_parameters: GameParameters;
+	game_parameters: GameParameters | LocalGameParameters;
 	grid: Array<Array<number>>;
 	first_player_id: string;
 	second_player_id: string;
@@ -26,6 +26,7 @@ export type GameParameters = {
 	board_size: number;
 	time_limit: number;
 }
+export type LocalGameParameters = { time_limit: number, board_size: number };
   
 
 export enum UserStatus {

@@ -113,7 +113,7 @@ export default function Home() {
       }
       
       function gameFoundCallback(game_id: any) {
-        window.location.href = `/hex/${game_id}`;
+        window.location.href = `/hex/o_${game_id}`;
       }
       
       function joinGameCallback(game_details: Game) {}
