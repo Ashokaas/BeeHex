@@ -15,7 +15,7 @@ import Spacer from '@/components/spacer/spacer';
 import InputText from '@/components/input_text/input_text';
 import Title_h1 from '@/components/title_h1/title_h1';
 import getEnv from '@/env/env';
-import Swal from 'sweetalert2';
+import CustomAlert from '@/components/custom_alert/custom_alert';
 
 function StatusText(props: { text: string }) {
   const style = {
@@ -35,7 +35,10 @@ export default function Login() {
   const [password, setPassword] = useState('');
   console.log(getEnv());
 
-  
+  const [logginSuccess, setLogginSuccess] = useState(false);
+  const [logginError, setLogginError] = useState(false);
+
+
   const handleSubmit = async (e: { preventDefault: () => void; }, type: 'login' | 'register') => {
     e.preventDefault();
     const url = type === 'login' ? `http://${getEnv()["IP_HOST"]}:3001/login` : `http://${getEnv()["IP_HOST"]}:3001/register`;
@@ -51,14 +54,8 @@ export default function Login() {
       // Redirect the user to a protected page
       // window.location.href = '/dashboard';
       console.log(response);
-      Swal.fire({
-        title: 'Success',
-        text: 'You have successfully logged in',
-        icon: 'success',
-        confirmButtonText: 'Ok',
-        color: '#ffffff',
-        background: '#363636'
-      });
+
+      setLogginSuccess(true);
 
       if (type === 'login') {
         const user = await axios.post(`http://${getEnv()["IP_HOST"]}:3001/me`, {}, { headers: { 'Authorization': localStorage.getItem('token') } });
@@ -66,14 +63,7 @@ export default function Login() {
       }
     } catch (error) {
       console.error(error);
-      Swal.fire({
-        title: 'Error',
-        text: 'An error occurred',
-        icon: 'error',
-        confirmButtonText: 'Ok',
-        color: '#ffffff',
-        background: '#363636'
-      });
+      setLogginError(true);
       }
   };
 
@@ -82,6 +72,10 @@ export default function Login() {
 
   return (
     <div className={styles.container}>
+      {logginError && <CustomAlert icon="close" text1='Error' text2='An error occurred' type='bad' />}
+      {logginSuccess && <CustomAlert icon="check" text1='Success' text2='You have successfully logged in' type='good' />}
+
+
       <Title_h1 text="Login/register" icon="login" />
       <Online>
         <form>

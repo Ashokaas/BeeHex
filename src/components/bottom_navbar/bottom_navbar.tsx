@@ -60,7 +60,7 @@ const BottomNavBar = () => {
       <p>Accueil</p>
       <span className="material-symbols-rounded">home</span>
     </a>
-    <a href="/hex">
+    <a href="/game_mode">
       <p>Jouer</p>
       <span className="material-symbols-rounded">swords</span>
     </a>
