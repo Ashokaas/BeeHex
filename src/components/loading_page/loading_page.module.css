@@ -1,0 +1,43 @@
+/* Loader.css */
+.loader_container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(5px);
+  z-index: 5000; /* Derrière tout le contenu */
+}
+
+.loader {
+  width: 100px;
+  height: 100px;
+  border: 8px solid #ccc;
+  border-top-color: #007bff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  70% {
+    transform: rotate(300deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.loader_container > p {
+  font-size: 2rem;
+  margin-top: 2rem;
+}

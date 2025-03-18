@@ -6,7 +6,7 @@ import styles from './home.module.css';
 import CustomAlert from '@/components/custom_alert/custom_alert';
 import { use } from 'react';
 import { useState } from 'react';
-
+import LoadingPage from '@/components/loading_page/loading_page';
 
 export default function Home() {
 	const [showAlert, setShowAlert] = useState(false);
