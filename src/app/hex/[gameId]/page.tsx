@@ -17,6 +17,7 @@ import getEnv from "@/env/env";
 import { WebsocketHandler } from "./WebsocketHandler";
 import { DatabaseGame, Game, GameStatus, ServerBoundJoinGamePacket, ServerBoundPacketType, ServerBoundPlayMovePacket, UserId, LocalGameParameters } from "../../definitions";
 import { OfflineHandler } from './OfflineHandler';
+import CustomAlert from '@/components/custom_alert/custom_alert';
 
 enum GameState {
   LOADING,
@@ -67,7 +68,7 @@ function showGrid() {
   document.getElementsByClassName(styles.loading_spinner)[0].classList.add(styles.hidden);
 }
 
-function parseGameParameters(gameId: string) : LocalGameParameters | null {
+function parseGameParameters(gameId: string): LocalGameParameters | null {
   const parameters = gameId.split('_');
   if (parameters.length != 2) {
     return null;
@@ -79,7 +80,7 @@ function parseGameParameters(gameId: string) : LocalGameParameters | null {
   return { time_limit, board_size };
 }
 
-function parseGameParametersAndMoves(gameId: string) : [ LocalGameParameters, moveArray ] | null {
+function parseGameParametersAndMoves(gameId: string): [LocalGameParameters, moveArray] | null {
   const mixed = gameId.split('_');
   if (mixed.length != 3) {
     return null;
@@ -99,12 +100,12 @@ function parseGameParametersAndMoves(gameId: string) : [ LocalGameParameters, mo
   return [game_parameters, moves];
 
 
-  
+
 }
 
 export default function Home() {
   const token = Cookies.get('token');
-  const rawGameId = useParams<{gameId: string}>().gameId;
+  const rawGameId = useParams<{ gameId: string }>().gameId;
   if (rawGameId === undefined || rawGameId === null || rawGameId === '' || rawGameId.length < 3) {
     window.location.href = '/';
   }
@@ -115,7 +116,7 @@ export default function Home() {
   if (rawGameId.startsWith("o_")) {
     //Online
     gameType = "online";
-    
+
   }
   else if (rawGameId.startsWith("l_")) {
     //Local
@@ -124,7 +125,7 @@ export default function Home() {
     if (!gameParameters) {
       window.location.href = '/';
     }
-    
+
   }
   else if (rawGameId.startsWith("m_")) {
     //From moves
@@ -132,7 +133,7 @@ export default function Home() {
     const gameParametersAndMoves = parseGameParametersAndMoves(gameId);
     if (!gameParametersAndMoves) {
       window.location.href = '/';
-      
+
     } else {
       [gameParameters, moves] = gameParametersAndMoves;
     }
@@ -143,11 +144,11 @@ export default function Home() {
   }
   const [gameState, setGameState] = useState(GameState.LOADING);
   let workingGameState: GameState = GameState.LOADING;
-  let game: GameInstance|undefined = undefined;
+  let game: GameInstance | undefined = undefined;
   const [grid, setGrid] = useState([[0, 0], [0, 0]]);
 
-  const [clickCallback, setClickCallback] = useState<(i: number, j: number) => void>(() => () => {});
-  const [hoverCallback, setHoverCallback] = useState<(i: number, j: number) => void>(() => () => {});
+  const [clickCallback, setClickCallback] = useState<(i: number, j: number) => void>(() => () => { });
+  const [hoverCallback, setHoverCallback] = useState<(i: number, j: number) => void>(() => () => { });
   const fetchUser = async (userId: UserId) => {
     try {
       const user = await axios.get(`http://${getEnv()['IP_HOST']}:3001/get_user/${userId}`, {});
@@ -161,7 +162,7 @@ export default function Home() {
   const fetchSelf = async () => {
     try {
       const user = await axios.post(`http://${getEnv()['IP_HOST']}:3001/me`, {}, {
-        headers: {'Authorization': token }
+        headers: { 'Authorization': token }
       });
       return [user.data.id, user.data.username, user.data.mmr, user.data.registration_date];
     } catch (error) {
@@ -174,30 +175,31 @@ export default function Home() {
     player2: { name: "En attente...", timer: "X:XX" }
   });
 
-  
-  
-  
 
-  
+
+  const [showEndGameAlert, setShowEndGameAlert] = useState(false);
+  const [endGameT1, setT1] = useState("Défaite/Victoire");
+  const [endGameT2, setT2] = useState("Vous avez gagné +X MMR");
+
   useEffect(() => {
-    
+
     async function initialize() {
       async function onlineGamePreInitialize() {
-        
+
         async function onlineGameInitialize() {
-          
+
           function errorCallback(message: string) {
             console.error(message);
           }
-          
+
           function gameSearchCallback(game_parameters: any, player_count: number, elo_range: [number, number]) { // Inutilisé ici, destiné à la page de recherche de jeu
             console.log(game_parameters, player_count, elo_range);
           }
-          
-          function gameFoundCallback(game_id: any) { 
+
+          function gameFoundCallback(game_id: any) {
             // Inutilisé ici, destiné à la page de recherche de jeu
           }
-          
+
           function joinGameCallback(game_details: Game) {
             setGameState(GameState.PLAYING);
             workingGameState = GameState.PLAYING;
@@ -205,7 +207,7 @@ export default function Home() {
             setGrid(game_details.grid);
             showGrid();
           }
-          
+
           function movePlayedCallback(x: number, y: number, turn: number, grid_array: Array<Array<number>>) {
             if (game) {
               game.updateGameState(grid_array, turn);
@@ -217,8 +219,21 @@ export default function Home() {
             console.log('Game ended', status, moves);
             setGameState(GameState.REVIEWING);
             workingGameState = GameState.REVIEWING;
+            if ((ownId === player1Id && status === GameStatus.FIRST_PLAYER_WIN) || (ownId === player2Id && status === GameStatus.SECOND_PLAYER_WIN)) {
+              console.log('Victoire');
+              setT1("Victoire");
+              setT2("Vous avez gagné +X MMR");
+              setShowEndGameAlert(true);
+            } else if ((ownId === player1Id && status === GameStatus.SECOND_PLAYER_WIN) || (ownId === player2Id && status === GameStatus.FIRST_PLAYER_WIN)) {
+              console.log('Défaite');
+              setT1("Défaite");
+              setT2("Vous avez perdu -X MMR");
+              setShowEndGameAlert(true);
+            } else {
+              console.log('Erreur');
+            }
           }
-        
+
           function connectionEndedCallback() {
             console.log('Connection ended');
             if (workingGameState === GameState.PLAYING) {
@@ -238,7 +253,7 @@ export default function Home() {
             }
           }
 
-          function onlineHoverCallback(i: number, j: number) {}
+          function onlineHoverCallback(i: number, j: number) { }
 
           let websocketHandler = await new WebsocketHandler({
             errorCallback,
@@ -249,7 +264,7 @@ export default function Home() {
             gameEndCallback,
             connectionEndedCallback
           }).awaitConnection();
-          
+
           websocketHandler.sendPacket({
             type: ServerBoundPacketType.JOIN_GAME,
             game_id: gameId
@@ -258,7 +273,7 @@ export default function Home() {
           setClickCallback(() => onlineClickCallback);
           setHoverCallback(() => onlineHoverCallback);
         }
-        const [ownId, ownUsername, ownMMR, ownRegistrationDate] = token ? await fetchSelf() : [null, null, null, null] ; // non enfait
+        const [ownId, ownUsername, ownMMR, ownRegistrationDate] = token ? await fetchSelf() : [null, null, null, null]; // non enfait
         const gameData: DatabaseGame = await fetchGame(gameId);
         if (!gameData) {
           console.error('Game not found');
@@ -287,15 +302,15 @@ export default function Home() {
         function errorCallback(message: string) {
           console.error(message);
         }
-        
+
         function gameSearchCallback(game_parameters: any, player_count: number, elo_range: [number, number]) { // Inutilisé ici, destiné à la page de recherche de jeu
           console.log(game_parameters, player_count, elo_range);
         }
-        
-        function gameFoundCallback(game_id: any) { 
+
+        function gameFoundCallback(game_id: any) {
           // Inutilisé ici, destiné à la page de recherche de jeu
         }
-        
+
         function joinGameCallback(game_details: Game) {
           setGameState(GameState.PLAYING);
           workingGameState = GameState.PLAYING;
@@ -303,7 +318,7 @@ export default function Home() {
           setGrid(game_details.grid);
           showGrid();
         }
-        
+
         function movePlayedCallback(x: number, y: number, turn: number, grid_array: Array<Array<number>>) {
           if (game) {
             game.updateGameState(grid_array, turn);
@@ -316,11 +331,11 @@ export default function Home() {
           setGameState(GameState.REVIEWING);
           workingGameState = GameState.REVIEWING;
         }
-      
+
         function connectionEndedCallback() {
           // Inutilisé
         }
-        
+
         function localClickCallback(i: number, j: number) {
           if (workingGameState === GameState.PLAYING && game && game.isValidMove(i, j)) {
             offlineHandler.sendPacket({
@@ -331,8 +346,8 @@ export default function Home() {
           }
         }
 
-        function localHoverCallback(i: number, j: number) {}
-        
+        function localHoverCallback(i: number, j: number) { }
+
         let offlineHandler = await new OfflineHandler({
           errorCallback,
           gameSearchCallback,
@@ -370,6 +385,15 @@ export default function Home() {
 
   return (
     <>
+      {showEndGameAlert
+        &&
+        <CustomAlert
+          text1={endGameT1}
+          text2={endGameT2}
+          icon={endGameT1 === "Victoire" ? "trophy" : "close"}
+          type={endGameT1 === "Victoire" ? "good" : "bad"}
+          onClick={() => setShowEndGameAlert(false)}
+        />}
       <div className={styles.game_interface}>
         <div className={styles.hex_parent}>
           <section className={`${styles.hexagon_grid} ${styles.hidden}`}>
