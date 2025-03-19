@@ -49,7 +49,7 @@ export default class GameInstance {
   }
 
   getCurrentPlayer() {
-    return this.turn % 2 === 0 ? this.first_player_id : this.second_player_id;
+    return this.turn % 2 === 0 ? this.second_player_id : this.first_player_id;
   }
 
   getOwnId() {

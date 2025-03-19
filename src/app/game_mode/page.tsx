@@ -85,7 +85,7 @@ export default function Home() {
 
   /* if game type is ranked, then the user can't play with a friend */
   useEffect(() => {
-    if (gameType === "Classé") {
+    if (gameType === "Classé" || gameType === "Hors-Ligne") {
       setGameF("Chercher une partie");
     }
   }, [gameType]);
@@ -112,6 +112,9 @@ export default function Home() {
     console.log("Game with : " + gameF);
     console.log("Game code : " + gameCode);
 
+    if (gameType === "Hors-Ligne") {
+      window.location.href = `/hex/l_${timeLimit.toString()}_${boardSize.toString()}`
+    }
     async function onlineSearchInitialize() {
       
       function errorCallback(message: string) {
@@ -172,7 +175,7 @@ export default function Home() {
           <RadioButton
             title="Choisir le type de partie"
             varName={gameType}
-            values={["Normal", "Classé"]}
+            values={["Normal", "Classé", "Hors-Ligne"]}
             setVar={setGameType}
           />
           <Spacer direction="H" spacing={3} />
