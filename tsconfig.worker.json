@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./public/workers",
+    "module": "ESNext",
+    "noEmit": false
+  },
+  "include": [
+    "src/app/hex/[gameId]/AlgorithmWorker.ts"
+  ]
+}
