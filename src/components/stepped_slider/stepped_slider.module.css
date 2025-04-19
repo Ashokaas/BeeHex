@@ -1,0 +1,41 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 80%;
+}
+
+.container > input[type="range"] {
+  -webkit-appearance: none;
+  width: 96%;
+  height: 8px;
+  background: var(--blue-500);
+  border-radius: 5px;
+  outline: none;
+}
+
+.container > input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 30px;
+  background: var(--blue-200);
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.container .steps {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.container .steps > div { 
+  width: 100%;
+}
+
+.container .step p {
+  font-size: 1em;
+  margin: 20px 0;
+}
+
