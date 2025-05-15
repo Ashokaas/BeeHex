@@ -441,10 +441,10 @@ export default function Home() {
           <Spacer spacing={2} direction='H' />
 
           
-          <MoveEvaluation index={0} Evaluation={2.3} nextMoves={["1-2", "2-3", "3-9"]} />
-          <MoveEvaluation index={1} Evaluation={2.3} nextMoves={["1-2", "2-3", "3-9"]} />
-          <MoveEvaluation index={2} Evaluation={-2.3} nextMoves={["1-2", "2-3", "3-9"]} />
-          <MoveEvaluation index={3} Evaluation={-2.3} nextMoves={["1-2", "2-3", "3-9"]} />
+          <MoveEvaluation index={0} Evaluation={2.3} nextMoves={["1-2", "2-3", "3-9"]} onClick={oui} onHover={oui} onLeave={oui}/>
+          <MoveEvaluation index={1} Evaluation={2.3} nextMoves={["1-2", "2-3", "3-9"]} onClick={oui} onHover={oui} onLeave={oui}/>
+          <MoveEvaluation index={2} Evaluation={-2.3} nextMoves={["1-2", "2-3", "3-9"]} onClick={oui} onHover={oui} onLeave={oui}/>
+          <MoveEvaluation index={3} Evaluation={-2.3} nextMoves={["1-2", "2-3", "3-9"]} onClick={oui} onHover={oui} onLeave={oui}/>
 
           <Spacer spacing={2} direction='H' />
           <h2>Exploration</h2>
@@ -453,6 +453,6 @@ export default function Home() {
     </>
   );
 }
-function oui() {
+function oui(i:number) {
   console.log("oui");
   }

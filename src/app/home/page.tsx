@@ -7,6 +7,8 @@ import CustomAlert from '@/components/custom_alert/custom_alert';
 import { use } from 'react';
 import { useState } from 'react';
 import LoadingPage from '@/components/loading_page/loading_page';
+import SteppedSlider from '@/components/stepped_slider/stepped_slider';
+import Spacer from '@/components/spacer/spacer';
 
 export default function Home() {
 	const [showAlert, setShowAlert] = useState(false);
@@ -18,6 +20,8 @@ export default function Home() {
 	const handleCloseAlert = () => {
 		setShowAlert(false);
 	};
+
+	const [sliderValue, setSliderValue] = useState(1);
 
 	return (
 		<>
@@ -48,18 +52,11 @@ export default function Home() {
 					<BeautifulButton text="Joueur contre grosse patate bleue" icon="people" link="" />
 				</div>
 
-				<img src="../src/svgs/logo.svg" alt="Logo" />
+				<Spacer direction='H' spacing={4} />
+				<SteppedSlider size={19} sliderValue={sliderValue} setSliderValue={setSliderValue} />
 
-				{showAlert && (
-					<CustomAlert
-						text1="Alerte"
-						text2="Ceci est une alerte"
-						type="neutral"
-						onClick={handleCloseAlert}
-					/>
-				)}
-				<BeautifulButton text="Afficher une alerte" onClick={handleButtonClick} />
-
+				<BeautifulButton text="test" onClick={() => {console.log(sliderValue)}} />
+	
 			</div>
 
 		</>

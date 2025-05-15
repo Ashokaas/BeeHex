@@ -15,7 +15,7 @@
     -webkit-clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
     clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
     z-index: 2;
-    
+    transition: background-color 0.2s ease-in-out;
 }
 
 /* Bordure d'un hexagone (ce qui est affiché sur les bords pour affiché la couleur rouge ou bleu du coté */
