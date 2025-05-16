@@ -18,6 +18,7 @@ import { WebsocketHandler } from "./WebsocketHandler";
 import { DatabaseGame, Game, GameStatus, ServerBoundJoinGamePacket, ServerBoundPacketType, ServerBoundPlayMovePacket, UserId, LocalGameParameters } from "../../definitions";
 import { OfflineHandler } from './OfflineHandler';
 import CustomAlert from '@/components/custom_alert/custom_alert';
+import { attributeScore, basicHeuristic, Explorer, RecommendedMove, SimpleGameInstance } from './Algorithm';
 
 enum GameState {
   LOADING,
@@ -27,6 +28,17 @@ enum GameState {
 }
 
 type moveArray = number[][];
+const testGrid = [
+  [0, 0, 0, 0, 0],
+  [0, 1, 0, 0, 0],
+  [0, 0, 0, 2, 0],
+  [0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0]
+]
+function explorerCallback(recommendedMove: RecommendedMove) {
+  console.log(`Explorer callback: (${recommendedMove.coordinate}), Score: ${recommendedMove.score.toString()}, [${recommendedMove.optimalRoute}]`);
+}
+const explorer = new Explorer(testGrid, 3, basicHeuristic, explorerCallback)
 
 function PlayerStats(props: { name: string, timer: string }) {
   return (
@@ -102,7 +114,6 @@ function parseGameParametersAndMoves(gameId: string): [LocalGameParameters, move
 
 
 }
-
 export default function Home() {
   const token = Cookies.get('token');
   const rawGameId = useParams<{ gameId: string }>().gameId;
@@ -175,6 +186,51 @@ export default function Home() {
     player2: { name: "En attente...", timer: "X:XX" }
   });
 
+  
+  
+  
+  
+  const testGrid2 = [
+        [
+            0,
+            1,
+            1,
+            1,
+            2
+        ],
+        [
+            1,
+            2,
+            2,
+            2,
+            0
+        ],
+        [
+            0,
+            0,
+            0,
+            1,
+            2
+        ],
+        [
+            1,
+            2,
+            1,
+            2,
+            1
+        ],
+        [
+            2,
+            2,
+            1,
+            1,
+            2
+        ]
+    ]
+
+
+  console.log("Game 1 :" + basicHeuristic(new SimpleGameInstance(testGrid, 6, [])).toString() + " - Game 2 :" + basicHeuristic(new SimpleGameInstance(testGrid2, 21, [])).toString());
+  console.log("Game 2 p1 atscore : " + attributeScore(testGrid2, 1).toString() + " - Game 2 p2 atscore : " + attributeScore(testGrid2, 2).toString());
 
 
   const [showEndGameAlert, setShowEndGameAlert] = useState(false);
@@ -210,8 +266,10 @@ export default function Home() {
 
           function movePlayedCallback(x: number, y: number, turn: number, grid_array: Array<Array<number>>) {
             if (game) {
+              
               game.updateGameState(grid_array, turn);
               setGrid(grid_array);
+              
             }
           }
 

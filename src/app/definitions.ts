@@ -144,7 +144,8 @@ export interface ServerBoundForfeitGamePacket {
 }
 
 export enum AlgorithmWorkerBoundPacketType {
-  EXPLORE_INSTANCE = 0
+  EXPLORE_INSTANCE = 0,
+  SET_ID = 1
 }
 
 export enum AlgorithmExplorerBoundPacketType {
@@ -160,12 +161,18 @@ export interface AlgorithmWorkerBoundExplorePacket {
   game: RawScoredGameInstance;
 }
 
+export interface AlgorithmWorkerBoundSetIdPacket {
+  type: AlgorithmWorkerBoundPacketType.SET_ID;
+  id: number;
+}
+
 export interface AlgorithmExplorerBoundGenericPacket {
   type: AlgorithmExplorerBoundPacketType;
 }
 
 export interface AlgorithmExplorerBoundResultPacket {
   type: AlgorithmExplorerBoundPacketType.RESULT;
+  id: number;
   result: ExploreResult;
 }
 export type Coordinate = [number, number]; // [y, x]

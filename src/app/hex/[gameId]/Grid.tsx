@@ -8,10 +8,6 @@ interface GridProps {
   hoverCallback: (i: number, j: number) => void;
 }
 
-interface GridState {
-  grid_array: Array<Array<number>>;
-}
-
 export default function ShowGrid (props: GridProps) {
   const [gridArray, setGridArray] = useState(props.grid_array);
   const [clickCallback, setClickCallback] = useState<(i: number, j: number) => void>(() => () => {});

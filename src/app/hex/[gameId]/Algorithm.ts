@@ -1,17 +1,22 @@
-import { GridHash, RawScoredGameInstance, RawSimpleGameInstance, RawScore, Coordinate } from "../../definitions";
+import { GridHash, RawScoredGameInstance, RawSimpleGameInstance, RawScore, Coordinate, AlgorithmExplorerBoundGenericPacket, AlgorithmExplorerBoundPacketType, AlgorithmExplorerBoundResultPacket, AlgorithmWorkerBoundPacketType, AlgorithmWorkerBoundExplorePacket, AlgorithmWorkerBoundSetIdPacket } from "../../definitions";
 
-
+var empty_array: number[][] = []
+var empty_map: Map<number, ScoredGameInstance> = new Map<number, ScoredGameInstance>()
 export class SimpleGameInstance { // TODO Ajouter un check pour victoire
-	public grid: Array<Array<number>>;
+	public grid: number[][];
 	public moves: Array<Coordinate>;
 	public turn: number;
-	
+	protected gridHash: string;
 
 	constructor(grid: Array<Array<number>>, turn: number, moves: Array<Coordinate> = []) {
 		this.grid = grid;
 		this.turn = turn;
 		this.moves = moves;
+		this.gridHash = hashGrid(grid); 
 	}
+
+
+	
 
 	getValidMoves() {
 		const validMoves: Array<Coordinate> = [];
@@ -41,6 +46,10 @@ export class SimpleGameInstance { // TODO Ajouter un check pour victoire
 		return this.turn;
 	}
 
+	getGridHash() {
+		return this.gridHash;
+	}
+
 	playMoveYX(y: number, x: number) {
 		if (this.isValidMove(y, x)) {
 			let newGrid = this.grid.map(row => row.slice()); // Crée une copie de la grille
@@ -61,7 +70,7 @@ export class SimpleGameInstance { // TODO Ajouter un check pour victoire
 	// Assigne un score à une partie
 	// et retourne une nouvelle instance de la partie avec le score mis à jour
 	giveInitialScore(score: Score) {
-		return new ScoredGameInstance(this.grid, this.turn, score);
+		return new ScoredGameInstance(this.grid, this.turn, this.moves, score);
 	}
 
 	raw(): RawSimpleGameInstance {
@@ -86,11 +95,18 @@ export class SimpleGameInstance { // TODO Ajouter un check pour victoire
 export class ScoredGameInstance extends SimpleGameInstance {
 	public score: Score;
 	public previousInstances: Array<ScoredGameInstance> = [];
-	public nextInstances: Map<number, ScoredGameInstance> = new Map<number, ScoredGameInstance>();
+	public nextInstances: Map<number, ScoredGameInstance>
+	
 
-	constructor(grid: Array<Array<number>>, turn: number, score: Score) {
+	constructor(grid: Array<Array<number>>, turn: number, moves: Array<Coordinate>, score: Score) {
 		super(grid, turn);
 		this.score = score;
+		this.moves = moves.slice()
+		if (this.score.isWinCountdown && (this.score.score == 0.5 || this.score.score == -0.5)) {
+			this.nextInstances = empty_map
+		} else {
+			this.nextInstances = new Map<number, ScoredGameInstance>();
+		}
 	}
 
 	getScore() {
@@ -100,18 +116,41 @@ export class ScoredGameInstance extends SimpleGameInstance {
 	setScore(score: Score) {
 		this.score = score;
 	}
-	
+
 	updatePreviousInstances() {
 		for (const instance of this.previousInstances) {
 			instance.updateScore();
 		}
 	}
-
+	getBestChildrenInstance(): ScoredGameInstance {
+		if (this.nextInstances.size == 0) {
+			return this; // Si l'instance n'a pas d'enfants, on retourne l'instance elle-même
+		}
+		if (this.turn % 2 === 0) {
+			return this.nextInstances.values().reduce((a, b) => a.getScore().isSmallerThan(b.getScore()) ? a : b).getBestChildrenInstance(); // Retourne l'instance avec le score maximum
+		} else {
+			return this.nextInstances.values().reduce((a, b) => a.getScore().isBiggerThan(b.getScore()) ? a : b).getBestChildrenInstance(); // Retourne l'instance avec le score minimum
+		}
+	}
 	updateScore() {
+		let currentScore = this.score
 		let minMax = this.turn % 2 === 0 ? Score.min : Score.max; // Choix de la fonction min ou max en fonction du tour
 		let scores = this.nextInstances.values().map(instance => instance.getScore()).toArray();
-		this.score = minMax(scores);
-		this.updatePreviousInstances();
+
+		let newScore = Score.fromRaw(minMax(scores).raw()); // On doit créer une nouvelle instance de Score, sinon on modifie l'instance de Score d'origine
+		
+		if (newScore.isWinCountdown) { // Lorsque le score des branches est un nombre de coups avant la victoire, on doit augmenter ce nombre de 0.5, puisque un coup supplémentaire doit être joué
+			newScore.score += newScore.score > 0 ? 0.5 : -0.5 // 
+		}
+		this.grid = empty_array // On vide la grille pour économiser de la mémoire, il ne sert plus à rien de la garder puisque ses enfants existent
+		if (!currentScore.isEqualTo(newScore)) {
+			//console.log("Current turn : " + this.turn + " | Current score : " + currentScore.toString() + " | New score : " + newScore.toString())
+			//console.log("Scores : " + scores.map(score => score.toString()).join(", "))
+			//console.log("Climb up")
+			this.score = newScore;
+			this.updatePreviousInstances();
+		}
+
 	}
 	raw(): RawScoredGameInstance {
 		return {
@@ -122,44 +161,230 @@ export class ScoredGameInstance extends SimpleGameInstance {
 			nextInstances: new Map<number, GridHash>() // Potentiellement coûteux alors que non utilisé
 		}
 	}
- 
+
 	static fromRaw(raw: RawScoredGameInstance): ScoredGameInstance {
-		return new ScoredGameInstance(raw.grid, raw.turn, Score.fromRaw(raw.score));
+		return new ScoredGameInstance(raw.grid, raw.turn, raw.moves, Score.fromRaw(raw.score));
 	}
 }
-interface RecommendatedMove {
-	x: number;
-	y: number;
-	score: number;
-	optimalRoute: Array<Coordinate>;	
+// Ce type d'instance est spécifique aux plateaux concernant le premier coup dans l'arbre d'exploration, qui est pertinent pour afficher le score de chacun des coups jouables.
+// L'instance agit comme une ScoredGameInstance normale, mais ne met pas à jour d'instances précédentes, et envoie son score mis à jour à l'explorateur lorsqu'il doit différer.
+// Ce type d'instance ne doit être traité que par le thread principal, et non un Worker, sinon l'instance sera rétrogradée en ScoredGameInstance
+class MainScoredGameInstance extends ScoredGameInstance {
+	private explorerCallback: Function
+	public playedMove: Coordinate
+	constructor(grid: Array<Array<number>>, turn: number, moves: Array<Coordinate>, score: Score, playedMove: Coordinate, explorerCallback: Function) {
+		super(grid, turn, moves, score);
+		this.explorerCallback = explorerCallback
+		this.playedMove = playedMove;
+	}
+
+	updateScore() {
+		let currentScore = this.score
+		let minMax = this.turn % 2 === 0 ? Score.min : Score.max; // Choix de la fonction min ou max en fonction du tour
+		let scores = this.nextInstances.values().map(instance => instance.getScore()).toArray();
+		let newScore = Score.fromRaw(minMax(scores).raw()); // On doit créer une nouvelle instance de Score, sinon on modifie l'instance de Score d'origine
+		if (newScore.isWinCountdown) { // Lorsque le score des branches est un nombre de coups avant la victoire, on doit augmenter ce nombre de 0.5, puisque un coup supplémentaire doit être joué
+			newScore.score += newScore.score > 0 ? 0.5 : -0.5 // 
+		}
+		console.log("MAIN Current turn : " + this.turn + " | Current score : " + currentScore.toString() + " | New score : " + newScore.toString())
+		console.log("Scores : " + scores.map(score => score.toString()).join(", "))
+
+		if (!currentScore.isEqualTo(newScore)) {
+			console.log("CALLBACK")
+			this.score = newScore;
+			this.explorerCallback(this)
+		} 
+	}
+
+}
+export interface RecommendedMove {
+	coordinate: Coordinate;
+	score: Score;
+	optimalRoute: Array<Coordinate>;
 }
 export class Explorer {
 	private game: ScoredGameInstance;
-	private currentPlayer: number;
 	private heuristic: Function;
 	private updateCallback: Function;
-	private workers: Array<Worker>;
-	private instancesToExplore: Array<ScoredGameInstance> = []; // Liste des instances à explorer
-	
-	constructor(game: SimpleGameInstance, heurstic: Function, updateCallback: Function) {
-		this.game = this.rateInstance(game); 
-		this.currentPlayer = game.getCurrentPlayer();
-		this.heuristic = heurstic;
+	private mainInstances: Array<MainScoredGameInstance>
+	private worker: Worker = new Worker(new URL("AlgorithmWorker.ts", import.meta.url));
+	//private workers: Array<Worker>;
+	private instances: Map<GridHash, ScoredGameInstance>;
+	//private instancesToExplore: Map<string, ScoredGameInstance> = []; // Liste des instances à explorer
+	//private waitingWorkers: Array<Worker> = []; // Liste des workers en attente d'une instance à explorer$
+	private bestMoves: Array<MainScoredGameInstance> = []
+	constructor(grid: Array<Array<number>>, turn: number, heuristic: Function, updateCallback: Function) {
+		let simpleGame = new SimpleGameInstance(grid, turn, []);
+		this.worker.addEventListener("message", this._workerCallback.bind(this));
+		this.heuristic = heuristic;
 		this.updateCallback = updateCallback;
-		this.workers = [];
-		for (let i = 0; i < navigator.hardwareConcurrency; i++) {
-			this.workers.push(new Worker(new URL("../../../../public/workers/AlgorithmWorker.js", import.meta.url))); // Crée un worker pour chaque coeur du processeur	
+		this.game = this.rateInstance(simpleGame);
+		this.instances = new Map<GridHash, ScoredGameInstance>();
+		this.instances.set(this.game.getGridHash(), this.game);
+		this.mainInstances = this.populateMainInstances(); // Remplit la liste des instances principales à explorer
+		this.sendNextInstanceToWorker();
+		//this.workers = [];
+		/*
+		for (let i = 0; i < navigator.hardwareConcurrency - 5; i++) { // "../../public/workers/AlgorithmWorker.js",
+			this.workers.push(new Worker(new URL("AlgorithmWorker.ts", import.meta.url))); // Crée un worker pour chaque coeur du processeur
+			this.workers[i].addEventListener("message", this._workerCallback.bind(this)); // Ajoute un listener pour chaque worker
+			this.workers[i].postMessage({ type: AlgorithmWorkerBoundPacketType.SET_ID, id: i } as AlgorithmWorkerBoundSetIdPacket); // Envoie un message au worker pour lui assigner un id
+			this.waitingWorkers.push(this.workers[i]); // Ajoute les workers à la liste des workers en attente d'une instance à explorer
 		}
-		this.instancesToExplore.push(this.game); // Ajoute l'instance de jeu initiale à la liste des instances à explorer
-		this.loop();
+		while (this.waitingWorkers.length > 0 && this.instancesToExplore.length > 0) {
+			let awokenWorker = this.waitingWorkers.pop()!!;
+			const instance = this.instancesToExplore.pop()!!; // Récupère la dernière instance à explorer
+			awokenWorker.postMessage({
+				type: AlgorithmWorkerBoundPacketType.EXPLORE_INSTANCE,
+				game: instance.raw()
+			} as AlgorithmWorkerBoundExplorePacket); // Envoie l'instance au worker pour exploration
+		}
+
+		*/
+
+		// Ajoute l'instance de jeu initiale à la liste des instances à explorer
 	}
 
-	loop() {
+	mainInstanceCallback(mainInstance: MainScoredGameInstance) {
+		if (!this.bestMoves.includes(mainInstance)) {
+			this.bestMoves.push(mainInstance)
+		}
+		if (this.bestMoves.length <= 25) {
+			console.log("Best scores : [" + this.bestMoves.map(move => move.score.toString()).join(", ") + "]")
+			this.updateCallback({coordinate: mainInstance.playedMove, score: mainInstance.getScore(), optimalRoute: []} as RecommendedMove); // Envoie le coup joué et le score à la fonction de mise à jour
+			return
+		}
+		let minMaxFunction;
+		if (this.game.turn % 2 === 0) {
+			minMaxFunction = (a: MainScoredGameInstance, b: MainScoredGameInstance) => a.getScore().isBiggerThan(b.getScore()) ? a : b
+		} else {
+			minMaxFunction = (a: MainScoredGameInstance, b: MainScoredGameInstance) => a.getScore().isSmallerThan(b.getScore()) ? a : b
+		}
+		let leastMove = this.bestMoves.reduce(minMaxFunction)
+		this.bestMoves.splice(this.bestMoves.indexOf(leastMove), 1) // Retire le coup de la liste des meilleurs coups
+		console.log(leastMove.playedMove, ' - ', leastMove.getScore().toString())
+		console.log("Best scores : [" + this.bestMoves.map(move => move.score.toString()).join(", ") + "]")
+		this.updateCallback({coordinate: mainInstance.playedMove, score: mainInstance.getScore(), optimalRoute: []} as RecommendedMove);
+	}
+
+	populateMainInstances() {
+		let nextInstances = explore(this.game);
+		let nextMainInstances = new Map<number, MainScoredGameInstance>();
+		for (let moveHash of nextInstances.keys().toArray()) {
+			let nextInstance = nextInstances.get(moveHash)!
+			let nextMainInstance = new MainScoredGameInstance(nextInstance.getGrid(), nextInstance.getTurn(), nextInstance.moves, nextInstance.getScore(), nextInstance.moves[0], this.mainInstanceCallback.bind(this)); // Crée une instance de jeu principale pour chaque instance suivante
+			nextMainInstances.set(moveHash, nextMainInstance)
+			this.instances.set(nextMainInstance.getGridHash(), nextMainInstance)
+			let furtherInstances = explore(nextMainInstance)
+			for (let moveHash of furtherInstances.keys().toArray()) {
+				let furtherInstance = furtherInstances.get(moveHash)!!
+				let furtherInstanceScore = furtherInstance.getScore()
+				this.instances.set(furtherInstance.getGridHash(), furtherInstance);
+				nextMainInstance.nextInstances.set(moveHash, furtherInstance)
+				/*
+				if (furtherInstanceScore.isWinCountdown == false || (furtherInstanceScore.score != 0.5 && furtherInstanceScore.score != -0.5)) {
+					this.instancesToExplore.push(furtherInstance); // Ajoute l'instance à la liste des instances à explorer
+				}
+				*/
+			}
+			nextMainInstance.updateScore(); // Met à jour le score de l'instance principale
+		}
+		return nextMainInstances.values().toArray()
+
+
+	}
+
+	sendNextInstanceToWorker() {
+		
+		if (this.game.turn % 2 == 0) {
+			this.mainInstances.sort((a, b) => a.getScore().isSmallerThan(b.getScore()) ? -1 : 1); // Trie les instances principales par score décroissant
+		} else {
+			this.mainInstances.sort((a, b) => a.getScore().isBiggerThan(b.getScore()) ? -1 : 1); // Trie les instances principales par score croissant
+		}
+		for (let i = 0; i < this.mainInstances.length; i++) {
+			//console.log("Pass" + i + " | " + this.mainInstances[i].getScore().toString())
+			let mainInstance = this.mainInstances[i];
+			let bestInstance = mainInstance.getBestChildrenInstance(); // Récupère l'instance avec le meilleur score
+			if (!bestInstance.getScore().isWinCountdown || (bestInstance.getScore().score != 0.5 && bestInstance.getScore().score != -0.5)) {
+			//	console.log("Send " + bestInstance.getGridHash() + " | " + bestInstance.getScore().toString())
+				this.worker.postMessage({
+					type: AlgorithmWorkerBoundPacketType.EXPLORE_INSTANCE,
+					game: bestInstance.raw()
+				} as AlgorithmWorkerBoundExplorePacket); // Envoie l'instance au worker pour exploration
+				break; // On sort de la boucle une fois qu'on a trouvé une instance à explorer
+			}
+		}
+	}
+
+
+	private _workerCallback(event: MessageEvent) {
+		const packet = event.data as AlgorithmExplorerBoundGenericPacket;
+		if (packet.type === AlgorithmExplorerBoundPacketType.RESULT) {
+			const packet = event.data as AlgorithmExplorerBoundResultPacket;
+			const id = packet.id;
+			//const worker = this.workers[id];
+			const gameInstances = packet.result.gameInstances;
+			const leaves = packet.result.leaves;
+			for (const hash of gameInstances.keys().toArray()) {
+				if (!this.instances.has(hash)) {
+					const instance = ScoredGameInstance.fromRaw(gameInstances.get(hash)!!);
+					this.instances.set(hash, instance);
+				} else if (leaves.includes(hash)) {
+					leaves.splice(leaves.indexOf(hash), 1); // Retire l'instance de la liste des instances à ajouter à l'exploration, puisqu'elle est déjà dans la liste ou a déjà été explorée
+				}
+			}
+			for (const hash of gameInstances.keys().toArray()) {
+				const instance = this.instances.get(hash)!!;
+				const rawInstance = gameInstances.get(hash)!!;
+				for (const moveHash of rawInstance.nextInstances.keys().toArray()) {
+					const nextInstanceHash = rawInstance.nextInstances.get(moveHash)!!;
+					const nextInstance = this.instances.get(nextInstanceHash)!!;
+					instance.nextInstances.set(moveHash, nextInstance);
+					nextInstance.previousInstances.push(instance); // Ajoute l'instance actuelle à la liste des instances précédentes de l'instance suivante				
+				}
+				if (instance.nextInstances.size > 0) {
+					instance.updateScore(); // Met à jour le score de l'instance actuelle
+				}
+			}
+			this.sendNextInstanceToWorker()
+			/*
+			for (const leaveHash of leaves) {
+				const instance = this.instances.get(leaveHash)!!;
+				if (!this.instancesToExplore.includes(instance) && instance.getTurn() < 26*) {
+					this.instancesToExplore.push(instance); // Ajoute l'instance à la liste des instances à explorer
+				}
+			}
+			if (this.instancesToExplore.length > 0) {
+				if (this.game.getTurn() % 2 == 0) {
+					this.instancesToExplore.sort((a, b) => a.getScore().isBiggerThan(b.getScore()) ? -1 : 1);
+				} else {
+					this.instancesToExplore.sort((a, b) => a.getScore().isBiggerThan(b.getScore()) ? 1 : -1);
+				}
+				const instance = this.instancesToExplore.pop()!!; // Récupère la dernière instance à explorer
+				worker.postMessage({
+					type: AlgorithmWorkerBoundPacketType.EXPLORE_INSTANCE,
+					game: instance.raw()
+				} as AlgorithmWorkerBoundExplorePacket); // Envoie l'instance au worker pour exploration
+				while (this.waitingWorkers.length > 0 && this.instancesToExplore.length > 0) {
+					let awokenWorker = this.waitingWorkers.pop()!!;
+					const instance = this.instancesToExplore.pop()!!; // Récupère la dernière instance à explorer
+					awokenWorker.postMessage({
+						type: AlgorithmWorkerBoundPacketType.EXPLORE_INSTANCE,
+						game: instance.raw()
+					} as AlgorithmWorkerBoundExplorePacket); // Envoie l'instance au worker pour exploration
+				}
+			}
+			
+			else {
+				this.waitingWorkers.push(worker); // Ajoute le worker à la liste des workers en attente d'une instance à explorer
+			}
+			*/
+		}
 
 	}
 
 	rateInstance(instance: SimpleGameInstance): ScoredGameInstance {
-		return new ScoredGameInstance(instance.getGrid(), instance.getTurn(), this.heuristic(instance));
+		return new ScoredGameInstance(instance.getGrid(), instance.getTurn(), instance.moves, this.heuristic(instance));
 	}
 }
 
@@ -169,39 +394,45 @@ export function basicHeuristic(instance: SimpleGameInstance): Score {
 	let grid = instance.getGrid();
 	let player1Score = attributeScore(grid, 1); // On calcule le score du joueur 1
 	let player2Score = attributeScore(grid, 2); // On calcule le score du joueur 2
+	//console.log(`minCost|minBridge1: ${player1Score[0]}|${player1Score[1]}, J2: ${player2Score[0]}|${player2Score[1]}, turn: ${instance.getTurn()}, grid: ${grid.join("|")}`)
 	if (player1Score[0] === 0) {
-		if (player1Score[1] === 0) { // Le joueur a gagné
-			return new Score(0.5, true); // Si le joueur 1 a gagné, on retourne 0.5
-		}
-		return new Score(player1Score[1], true); // Si le joueur 1 a un pont assuré, il gagne
+		return new Score(player1Score[1] + (instance.getTurn() % 2 === 0 ? 0.5 : 0), true)
 	}
-	if (player2Score[0] === 0) {
-		if (player2Score[1] === 0) { // Le joueur a gagné
-			return new Score(-0.5, true); // Si le joueur 2 a gagné, on retourne -0.5
-		}
-		return new Score(-player2Score[1], true); // Si le joueur 2 a un pont assuré, il gagne
+	else if (player2Score[0] === 0) {
+		return new Score(-player2Score[1] + (instance.getTurn() % 2 === 1 ? -0.5 : 0), true)
 	}
-	return new Score(player1Score[0] - player2Score[0], false); // Sinon, on retourne la différence de score entre les deux joueurs
-	
+	return new Score(player2Score[0] - player1Score[0], false); // Sinon, on retourne la différence de score entre les deux joueurs
 }
 
+function explore(game: ScoredGameInstance) {
+	const gridLength = game.getGrid().length;
+	const playableMoves = game.getValidMoves();
+	const nextInstances = new Map<number, ScoredGameInstance>();
+	for (let move of playableMoves) {
+		const newGame = game.playMoveYX(move[0], move[1]);
+		const scoredNewGame = newGame.giveInitialScore(basicHeuristic(newGame));
+		nextInstances.set(hashYX(gridLength, move[0], move[1]), scoredNewGame);
+		scoredNewGame.previousInstances.push(game); // Ajoute l'instance actuelle à la liste des instances précédentes de l'instance suivante
+	}
+	return nextInstances;
+}
 
-function attributeScore(grid: number[][], player: number): [number, number] {
+export function attributeScore(grid: number[][], player: number): [number, number] {
 	let size = grid.length;
 	let minCost = grid.length ** 2; // Valeur inatteignable pour le cout
 	let minBridges = grid.length ** 2; // Valeur inatteignable pour le nombre de ponts
 	let boundCheck;
 	let hexagonsToCheck: Array<CheckableHexagon> = [];
 	let checkedHexagons: Array<Coordinate> = [];
-	if (player === 1) {
+	if (player === 1) { 
 		for (let i = 0; i < grid.length; i++) {
 			if (grid[i][0] === 1) {
 				hexagonsToCheck.push([[i, 0], 0, 0]);
 			}
 			else if (grid[i][0] === 0) {
-				if (i > 0 && grid[i - 1][1] === 1) {
+				if (i > 0 && grid[i - 1][1] === 1 && grid[i - 1][0] === 0) {
 					hexagonsToCheck.push([[i, 0], 0, 1]);
-				} else if (grid[i][1] === 1) {
+				} else if (i < grid.length - 1 && grid[i][1] === 1 && grid[i + 1][0] === 0) {
 					hexagonsToCheck.push([[i, 0], 0, 1]);
 				} else {
 					hexagonsToCheck.push([[i, 0], 1, 0]);
@@ -215,9 +446,9 @@ function attributeScore(grid: number[][], player: number): [number, number] {
 				hexagonsToCheck.push([[0, i], 0, 0]);
 			}
 			else if (grid[0][i] === 0) {
-				if (i > 0 && grid[1][i - 1] === 2) {
+				if (i > 0 && grid[1][i - 1] === 2 && grid[0][i - 1] === 0) {
 					hexagonsToCheck.push([[0, i], 0, 1]);
-				} else if (grid[1][i] === 2) {
+				} else if (i < grid.length - 1 && grid[1][i] === 2 && grid[0][i + 1] === 0) {
 					hexagonsToCheck.push([[0, i], 0, 1]);
 				} else {
 					hexagonsToCheck.push([[0, i], 1, 0]);
@@ -245,8 +476,8 @@ function attributeScore(grid: number[][], player: number): [number, number] {
 						isBridge = true;
 					} else {
 						let candidates = getOuterBridgeHexagons(hexagon[0], surroundingHexagon).filter(coord => isInBounds(size, coord)).filter(coord => grid[coord[0]][coord[1]] === player); // On cherche les hexagones extérieurs formant un potientiel pont
-						if (candidates.length > 0) { 
-							candidates = candidates.filter(coord => getInnerBridgeHexagons(hexagon[0], surroundingHexagon).every(coord2 => grid[coord2[0]][coord2[1]])); // On vérifie si les hexagones intérieurs sont libres
+						if (candidates.length > 0) {
+							candidates = candidates.filter(coord => getInnerBridgeHexagons(hexagon[0], coord).every(coord2 => grid[coord2[0]][coord2[1]] === 0)); // On vérifie si les hexagones intérieurs sont libres
 							if (candidates.length > 0) {
 								cost = hexagon[1]; // Si on a un pont, on ne change pas le cout
 								isBridge = true;
@@ -261,7 +492,7 @@ function attributeScore(grid: number[][], player: number): [number, number] {
 					cost = hexagon[1] + 1; // Si la case précédente n'est pas occupée par le joueur actuel, on ajoute 1 au cout
 				}
 				let bridges = isBridge ? hexagon[2] + 1 : hexagon[2];
-				if (boundCheck === size - 1) {
+				if (boundCheck === size - 1) {// Il existe une erreur de logique, des cases d'arrivée sont considérées comme des ponts, mais elles ne le sont pas
 					if (cost === 0) {
 						if (bridges < minBridges) {
 							minBridges = bridges;
@@ -281,7 +512,7 @@ function attributeScore(grid: number[][], player: number): [number, number] {
 							existingHexagons[0][2] = bridges
 						} else if (existingHexagons[0][1] === cost && existingHexagons[0][2] > hexagon[2]) {
 							existingHexagons[0][2] = bridges
-						} 
+						}
 					} else {
 						hexagonsToCheck.push([surroundingHexagon, cost, bridges]); // Ajoute l'hexagone à la liste des hexagones à vérifier
 					}
@@ -293,15 +524,15 @@ function attributeScore(grid: number[][], player: number): [number, number] {
 }
 
 function isCoordinateInArray(array: Array<Coordinate>, coord: Coordinate) {
-    for (let i = 0; i < array.length; i++) {
-        if (array[i][0] === coord[0] && array[i][1] === coord[1]) {
-            return true;
-        }
-    }
-    return false;
+	for (let i = 0; i < array.length; i++) {
+		if (array[i][0] === coord[0] && array[i][1] === coord[1]) {
+			return true;
+		}
+	}
+	return false;
 }
 
-function getInnerBridgeHexagons(hex1: Coordinate, hex2: Coordinate): Array<Coordinate> { 
+function getInnerBridgeHexagons(hex1: Coordinate, hex2: Coordinate): Array<Coordinate> {
 	let diffY = hex2[0] - hex1[0];
 	let diffX = hex2[1] - hex1[1];
 	let y = hex2[0];
@@ -325,7 +556,7 @@ function getInnerBridgeHexagons(hex1: Coordinate, hex2: Coordinate): Array<Coord
 	if (diffX === 2 && diffY === -1) {
 		return [[y + 1, x - 1], [y, x - 1]];
 	}
-	
+
 	console.warn("Invalid hexagons for inner bridge hexagons.");
 	return [];
 }
@@ -377,7 +608,7 @@ function filterAntiHexagons(grid: Array<Array<number>>, hexagons: Array<Coordina
 	return filteredHexagons
 }
 
-function getSurroundingHexagons(size: number, y: number, x: number) : Array<Coordinate> {
+function getSurroundingHexagons(size: number, y: number, x: number): Array<Coordinate> {
 	let surroundingHexagons: Array<Coordinate> = [];
 	if (x > 0) {
 		surroundingHexagons.push([y, x - 1]);
@@ -411,7 +642,7 @@ function isInBoundsYX(size: number, y: number, x: number) {
 export function hashYX(length: number, y: number, x: number): number {
 	const size = length;
 	return y + x * size
-  }
+}
 
 export class Score {
 	public score: number;
@@ -423,7 +654,7 @@ export class Score {
 	}
 
 	toString() {
-		return this.isWinCountdown ? `#${Math.round(this.score)}` : `${this.score}`;
+		return this.isWinCountdown ? `#${this.score}` : `${this.score}`;
 	}
 
 	public isBiggerThan(other: Score): boolean { // Comparaison de scores qui prend en compte les scores assurant la victoire après X coups
@@ -436,7 +667,7 @@ export class Score {
 		if (!this.isWinCountdown && other.isWinCountdown) {
 			return other.score < 0;
 		}
-	 	if (this.score * other.score < 0) { // Si on a deux scores assurant une victoire de signes opposés, alors le signe positif est toujours le plus grand
+		if (this.score * other.score < 0) { // Si on a deux scores assurant une victoire de signes opposés, alors le signe positif est toujours le plus grand
 			return this.score > other.score;
 		}
 		return Math.abs(this.score) < Math.abs(other.score); // Si les deux scores assurant une victoire sont de signes identiques, celui qui est le plus proche de 0 est le plus grand
@@ -445,6 +676,11 @@ export class Score {
 	public isSmallerThan(other: Score): boolean {
 		return other.isBiggerThan(this);
 	}
+
+	public isEqualTo(other: Score): boolean {
+		return this.score === other.score && this.isWinCountdown === other.isWinCountdown;
+	}
+
 
 	raw(): RawScore {
 		return {
@@ -466,13 +702,15 @@ export class Score {
 	}
 }
 
-export function hashGrid(grid: Array<Array<number>>): GridHash {
-	let hash = "";
+export function hashGrid(grid: Array<Array<number>>): GridHash { // passer ceci à du base 36
+	let hash = BigInt(0)
+	let ii = 1n
 	for (let i of grid) {
-		for (let j of i) {
-			hash += j
-		}
+	for (let j of i) {
+		hash += BigInt(j) * ii
+		ii *= 3n
+	} 
 	}
-	return hash;
+	let finalHash = hash.toString(36)
+	return finalHash 
 }
-
