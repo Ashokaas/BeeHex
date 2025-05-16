@@ -1,0 +1,88 @@
+.container {
+  display: grid;
+  grid-template-columns: 0.2fr 1fr;
+  align-items: center;
+  width: 100%;
+  font-weight: bold;
+  padding: 7px 5%;
+
+}
+
+.container:hover {
+  background: var(--bg-color-secondary);
+  cursor: pointer;
+}
+
+.moveEvaluation {
+  grid-column: 1;
+}
+
+.moveEvaluation p {
+  padding: 7px 15px;
+  font-size: 1.2em;
+  text-align: center;
+}
+
+.positive {
+  border: 2px solid var(--red-side);
+}
+
+.negative {
+  border: 2px solid var(--blue-side);
+}
+
+.nextMoves {
+  grid-column: 2;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  gap: 10px;
+  margin-left: 30px;
+}
+
+
+
+.hexPreviewPos1 {
+  background-color: var(--red-600);
+}
+
+.hexPreviewPos2 {
+  animation: fadeInPos2 1s forwards;
+  animation-delay: 0.2s;
+}
+@keyframes fadeInPos2 {
+  100% {
+    background-color: var(--red-400);
+  }
+}
+
+.hexPreviewPos3 {
+  animation: fadeInPos3 1s forwards;
+  animation-delay: 0.4s;
+}
+@keyframes fadeInPos3 {
+  100% {
+    background-color: var(--red-200);
+  }
+}
+
+.hexPreviewNeg1 {
+  background-color: var(--blue-600);
+}
+
+.hexPreviewNeg2 {
+  animation: fadeInNeg2 1s forwards;
+  animation-delay: 0.2s;
+}
+@keyframes fadeInNeg2 {
+  100% {background-color: var(--blue-400);}
+}
+
+.hexPreviewNeg3 {
+  animation: fadeInNeg3 1s forwards;
+  animation-delay: 0.4s;
+}
+@keyframes fadeInNeg3 {
+  100% {background-color: var(--blue-200);}
+}

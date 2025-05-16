@@ -34,6 +34,27 @@
   --red-side: red;
   --red-side-secondary: rgb(148, 10, 0);
 
+  --red-100: #ffd6d6;
+  --red-200: #ffadad;
+  --red-300: #ff8585;
+  --red-400: #ff5c5c;
+  --red-500: #ff3333;
+  --red-600: #cc2929;
+  --red-700: #991f1f;
+  --red-800: #661414;
+  --red-900: #330a0a;
+
+  --blue-100: #d6e4ff;
+  --blue-200: #adc8ff;
+  --blue-300: #85aaff;
+  --blue-400: #5c8cff;
+  --blue-500: #3366ff;
+  --blue-600: #264dcc;
+  --blue-700: #193399;
+  --blue-800: #0d1a66;
+  --blue-900: #060d33;
+
+
   --primary: #ffd400;
   --primary-100: #332b00;
   --primary-200: #665500;

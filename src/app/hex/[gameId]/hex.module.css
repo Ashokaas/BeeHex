@@ -15,7 +15,7 @@
     -webkit-clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
     clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
     z-index: 2;
-    
+    transition: background-color 0.2s ease-in-out;
 }
 
 /* Bordure d'un hexagone (ce qui est affiché sur les bords pour affiché la couleur rouge ou bleu du coté */
@@ -35,7 +35,6 @@
 }
 .hexagon_grid {
     white-space: nowrap;
-    position: absolute;
 }
 .hexagon_row {
     white-space: nowrap;
@@ -112,7 +111,6 @@
 /* Pas de saut de ligne et positionnement absolu pour la grille */
 .hexagon_grid {
     white-space: nowrap;
-    position: absolute;
 }
 .hexagon_row {
     white-space: nowrap;
@@ -134,11 +132,37 @@
 
 .game_interface .hex_parent {
     grid-column: 1;
-    display: flex;
+    display: grid;
+    grid-template-rows: 5fr 1fr;
+    grid-template-columns: 1fr;
     justify-content: center;
     align-items: center;
-    padding: 2vh;
+    width: 100%;
 }
+
+.hex_parent .hexagon_grid {
+    grid-row: 1;
+    grid-column: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.stepped_slider_container {
+    width: 100%;
+    grid-row: 2;
+    grid-column: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.stepped_slider_container {
+    text-align: center;
+}
+
 .hex_parent {
     width: 100%;
 }

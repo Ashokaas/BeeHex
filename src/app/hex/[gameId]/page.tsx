@@ -8,7 +8,7 @@ import axios from "axios";
 
 import Cookies from 'js-cookie';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, use } from 'react';
 
 import ShowGrid from "./Grid";
 import GameInstance from "./GameInstance";
@@ -19,6 +19,11 @@ import { DatabaseGame, Game, GameStatus, ServerBoundJoinGamePacket, ServerBoundP
 import { OfflineHandler } from './OfflineHandler';
 import CustomAlert from '@/components/custom_alert/custom_alert';
 import { attributeScore, basicHeuristic, Explorer, RecommendedMove, SimpleGameInstance } from './Algorithm';
+import SteppedSlider from '@/components/stepped_slider/stepped_slider';
+import { MoveEvaluation } from '@/components/analysis_board/move_evaluation/move_evaluation';
+import Title_h1 from '@/components/title_h1/title_h1';
+import Spacer from '@/components/spacer/spacer';
+
 
 enum GameState {
   LOADING,
@@ -40,7 +45,7 @@ function explorerCallback(recommendedMove: RecommendedMove) {
 }
 const explorer = new Explorer(testGrid, 3, basicHeuristic, explorerCallback)
 
-function PlayerStats(props: { name: string, timer: string }) {
+export function PlayerStats(props: { name: string, timer: string }) {
   return (
     <div className={styles.player_status}>
       <h1 className={styles.player_name}>{props.name}</h1>
@@ -440,10 +445,10 @@ export default function Home() {
 
     initialize();
   }, []); // L'array vide signifie que cette fonction ne s'exécute qu'une seule fois
-
+  const [sliderValue, setSliderValue] = useState(1);
   return (
     <>
-      {showEndGameAlert
+      {/**{showEndGameAlert
         &&
         <CustomAlert
           text1={endGameT1}
@@ -476,7 +481,37 @@ export default function Home() {
           </div>
 
         </div>
+      </div>**/}
+      <div className={styles.game_interface}>
+        <div className={styles.hex_parent}>
+          <section className={`${styles.hexagon_grid} ${styles.hidden}`}>
+            <ShowGrid grid_array={grid} clickCallback={clickCallback} hoverCallback={hoverCallback} />
+          </section>
+          <div className={styles.loading_spinner}></div>
+          <div className={styles.stepped_slider_container}>
+            <SteppedSlider size={20} sliderValue={sliderValue} setSliderValue={setSliderValue} />
+          </div>
+        </div>
+          
+
+        <div className={styles.players}>
+          <Spacer spacing={2} direction='H' />
+          <h2>Ordinateur</h2>
+          <Spacer spacing={2} direction='H' />
+
+          
+          <MoveEvaluation index={0} Evaluation={2.3} nextMoves={["1-2", "2-3", "3-9"]} onClick={oui} onHover={oui} onLeave={oui}/>
+          <MoveEvaluation index={1} Evaluation={2.3} nextMoves={["1-2", "2-3", "3-9"]} onClick={oui} onHover={oui} onLeave={oui}/>
+          <MoveEvaluation index={2} Evaluation={-2.3} nextMoves={["1-2", "2-3", "3-9"]} onClick={oui} onHover={oui} onLeave={oui}/>
+          <MoveEvaluation index={3} Evaluation={-2.3} nextMoves={["1-2", "2-3", "3-9"]} onClick={oui} onHover={oui} onLeave={oui}/>
+
+          <Spacer spacing={2} direction='H' />
+          <h2>Exploration</h2>
+        </div>
       </div>
     </>
   );
 }
+function oui(i:number) {
+  console.log("oui");
+  }
