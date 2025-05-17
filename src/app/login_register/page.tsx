@@ -36,7 +36,6 @@ export default function Login() {
   console.log(getEnv());
   const router = useRouter()
 
-  const [logginSuccess, setLogginSuccess] = useState(false);
   const [logginError, setLogginError] = useState(false);
 
 
@@ -54,7 +53,7 @@ export default function Login() {
 
       console.log(response);
 
-      setLogginSuccess(true);
+      router.push('/home');
 
       if (type === 'login') {
         const user = await axios.post(`http://${getEnv()["IP_HOST"]}:3001/me`, {}, { headers: { 'Authorization': response.data.token } });
@@ -78,14 +77,7 @@ export default function Login() {
           text2='An error occurred'
           type='bad'
         />}
-      {logginSuccess &&
-        <CustomAlert
-          icon="check"
-          text1='Success'
-          text2='You have successfully logged in'
-          type='good'
-          onClick={async (e) => { router.push('/home') }}
-        />}
+      
 
 
       <Title_h1 text="Login/register" icon="login" />
