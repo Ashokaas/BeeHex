@@ -8,7 +8,6 @@ import React, { useState } from 'react';
 import axios from 'axios';
 
 import Cookies from 'js-cookie';
-import { Online, Offline } from 'react-detect-offline';
 
 import BeautifulButton from '@/components/button/button';
 import Spacer from '@/components/spacer/spacer';
@@ -16,6 +15,7 @@ import InputText from '@/components/input_text/input_text';
 import Title_h1 from '@/components/title_h1/title_h1';
 import getEnv from '@/env/env';
 import CustomAlert from '@/components/custom_alert/custom_alert';
+import { useRouter } from 'next/navigation';
 
 function StatusText(props: { text: string }) {
   const style = {
@@ -34,6 +34,7 @@ export default function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   console.log(getEnv());
+  const router = useRouter()
 
   const [logginSuccess, setLogginSuccess] = useState(false);
   const [logginError, setLogginError] = useState(false);
@@ -51,8 +52,7 @@ export default function Login() {
       Cookies.set('username', response.data.user.username);
       window.dispatchEvent(new Event('cookieChange'));
       localStorage.setItem('token', response.data.token);
-      // Redirect the user to a protected page
-      // window.location.href = '/dashboard';
+
       console.log(response);
 
       setLogginSuccess(true);
@@ -64,7 +64,7 @@ export default function Login() {
     } catch (error) {
       console.error(error);
       setLogginError(true);
-      }
+    }
   };
 
   const handleLoginSubmit = (e: { preventDefault: () => void; }) => handleSubmit(e, 'login');
@@ -72,47 +72,54 @@ export default function Login() {
 
   return (
     <div className={styles.container}>
-      {logginError && <CustomAlert icon="close" text1='Error' text2='An error occurred' type='bad' />}
-      {logginSuccess && <CustomAlert icon="check" text1='Success' text2='You have successfully logged in' type='good' />}
+      {logginError &&
+        <CustomAlert
+          icon="close"
+          text1='Error'
+          text2='An error occurred'
+          type='bad'
+        />}
+      {logginSuccess &&
+        <CustomAlert
+          icon="check"
+          text1='Success'
+          text2='You have successfully logged in'
+          type='good'
+          onClick={async (e) => { router.push('/home') }}
+        />}
 
 
       <Title_h1 text="Login/register" icon="login" />
-      <Online>
-        <form>
-          <InputText
-            type="text"
-            description='Username'
-            placeholder='Jean Michel'
-            autoComplete='off'
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
-          <Spacer direction="H" spacing={2} />
-
-          <InputText
-            type='password'
-            description='Password'
-            placeholder=''
-            autoComplete='off'
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <Spacer direction="H" spacing={3} />
-
-          <div className={styles.buttons_parent}>
-            <BeautifulButton text="Login" icon="login" onClick={handleLoginSubmit} />
-            <Spacer direction="H" spacing={2} />
-            <BeautifulButton text="Register" icon="app_registration" onClick={handleRegisterSubmit} />
-          </div>
-        </form>
-
+      <form>
+        <InputText
+          type="text"
+          description='Username'
+          placeholder='Jean Michel'
+          autoComplete='off'
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+        />
         <Spacer direction="H" spacing={2} />
-        
-      </Online>
 
-      <Offline suppressHydrationWarning>
-        <StatusText text="You are offline" />
-      </Offline>
+        <InputText
+          type='password'
+          description='Password'
+          placeholder=''
+          autoComplete='off'
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <Spacer direction="H" spacing={3} />
+
+        <div className={styles.buttons_parent}>
+          <BeautifulButton text="Login" icon="login" onClick={handleLoginSubmit} />
+          <Spacer direction="H" spacing={2} />
+          <BeautifulButton text="Register" icon="app_registration" onClick={handleRegisterSubmit} />
+        </div>
+      </form>
+
+      <Spacer direction="H" spacing={2} />
+
     </div>
   );
 };
