@@ -65,7 +65,7 @@ const BottomNavBar = () => {
       <p>Classement</p>
       <span className="material-symbols-rounded">leaderboard</span>
     </Link>
-    <Link className={styles.a} href="#">
+    <Link className={styles.a} href="/history">
       <p>Historique</p>
       <span className="material-symbols-rounded">replay</span>
     </Link>
