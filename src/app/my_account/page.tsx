@@ -82,7 +82,6 @@ const LineChart = ({ games }: { games: { mmrAfterGame: number, gameDate: number 
 // Main Page component
 export default function Page() {
   const [username, setUsername] = useState<string | null>(null);
-  const [userId, setUserId] = useState<string | null>(null);
   const [games, setGames] = useState<{ mmrAfterGame: number, gameDate: number }[]>([]);
 
   const [passwordEditSuccess, setPasswordEditSuccess] = useState(false);
@@ -93,7 +92,7 @@ export default function Page() {
   const fetchUser = async () => {
     const token = Cookies.get('token');
     if (!token) {
-      window.location.href = '/login_register';
+      router.push('/login_register');
       return;
     }
 
@@ -102,7 +101,7 @@ export default function Page() {
         headers: { 'Authorization': token }
       });
       setUsername(user.data.username);
-      setUserId(user.data.id);
+      Cookies.set('userId', user.data.id);
 
       const gamesRes = await axios.get(`http://${getEnv()['IP_HOST']}:3001/get_games_by_user/${user.data.id}`);
       setGames(gamesRes.data);
