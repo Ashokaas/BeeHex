@@ -49,7 +49,7 @@ export default function CustomAlert(
         <p className={styles.t1}>{props.text1}</p>
         <p className={styles.t2}>{props.text2}</p>
         <Spacer direction='H' spacing={2} />
-        <BeautifulButton text="OK" type="button" onClick={handleClick} />
+        <BeautifulButton text="OK" type="button" onClick={async (e) => {handleClick}} />
         <Spacer direction='H' spacing={1} />
       </div>
     </div>
