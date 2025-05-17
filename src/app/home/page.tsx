@@ -10,6 +10,8 @@ import LoadingPage from '@/components/loading_page/loading_page';
 import SteppedSlider from '@/components/stepped_slider/stepped_slider';
 import Spacer from '@/components/spacer/spacer';
 
+import Link from 'next/link';
+
 export default function Home() {
 	const [showAlert, setShowAlert] = useState(false);
 
@@ -58,7 +60,7 @@ export default function Home() {
 
 					<div className={styles.try_now}>
 						<h2>Essayer maintenant !</h2>
-						<a href='/hex/l_0_5'><img src="/exemple.gif" alt="BeeHex demo" /></a>
+						<Link href='/hex/l_0_5'><img src="/exemple.gif" alt="BeeHex demo" /></Link>
 
 					</div>
 				</div>
