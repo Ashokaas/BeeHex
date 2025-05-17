@@ -51,14 +51,13 @@ export default function Login() {
       Cookies.set('token', response.data.token);
       Cookies.set('username', response.data.user.username);
       window.dispatchEvent(new Event('cookieChange'));
-      localStorage.setItem('token', response.data.token);
 
       console.log(response);
 
       setLogginSuccess(true);
 
       if (type === 'login') {
-        const user = await axios.post(`http://${getEnv()["IP_HOST"]}:3001/me`, {}, { headers: { 'Authorization': localStorage.getItem('token') } });
+        const user = await axios.post(`http://${getEnv()["IP_HOST"]}:3001/me`, {}, { headers: { 'Authorization': response.data.token } });
         console.log(user.data);
       }
     } catch (error) {
