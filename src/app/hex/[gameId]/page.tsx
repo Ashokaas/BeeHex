@@ -330,8 +330,18 @@ export default function Home() {
           }
         }
 
-        function gameEndCallback(status: GameStatus, moves: string) {
+        function gameEndCallback(status: GameStatus, moves: string, winningHexagons: Array<[number, number]>) {
           console.log('Game ended', status, moves);
+          console.log('winningHexagons', winningHexagons);
+          winningHexagons.reverse();
+            winningHexagons.forEach((hexagon, i) => {
+            setTimeout(() => {
+              const el = document.getElementsByClassName(`${hexagon[1]}-${hexagon[0]}`)[0];
+              if (el) {
+              el.classList.add(styles.winningHexagons);
+              }
+            }, 250 * (i + 1));
+            });
           setGameState(GameState.REVIEWING);
           workingGameState = GameState.REVIEWING;
         }

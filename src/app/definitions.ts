@@ -105,6 +105,7 @@ export interface ClientBoundGameEndPacket {
   type: ClientBoundPacketType.GAME_END;
   status: GameStatus;
   moves: string;
+  winningHexagons: Array<[number, number]>;
 }
 
 export interface ServerBoundGenericPacket {
