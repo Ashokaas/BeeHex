@@ -9,6 +9,7 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 
 import getEnv from '@/env/env';
+import Spacer from '@/components/spacer/spacer';
 
 function mmr_to_rank(mmr: number) {
 	if (mmr < 200) return 0
@@ -63,6 +64,17 @@ export default function Home() {
 	const svgs = paths.map(path => reqSvgs(path))
 	console.log(svgs)
 	const ranks = [200, 400, 600, 800, 1000, 1200, 1400, 1600, 1800]
+	const classements = [
+    [200, "Faux-bourdon I"],
+    [400, "Faux-bourdon II"],
+    [600, "Faux-bourdon III"],
+    [800, "Ouvrière I"],
+    [1000, "Ouvrière II"],
+    [1200, "Ouvrière III"],
+    [1400, "Reine I"],
+    [1600, "Reine II"],
+    [1800, "Reine III"]
+  ];
 
 
 
@@ -116,13 +128,15 @@ export default function Home() {
 						{svgs.map((svg, index) => (
 							<div key={index}>
 								<img src={svg.default.src} alt="rank" />
-								<h3>{ranks[index]}</h3>
+								<h3>{classements[index][1]}</h3>
+								<h3>{classements[index][0]}</h3>
 							</div>
 						))}
 					</div>
 				</div>
 
 			</div>
+
 		</>
 	);
 }

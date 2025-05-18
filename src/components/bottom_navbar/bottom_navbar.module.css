@@ -11,7 +11,7 @@
 }
 
 /* MENUS de la nav bar*/
-#bottom_nav_bar a {
+#bottom_nav_bar .a {
     text-decoration: none;
     color: #ffffff;
     display: flex;
@@ -26,7 +26,7 @@
 }
 
 /* LOGOS des menus */
-#bottom_nav_bar a img {
+#bottom_nav_bar .a img {
     width: 100%;
     max-height: 50%;
     filter: invert(100%);
@@ -38,47 +38,47 @@ On est pas obligé de spécifier la page puisque si on applique un 'invert(100%)
 qui est déjà blanc, il ne changera pas de couleur (car il est noir à la base) */
 
 /* Accueil : jaune */
-#bottom_nav_bar a:nth-child(1):hover {
+#bottom_nav_bar .a:nth-child(1):hover {
     background-color: var(--primary-light-400);
 }
-#bottom_nav_bar a:nth-child(1):hover img {
+#bottom_nav_bar .a:nth-child(1):hover img {
     filter: invert(100%) !important;
 }
 
 /* Jouer : vert */ 
-#bottom_nav_bar a:nth-child(2):hover {
+#bottom_nav_bar .a:nth-child(2):hover {
     background-color: var(--secondary-light-500);
 }
-#bottom_nav_bar a:nth-child(2):hover img {
+#bottom_nav_bar .a:nth-child(2):hover img {
     filter: invert(100%) !important;
 }
 
 /* Partie avancée : bleu*/
-#bottom_nav_bar a:nth-child(3):hover {
+#bottom_nav_bar .a:nth-child(3):hover {
     background-color: var(--blue-300);
 }
-#bottom_nav_bar a:nth-child(3):hover img {
+#bottom_nav_bar .a:nth-child(3):hover img {
     filter: invert(100%) !important;
 }
 
 /* A propos : gris */
-#bottom_nav_bar a:nth-child(4):hover {
+#bottom_nav_bar .a:nth-child(4):hover {
     background-color: #5f5f5f;
 }
-#bottom_nav_bar a:nth-child(4):hover img {
+#bottom_nav_bar .a:nth-child(4):hover img {
     filter: invert(100%) !important;
 }
 
 /* Login/register : rouge */
-#bottom_nav_bar a:nth-child(5):hover {
+#bottom_nav_bar .a:nth-child(5):hover {
     background-color: rgb(182, 58, 58);
 }
-#bottom_nav_bar a:nth-child(5):hover img {
+#bottom_nav_bar .a:nth-child(5):hover img {
     filter: invert(100%) !important;
 }
 
 
-#bottom_nav_bar a:focus {
+#bottom_nav_bar .a:focus {
     outline: none !important;
 }
 

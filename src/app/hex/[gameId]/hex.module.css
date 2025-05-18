@@ -100,6 +100,24 @@
       );
 }
 
+.winningHexagons {
+    animation: winningHexagonsFlash 2s linear infinite;
+}
+
+@keyframes winningHexagonsFlash {
+    0% {
+        background: empty;
+    }
+    40% {
+        background: rgba(255, 255, 255, 0.8);
+    }
+    100% {
+        background: empty;
+    }
+}
+
+
+
 /* Séparateur de chaque hexagone */
 .spacer {
     width: calc(70px * calc(6 / 14) + 3px);

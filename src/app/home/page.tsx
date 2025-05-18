@@ -10,6 +10,8 @@ import LoadingPage from '@/components/loading_page/loading_page';
 import SteppedSlider from '@/components/stepped_slider/stepped_slider';
 import Spacer from '@/components/spacer/spacer';
 
+import Link from 'next/link';
+
 export default function Home() {
 	const [showAlert, setShowAlert] = useState(false);
 
@@ -31,32 +33,41 @@ export default function Home() {
 					Vous pouvez ici jouer au Jeu de Hex ! Cliquez sur les boutons ci-dessous pour commencer une partie.
 				</p>
 
-				<div id="rules">
-					<h2>Règles du jeu :</h2>
-					<ul>
-						<li>Deux joueurs s affrontent sur un tablier hexagonal.
-						</li>
-						<li>Chaque joueur possède un camp/couleur (rouge ou bleu).
-						</li>
-						<li>Les joueurs placent chacun leur tour une pièce de leur couleur sur une case grise du tablier.
-						</li>
-						<li>Le but est de relier les deux cotés de sa couleur avec une chaine ininterrompu (pas necessairement droite) de pièces de sa couleur
-						</li>.
-						<li>Le premier joueur à relier les deux cotés de sa couleur gagne la partie.
-						</li>
-					</ul>
+				<ul>
+					<li>Il est possible de jouer en local contre un ami ainsi que contre un ordinateur.</li>
+					<li>Vous pouvez aussi jouer en ligne, pour cela il faut simplement créer un compte.</li>
+					<li>L'analyse de partie est aussi disponible, elle permet de vous aider à progresser dans le jeu.</li>
+				</ul>
+
+				<Spacer direction='H' spacing={2} />
+
+				<div className={styles.rules}>
+					<div>
+						<h2>Règles du jeu :</h2>
+						<ul>
+							<li>Deux joueurs s'affrontent sur un tablier hexagonal.
+							</li>
+							<li>Chaque joueur possède un camp/couleur (rouge ou bleu).
+							</li>
+							<li>Les joueurs placent chacun leur tour une pièce de leur couleur sur une case grise du tablier.
+							</li>
+							<li>Le but est de relier les deux cotés de sa couleur avec une chaine ininterrompu (pas necessairement droite) de pièces de sa couleur
+							</li>
+							<li>Le premier joueur à relier les deux cotés de sa couleur gagne la partie.
+							</li>
+						</ul>
+					</div>
+
+					<div className={styles.try_now}>
+						<h2>Essayer maintenant !</h2>
+						<Link href='/hex/l_0_5'><img src="/exemple.gif" alt="BeeHex demo" /></Link>
+
+					</div>
 				</div>
-				<br /><br />
 
-				<div id="buttons">
-					<BeautifulButton text="Joueur contre grosse patate bleue" icon="people" link="" />
-				</div>
 
-				<Spacer direction='H' spacing={4} />
-				<SteppedSlider size={19} sliderValue={sliderValue} setSliderValue={setSliderValue} />
 
-				<BeautifulButton text="test" onClick={() => {console.log(sliderValue)}} />
-	
+
 			</div>
 
 		</>

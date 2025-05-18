@@ -6,7 +6,7 @@ interface WebsocketCallbacks {
 	gameFoundCallback: (game_id: packets.GameId) => void;
 	joinGameCallback: (game: packets.Game) => void;
 	movePlayedCallback: (x: number, y: number, turn: number, grid_array: Array<Array<number>>) => void;
-	gameEndCallback: (status: packets.GameStatus, moves: string) => void;
+	gameEndCallback: (status: packets.GameStatus, moves: string, winningHexagons: Array<[number, number]>) => void;
 	connectionEndedCallback: () => void;
 }
 class GameInstance implements packets.Game {
@@ -41,7 +41,7 @@ class GameInstance implements packets.Game {
 		this.moves.push([x, y]);
 		let { winner, winningHexagons } = this.checkForWinnerXY(x, y);
 		if (winner) {
-			this.endGame(this.turn % 2 === 0 ? packets.GameStatus.SECOND_PLAYER_WIN : packets.GameStatus.FIRST_PLAYER_WIN);
+			this.endGame(this.turn % 2 === 0 ? packets.GameStatus.SECOND_PLAYER_WIN : packets.GameStatus.FIRST_PLAYER_WIN, winningHexagons);
 		}
 		this.turn++;
 	}
@@ -54,8 +54,13 @@ class GameInstance implements packets.Game {
 	  return movesString.trim();
 	}
   
-	endGame(status: packets.GameStatus) {
-	  this.handler.handlePacket({type: packets.ClientBoundPacketType.GAME_END, status: status, moves: this.exportMoves()} as packets.ClientBoundGameEndPacket);
+	endGame(status: packets.GameStatus, winningHexagons: Array<[number, number]> = []) {
+	  this.handler.handlePacket({
+			type: packets.ClientBoundPacketType.GAME_END, 
+			status: status, 
+			moves: this.exportMoves(),
+			winningHexagons: winningHexagons 
+		} as packets.ClientBoundGameEndPacket);
 	}
   
 	exportGame(): packets.Game {
@@ -214,7 +219,7 @@ export class OfflineHandler {
 				break;
 			case packets.ClientBoundPacketType.GAME_END:
 				const gameEndPacket = packet as packets.ClientBoundGameEndPacket;
-			 	this.callbacks.gameEndCallback(gameEndPacket.status, gameEndPacket.moves);
+			 	this.callbacks.gameEndCallback(gameEndPacket.status, gameEndPacket.moves, gameEndPacket.winningHexagons);
 			 	break;
 		}
 	}

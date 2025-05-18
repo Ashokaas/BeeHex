@@ -9,11 +9,11 @@ import BeautifulButton from '@/components/button/button';
 import * as echarts from 'echarts';
 import styles from './account.module.css'
 import Spacer from '@/components/spacer/spacer';
-import CustomAlert
+import CustomAlert from '@/components/custom_alert/custom_alert';
+import { useRouter } from 'next/navigation'
 
-from '@/components/custom_alert/custom_alert';
 // LineChart component to display a line chart using ECharts
-const LineChart = () => {
+const LineChart = ({ games }: { games: { mmrAfterGame: number, gameDate: number }[] }) => {
   const chartRef = useRef(null);
   const classements = [
     [200, "Faux-bourdon I"],
@@ -37,14 +37,12 @@ const LineChart = () => {
     return "Unranked";
   };
 
-  // Function to generate a random MMR value
-  const getRandomValue = () => Math.floor(Math.random() * (2000 - 200 + 1)) + 200;
-
-  // Generate data for the chart
-  const data = Array.from({ length: 20 }, (_, i) => {
-    const value = getRandomValue();
-    return [i + 1, value, getRank(value)];
-  });
+  // L'axe X est maintenant l'ordre des parties
+  const data = games.map((game, i) => [
+    `Partie ${i + 1}`, // Affiche "Game 1", "Game 2", ...
+    game.mmrAfterGame,
+    getRank(game.mmrAfterGame)
+  ]);
 
   useEffect(() => {
     const chart = echarts.init(chartRef.current);
@@ -54,10 +52,10 @@ const LineChart = () => {
         trigger: "axis",
         formatter: (params: any) => {
           const data = params[0].data;
-          return `Match: ${data[0]}<br>MMR: ${data[1]}<br>Rank: ${data[2]}`;
+          return `MMR: ${data[1]}<br>Rank: ${data[2]}`;
         },
       },
-      xAxis: { type: "category", name: "Match" },
+      xAxis: { type: "category", name: "Partie" },
       yAxis: {
         type: "value",
         name: "MMR",
@@ -76,7 +74,7 @@ const LineChart = () => {
     chart.setOption(option);
 
     return () => chart.dispose();
-  }, []);
+  }, [games]); // Met à jour le graphique si games change
 
   return <div ref={chartRef} style={{ width: "600px", height: "400px" }} />;
 };
@@ -84,15 +82,17 @@ const LineChart = () => {
 // Main Page component
 export default function Page() {
   const [username, setUsername] = useState<string | null>(null);
+  const [games, setGames] = useState<{ mmrAfterGame: number, gameDate: number }[]>([]);
 
   const [passwordEditSuccess, setPasswordEditSuccess] = useState(false);
   const [passwordEditError, setPasswordEditError] = useState(false);
+  const router = useRouter()
 
   // Function to fetch user data
   const fetchUser = async () => {
     const token = Cookies.get('token');
     if (!token) {
-      window.location.href = '/login_register';
+      router.push('/login_register');
       return;
     }
 
@@ -101,10 +101,18 @@ export default function Page() {
         headers: { 'Authorization': token }
       });
       setUsername(user.data.username);
+      Cookies.set('userId', user.data.id);
+
+      const gamesRes = await axios.get(`http://${getEnv()['IP_HOST']}:3001/get_games_by_user/${user.data.id}`);
+      setGames(gamesRes.data);
+
+
     } catch (error) {
       console.error('Error fetching user:', error);
     }
   };
+
+
 
   useEffect(() => {
     fetchUser();
@@ -118,7 +126,7 @@ export default function Page() {
           text1="Password updated"
           text2="Your password has been successfully updated"
           type="good"
-          onClick={() => setPasswordEditSuccess(false)}
+          onClick={async (e) => { setPasswordEditSuccess(false)}}
         />
       )}
 
@@ -128,14 +136,14 @@ export default function Page() {
           text1="Failed to update password"
           text2="Please check your current password"
           type="bad"
-          onClick={() => setPasswordEditError(false)}
+          onClick={async (e) => { setPasswordEditError(false)}}
         />
       )}
 
-      <Title_h1 text="My Account" icon='person' />
+      <Title_h1 text="Mon compte" icon='person' />
       <div className={styles.container}>
-        <p>{username ? `Welcome, ${username} !` : 'Loading...'}</p>
-        <LineChart />
+        <p>{username ? `Bienvenue, ${username} !` : 'Chargement...'}</p>
+        <LineChart games={games} />
 
         <form className={styles.form}
           onSubmit={async (e) => {
@@ -160,16 +168,16 @@ export default function Page() {
         >
           <div className={styles.form_inputs}>
             <div>
-              <label htmlFor="current_password">Current password:</label>
+              <label htmlFor="current_password">Mot de passe actuel:</label>
               <input type="password" id="current_password" name="current_password" required />
             </div>
             <div>
-              <label htmlFor="new_password">New password:</label>
+              <label htmlFor="new_password">Nouveau mot de passe:</label>
               <input type="password" id="new_password" name="new_password" required />
             </div>
           </div>
           <BeautifulButton
-            text="Update Password"
+            text="Mettre à jour le mot de passe"
             icon="lock"
             type="submit"
           />
@@ -183,7 +191,10 @@ export default function Page() {
           onClick={async (e) => {
             e.preventDefault();
             Cookies.remove('token');
-            window.location.href = '/login_register';
+            Cookies.remove('userId');
+            Cookies.remove('username');
+            window.dispatchEvent(new Event('cookieChange'));
+            router.push('/home')
           }}
         />
       </div>

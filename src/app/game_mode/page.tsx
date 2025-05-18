@@ -11,9 +11,22 @@ import Spacer from "@/components/spacer/spacer";
 import { BOARD_SIZES, Game, ServerBoundGameSearchPacket, ServerBoundPacketType, TIME_LIMITS } from "../definitions";
 import { WebsocketHandler } from "./WebsocketHandler";
 import LoadingPage from "@/components/loading_page/loading_page";
+import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
+import axios from "axios";
+import getEnv from "@/env/env";
 
 
-
+type GameArr = {
+  gameId: string;
+  firstPlayerId: string;
+  EloChangeFirstPlayer: number;
+  EloChangeSecondPlayer: number;
+  mmrAfterGame: number;
+  opponentUsername: string;
+  gameDate: string;
+  moves: string;
+};
 /*
   * Create a radio button group
   *
@@ -25,7 +38,7 @@ import LoadingPage from "@/components/loading_page/loading_page";
   *
   * @returns The RadioButton component.
   */
- 
+
 function RadioButton(props:
   {
     title: string,
@@ -60,8 +73,8 @@ function RadioButton(props:
 
 
 export default function Home() {
-  const time_limits_str = TIME_LIMITS.map((time) => {return time.toString() });
-  const board_sizes_str = BOARD_SIZES.map((size) => {return size.toString() });
+  const time_limits_str = TIME_LIMITS.map((time) => { return time.toString() });
+  const board_sizes_str = BOARD_SIZES.map((size) => { return size.toString() });
   const [gameType, setGameType] = useState("Normal");
   const [gameMode, setGameMode] = useState("Normal");
   const [timeLimit, setTimeLimit] = useState(time_limits_str[0]);
@@ -72,10 +85,38 @@ export default function Home() {
 
   const [isSearchingGame, setIsSearchingGame] = useState(false);
 
-  /* convert letters to numbers */
-  const numbers = {"&": 1, "é": 2, "\"": 3, "'": 4, "(": 5, "-": 6, "è": 7, "_": 8, "ç": 9, "à": 0};
+  const [gamesArr, setGamesArr] = useState<GameArr[]>([]);
+  const router = useRouter();
+
+  const fetchUserLastGames = async () => {
+    const userId = Cookies.get('userId');
+    if (!userId) {
+      console.log("userId non trouvé dans les cookies");
+      return;
+    }
+    try {
+      const gamesRes = await axios.get(`http://${getEnv()['IP_HOST']}:3001/get_games_by_user/${userId}`);
+      setGamesArr(gamesRes.data);
+      console.log(gamesRes.data);
+    } catch (error) {
+      console.error('Error fetching user:', error);
+    }
+  };
+
+
+
   useEffect(() => {
-    if (gameCode[gameCode.length-1] in numbers) {
+    fetchUserLastGames();
+  }, []);
+
+
+
+
+
+  /* convert letters to numbers */
+  const numbers = { "&": 1, "é": 2, "\"": 3, "'": 4, "(": 5, "-": 6, "è": 7, "_": 8, "ç": 9, "à": 0 };
+  useEffect(() => {
+    if (gameCode[gameCode.length - 1] in numbers) {
       const lastChar = gameCode[gameCode.length - 1] as keyof typeof numbers;
       if (lastChar in numbers) {
         setGameCode(gameCode.slice(0, -1) + numbers[lastChar]);
@@ -97,7 +138,7 @@ export default function Home() {
     }
     if (gameF === "Rejoindre un ami") {
       setShowCodeInput(true);
-      
+
     } else {
       setShowCodeInput(false);
     }
@@ -116,32 +157,32 @@ export default function Home() {
       window.location.href = `/hex/l_${timeLimit.toString()}_${boardSize.toString()}`
     }
     async function onlineSearchInitialize() {
-      
+
       function errorCallback(message: string) {
         console.error(message);
         setIsSearchingGame(false);
       }
-      
+
       function gameSearchCallback(game_parameters: any, player_count: number, elo_range: [number, number]) {
         console.log(game_parameters, player_count, elo_range);
       }
-      
+
       function gameFoundCallback(game_id: any) {
         window.location.href = `/hex/o_${game_id}`;
       }
-      
-      function joinGameCallback(game_details: Game) {}
-      
-      function movePlayedCallback(x: number, y: number, turn: number, grid_array: Array<Array<number>>) {}
-    
+
+      function joinGameCallback(game_details: Game) { }
+
+      function movePlayedCallback(x: number, y: number, turn: number, grid_array: Array<Array<number>>) { }
+
       function connectionEndedCallback() {
         console.error('Connection ended');
         setIsSearchingGame(false);
       }
 
-      function clickCallback(i: number, j: number) {}
+      function clickCallback(i: number, j: number) { }
 
-      function hoverCallback(i: number, j: number) {}
+      function hoverCallback(i: number, j: number) { }
 
       let websocketHandler = await new WebsocketHandler({
         errorCallback,
@@ -151,20 +192,21 @@ export default function Home() {
         movePlayedCallback,
         connectionEndedCallback
       }).awaitConnection();
-      
+
       websocketHandler.sendPacket({
         type: ServerBoundPacketType.GAME_SEARCH,
         game_parameters: {
           time_limit: parseInt(timeLimit),
           board_size: parseInt(boardSize),
           ranked: gameType === "Classé",
-        }} as ServerBoundGameSearchPacket);
+        }
+      } as ServerBoundGameSearchPacket);
 
       // cherche une game
       setIsSearchingGame(true);
     }
     onlineSearchInitialize();
-}
+  }
 
   return (
     <div className={styles.main_container}>
@@ -179,7 +221,7 @@ export default function Home() {
             setVar={setGameType}
           />
           <Spacer direction="H" spacing={3} />
-          
+
           <RadioButton
             title="Temps limite (en secondes)"
             varName={timeLimit}
@@ -188,7 +230,7 @@ export default function Home() {
           />
 
           <Spacer direction="H" spacing={3} />
-          
+
           <RadioButton
             title="Taille du plateau"
             varName={boardSize}
@@ -202,7 +244,7 @@ export default function Home() {
             values={["Normal", "Bombe", "-1", "Invisible"]}
             setVar={setGameMode}
           /> */}
-          
+
           <Spacer direction="H" spacing={3} />
           <RadioButton
             title="Avec qui jouer ?"
@@ -213,14 +255,14 @@ export default function Home() {
           <Spacer direction="H" spacing={3} />
           {showCodeInput && (
             <>
-            <InputText
-              description="Code de la partie"
-              placeholder="Code de la partie"
-              autoComplete="off"
-              value={gameCode}
-              onChange={(e) => {setGameCode(e.target.value)}}
-            />
-            <Spacer direction="H" spacing={3} />
+              <InputText
+                description="Code de la partie"
+                placeholder="Code de la partie"
+                autoComplete="off"
+                value={gameCode}
+                onChange={(e) => { setGameCode(e.target.value) }}
+              />
+              <Spacer direction="H" spacing={3} />
             </>
           )}
           <BeautifulButton text="Jouer" onClick={handleValidationButton} />
@@ -229,6 +271,43 @@ export default function Home() {
 
       <div className={styles.right_container}>
         <Title_h1 text="Dernières parties" />
+        <div className={styles.history_content}>
+          {gamesArr.length === 0 ? (
+            <div className={styles.current_mmr}>
+                <b>Aucune partie récente/Vous n'êtes pas connecté</b>
+                
+            </div>
+          ) : (
+            <>
+              <div className={styles.current_mmr}>
+                <b>MMR actuel : {gamesArr[0].mmrAfterGame}</b>
+              </div>
+              {gamesArr.slice(0, 5).map((game) => {
+                const userId = Cookies.get('userId');
+                const isFirstPlayer = game.firstPlayerId === userId;
+                const victory = (isFirstPlayer && game.EloChangeFirstPlayer > 0) || (!isFirstPlayer && game.EloChangeSecondPlayer > 0);
+                const mmrChange = isFirstPlayer ? game.EloChangeFirstPlayer : game.EloChangeSecondPlayer;
+                const opponentUsername = game.opponentUsername || "Unknown";
+                return (
+                  <div className={styles.history_item} key={game.gameId}>
+                    <div className={styles.history_item_title}>
+                      <span className={victory ? styles.title_win : styles.title_lose}>
+                        {victory ? "Victoire" : "Défaite"}
+                      </span>
+                      &nbsp;VS&nbsp;
+                      <span>{opponentUsername}</span>
+                    </div>
+                    <div className={styles.history_item_content_text}>
+                      <span className={victory ? styles.mmr_win : styles.mmr_lose}>
+                        {mmrChange > 0 ? "+" : ""}{mmrChange} MMR
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+            </>
+          )}
+        </div>
       </div>
 
     </div>
