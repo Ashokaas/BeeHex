@@ -15,13 +15,15 @@ import GameInstance from "./GameInstance";
 
 import getEnv from "@/env/env";
 import { WebsocketHandler } from "./WebsocketHandler";
-import { DatabaseGame, Game, GameStatus, ServerBoundJoinGamePacket, ServerBoundPacketType, ServerBoundPlayMovePacket, UserId, LocalGameParameters } from "../../definitions";
+import { DatabaseGame, Game, GameStatus, ServerBoundJoinGamePacket, ServerBoundPacketType, ServerBoundPlayMovePacket, UserId, LocalGameParameters, Coordinate } from "../../definitions";
 import { OfflineHandler } from './OfflineHandler';
 import CustomAlert from '@/components/custom_alert/custom_alert';
+import { attributeScore, basicHeuristic, Explorer, RecommendedMove, Score, SimpleGameInstance } from './Algorithm';
 import SteppedSlider from '@/components/stepped_slider/stepped_slider';
 import { MoveEvaluation } from '@/components/analysis_board/move_evaluation/move_evaluation';
 import Title_h1 from '@/components/title_h1/title_h1';
 import Spacer from '@/components/spacer/spacer';
+
 
 enum GameState {
   LOADING,
@@ -31,6 +33,7 @@ enum GameState {
 }
 
 type moveArray = number[][];
+const explorer = new Explorer([[1, 1], [1, 1]], 5, basicHeuristic, () => {})
 
 export function PlayerStats(props: { name: string, timer: string }) {
   return (
@@ -106,7 +109,6 @@ function parseGameParametersAndMoves(gameId: string): [LocalGameParameters, move
 
 
 }
-
 export default function Home() {
   const token = Cookies.get('token');
   const rawGameId = useParams<{ gameId: string }>().gameId;
@@ -115,7 +117,7 @@ export default function Home() {
   }
   let gameType: "online" | "local" | "moves";
   let gameParameters: { time_limit: number, board_size: number } | undefined | null;
-  let moves: moveArray | undefined | null;
+  let moves: moveArray = [];
   const gameId = rawGameId.substring(2);
   if (rawGameId.startsWith("o_")) {
     //Online
@@ -147,10 +149,12 @@ export default function Home() {
     window.location.href = '/';
   }
   const [gameState, setGameState] = useState(GameState.LOADING);
+  const [storedMoves, setStoredMoves] = useState(moves);
+  const [gameParametersState, setGameParametersState] = useState(gameParameters);
   let workingGameState: GameState = GameState.LOADING;
   let game: GameInstance | undefined = undefined;
   const [grid, setGrid] = useState([[0, 0], [0, 0]]);
-
+  const [turn , setTurn] = useState(1);
   const [clickCallback, setClickCallback] = useState<(i: number, j: number) => void>(() => () => { });
   const [hoverCallback, setHoverCallback] = useState<(i: number, j: number) => void>(() => () => { });
   const fetchUser = async (userId: UserId) => {
@@ -179,11 +183,42 @@ export default function Home() {
     player2: { name: "En attente...", timer: "X:XX" }
   });
 
-
-
   const [showEndGameAlert, setShowEndGameAlert] = useState(false);
   const [endGameT1, setT1] = useState("Défaite/Victoire");
   const [endGameT2, setT2] = useState("Vous avez gagné +X MMR");
+  const [currentMoves, setCurrentMoves] = useState(moves);
+  const [sliderValue, setSliderValue] = useState(1);
+
+  const [moveEvaluationScore1, setMoveEvaluationScore1] = useState(new Score(0, false));
+  const [moveEvaluationScore2, setMoveEvaluationScore2] = useState(new Score(0, false));
+  const [moveEvaluationScore3, setMoveEvaluationScore3] = useState(new Score(0, false));
+  const [moveEvaluationScore4, setMoveEvaluationScore4] = useState(new Score(0, false));
+  const [moveEvaluationMoves1, setMoveEvaluationMoves1] = useState([] as Coordinate[]);
+  const [moveEvaluationMoves2, setMoveEvaluationMoves2] = useState([] as Coordinate[]);
+  const [moveEvaluationMoves3, setMoveEvaluationMoves3] = useState([] as Coordinate[]);
+  const [moveEvaluationMoves4, setMoveEvaluationMoves4] = useState([] as Coordinate[]);
+  const [recommendedMoves, setRecommendedMoves] = useState([] as Coordinate[]);
+  function explorerCallback(moves: RecommendedMove[]) {
+    for (let i = 0; i < moves.length; i++) {
+      const move = moves[i];
+      if (i === 0) {
+        setMoveEvaluationScore1(move.score);
+        setMoveEvaluationMoves1(move.optimalRoute.slice(0, 6));
+      } else if (i === 1) {
+        setMoveEvaluationScore2(move.score);
+        setMoveEvaluationMoves2(move.optimalRoute.slice(0, 6));
+      } else if (i === 2) {
+        setMoveEvaluationScore3(move.score);
+        setMoveEvaluationMoves3(move.optimalRoute.slice(0, 6));
+      } else if (i === 3) {
+        setMoveEvaluationScore4(move.score);
+        setMoveEvaluationMoves4(move.optimalRoute.slice(0, 6));
+      }
+    }
+    setRecommendedMoves(moves.map((move) => move.optimalRoute[0]));
+  }
+
+
 
   useEffect(() => {
 
@@ -208,6 +243,7 @@ export default function Home() {
             setGameState(GameState.PLAYING);
             workingGameState = GameState.PLAYING;
             game = GameInstance.fromGame(game_details, ownId);
+            setGameParametersState(game_details.game_parameters);
             setGrid(game_details.grid);
             showGrid();
           }
@@ -221,6 +257,12 @@ export default function Home() {
 
           function gameEndCallback(status: GameStatus, moves: string) {
             console.log('Game ended', status, moves);
+            setStoredMoves(moves.split(' ').map((move) => {
+              const move_int = parseInt(move);
+              const y = Math.floor(move_int / game!!.getGridArray().length);
+              const x = move_int % game!!.getGridArray().length;
+              return [x, y];
+            }));
             setGameState(GameState.REVIEWING);
             workingGameState = GameState.REVIEWING;
             if ((ownId === player1Id && status === GameStatus.FIRST_PLAYER_WIN) || (ownId === player2Id && status === GameStatus.SECOND_PLAYER_WIN)) {
@@ -294,11 +336,18 @@ export default function Home() {
         if (gameData.status === GameStatus.IN_PROGRESS) {
           onlineGameInitialize();
           return;
+        } else {
+          console.error('Game not in progress');
+          setGameParametersState(gameData.gameParameters);
+          setStoredMoves(gameData.moves!!.split(' ').map((move) => {
+            const move_int = parseInt(move);
+            const y = Math.floor(move_int / gameData.gameParameters.board_size);
+            const x = move_int % gameData.gameParameters.board_size;
+            return [x, y];
+          }));
+          setGameState(GameState.REVIEWING);
+          workingGameState = GameState.REVIEWING;
         }
-        setGameState(GameState.REVIEWING);
-        workingGameState = GameState.REVIEWING;
-        console.error('NOT IMPLEMENTED');
-        return;
       };
 
       async function localInitialize() {
@@ -319,6 +368,7 @@ export default function Home() {
           setGameState(GameState.PLAYING);
           workingGameState = GameState.PLAYING;
           game = GameInstance.fromGame(game_details, ownId);
+          setGameParametersState(game_details.game_parameters);
           setGrid(game_details.grid);
           showGrid();
         }
@@ -332,6 +382,13 @@ export default function Home() {
 
         function gameEndCallback(status: GameStatus, moves: string, winningHexagons: Array<[number, number]>) {
           console.log('Game ended', status, moves);
+          setStoredMoves(moves.split(' ').map((move) => {
+              const move_int = parseInt(move);
+              const y = Math.floor(move_int / game!!.getGridArray().length);
+              const x = move_int % game!!.getGridArray().length;
+              return [x, y];
+            }));
+            /*
           console.log('winningHexagons', winningHexagons);
           winningHexagons.reverse();
             winningHexagons.forEach((hexagon, i) => {
@@ -342,6 +399,7 @@ export default function Home() {
               }
             }, 250 * (i + 1));
             });
+            */
           setGameState(GameState.REVIEWING);
           workingGameState = GameState.REVIEWING;
         }
@@ -396,10 +454,33 @@ export default function Home() {
 
     initialize();
   }, []); // L'array vide signifie que cette fonction ne s'exécute qu'une seule fois
-  const [sliderValue, setSliderValue] = useState(1);
+
+  useEffect(() => {
+    if (gameState === GameState.REVIEWING) {
+      setCurrentMoves(storedMoves!!.slice(0, sliderValue - 1));
+    }
+  }, [sliderValue, gameState]);
+
+  useEffect(() => {
+    if (gameState === GameState.REVIEWING) {
+      const ggrid = new Array(gameParametersState?.board_size).fill(0).map(() => new Array(gameParametersState?.board_size).fill(0));
+      for (let i = 0; i < currentMoves.length; i++) {
+        const move = currentMoves[i];
+        ggrid[move[0]][move[1]] = i % 2 === 0 ? 1 : 2;
+      }
+      setGrid(ggrid);
+      console.log(ggrid, currentMoves);
+      explorer.setGame(ggrid, currentMoves.length + 1, basicHeuristic, explorerCallback)
+    }
+  }, [gameState, currentMoves]);
+
+  useEffect(() => {
+    setTurn(grid.join("").replaceAll("0", "").length + 1);
+  }, [grid]);
+
   return (
     <>
-      {/**{showEndGameAlert
+      {showEndGameAlert
         &&
         <CustomAlert
           text1={endGameT1}
@@ -408,10 +489,11 @@ export default function Home() {
           type={endGameT1 === "Victoire" ? "good" : "bad"}
           onClick={() => setShowEndGameAlert(false)}
         />}
+      {gameState != GameState.REVIEWING &&
       <div className={styles.game_interface}>
         <div className={styles.hex_parent}>
           <section className={`${styles.hexagon_grid} ${styles.hidden}`}>
-            <ShowGrid grid_array={grid} clickCallback={clickCallback} hoverCallback={hoverCallback} />
+            <ShowGrid grid_array={grid} turn={turn} recommendedMoves={recommendedMoves}  clickCallback={clickCallback} hoverCallback={hoverCallback} />
           </section>
           <div className={styles.loading_spinner}></div>
         </div>
@@ -432,34 +514,32 @@ export default function Home() {
           </div>
 
         </div>
-      </div>**/}
+      </div>
+      }
+
+      {gameState === GameState.REVIEWING &&
       <div className={styles.game_interface}>
         <div className={styles.hex_parent}>
           <section className={`${styles.hexagon_grid} ${styles.hidden}`}>
-            <ShowGrid grid_array={grid} clickCallback={clickCallback} hoverCallback={hoverCallback} />
+            <ShowGrid grid_array={grid} turn={turn} recommendedMoves={recommendedMoves} clickCallback={clickCallback} hoverCallback={hoverCallback} />
           </section>
           <div className={styles.loading_spinner}></div>
           <div className={styles.stepped_slider_container}>
-            <SteppedSlider size={20} sliderValue={sliderValue} setSliderValue={setSliderValue} />
+            <SteppedSlider size={storedMoves.length + 1} sliderValue={sliderValue} setSliderValue={setSliderValue} />
           </div>
         </div>
-          
-
         <div className={styles.players}>
           <Spacer spacing={2} direction='H' />
           <h2>Ordinateur</h2>
           <Spacer spacing={2} direction='H' />
-
-          
-          <MoveEvaluation index={0} Evaluation={2.3} nextMoves={["1-2", "2-3", "3-9"]} onClick={oui} onHover={oui} onLeave={oui}/>
-          <MoveEvaluation index={1} Evaluation={2.3} nextMoves={["1-2", "2-3", "3-9"]} onClick={oui} onHover={oui} onLeave={oui}/>
-          <MoveEvaluation index={2} Evaluation={-2.3} nextMoves={["1-2", "2-3", "3-9"]} onClick={oui} onHover={oui} onLeave={oui}/>
-          <MoveEvaluation index={3} Evaluation={-2.3} nextMoves={["1-2", "2-3", "3-9"]} onClick={oui} onHover={oui} onLeave={oui}/>
-
+          <MoveEvaluation index={0} turn={turn} Evaluation={moveEvaluationScore1} nextMoves={moveEvaluationMoves1} onClick={oui} onHover={oui} onLeave={oui}/>
+          <MoveEvaluation index={1} turn={turn} Evaluation={moveEvaluationScore2} nextMoves={moveEvaluationMoves2} onClick={oui} onHover={oui} onLeave={oui}/>
+          <MoveEvaluation index={2} turn={turn} Evaluation={moveEvaluationScore3} nextMoves={moveEvaluationMoves3} onClick={oui} onHover={oui} onLeave={oui}/>
+          <MoveEvaluation index={3} turn={turn} Evaluation={moveEvaluationScore4} nextMoves={moveEvaluationMoves4} onClick={oui} onHover={oui} onLeave={oui}/>
           <Spacer spacing={2} direction='H' />
           <h2>Exploration</h2>
         </div>
-      </div>
+      </div>}
     </>
   );
 }

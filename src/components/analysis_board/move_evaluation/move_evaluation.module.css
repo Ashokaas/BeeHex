@@ -48,7 +48,7 @@
 }
 
 .hexPreviewPos2 {
-  animation: fadeInPos2 1s forwards;
+  animation: fadeInPos2 0.5s forwards;
   animation-delay: 0.2s;
 }
 @keyframes fadeInPos2 {
@@ -58,8 +58,8 @@
 }
 
 .hexPreviewPos3 {
-  animation: fadeInPos3 1s forwards;
-  animation-delay: 0.4s;
+  animation: fadeInPos3 0.5s forwards;
+  animation-delay: 0.1s;
 }
 @keyframes fadeInPos3 {
   100% {
@@ -72,16 +72,16 @@
 }
 
 .hexPreviewNeg2 {
-  animation: fadeInNeg2 1s forwards;
-  animation-delay: 0.2s;
+  animation: fadeInNeg2 0.5s forwards;
+  animation-delay: 0.1s;
 }
 @keyframes fadeInNeg2 {
   100% {background-color: var(--blue-400);}
 }
 
 .hexPreviewNeg3 {
-  animation: fadeInNeg3 1s forwards;
-  animation-delay: 0.4s;
+  animation: fadeInNeg3 0.5s forwards;
+  animation-delay: 0.2s;
 }
 @keyframes fadeInNeg3 {
   100% {background-color: var(--blue-200);}

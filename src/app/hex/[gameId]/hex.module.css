@@ -370,6 +370,37 @@
     background-color: var(--red-side);
 }
 
+.hexPreviewRed1 {
+    background-color: var(--red-preview-1);
+}
+
+.hexPreviewRed2 {
+    background-color: var(--red-preview-2);
+}
+
+.hexPreviewRed3 {
+    background-color: var(--red-preview-3);
+}
+
+.hexPreviewRed4 {
+    background-color: var(--red-preview-4);
+}
+
+.hexPreviewBlue1 {
+    background-color: var(--blue-preview-1);
+}
+
+.hexPreviewBlue2 {
+    background-color: var(--blue-preview-2);
+}
+
+.hexPreviewBlue3 {
+    background-color: var(--blue-preview-3);
+}
+
+.hexPreviewBlue4 {
+    background-color: var(--blue-preview-4);
+}
 /* CHRONOMETRE */
 .active_timer {
     color: lightgray;

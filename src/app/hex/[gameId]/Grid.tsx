@@ -1,26 +1,29 @@
 import React, { Component, useEffect, useState } from 'react';
 import styles from './hex.module.css';
 import GameInstance from './GameInstance';
+import { Coordinate } from '@/app/definitions';
 
 interface GridProps {
   grid_array: Array<Array<number>>;
+  turn: number;
+  recommendedMoves: Array<Coordinate>;
   clickCallback: (i: number, j: number) => void;
   hoverCallback: (i: number, j: number) => void;
 }
 
-interface GridState {
-  grid_array: Array<Array<number>>;
-}
-
 export default function ShowGrid (props: GridProps) {
   const [gridArray, setGridArray] = useState(props.grid_array);
+  const [turn, setTurn] = useState(props.turn);
+  const [recommendedMoves, setRecommendedMoves] = useState(props.recommendedMoves);
   const [clickCallback, setClickCallback] = useState<(i: number, j: number) => void>(() => () => {});
   const [hoverCallback, setHoverCallback] = useState<(i: number, j: number) => void>(() => () => {});
   useEffect(() => {
     setGridArray(props.grid_array);
+    setTurn(props.turn);
+    setRecommendedMoves(props.recommendedMoves);
     setClickCallback(() => props.clickCallback);
     setHoverCallback(() => props.hoverCallback);
-  }, [props.grid_array, props.clickCallback, props.hoverCallback]);
+  }, [props.grid_array, props.recommendedMoves, props.turn, props.clickCallback, props.hoverCallback]);
   
 
   function handleHexagonClick(i: number, j: number) {
@@ -36,6 +39,7 @@ export default function ShowGrid (props: GridProps) {
 
   function generateGrid(n: number) {
     const grid = [];
+    let hexSign = turn % 2 === 0 ? "blue" : "red";
     for (let i = 0; i < n; i++) {
       const row = [];
       for (let k = 0; k < i; k++) {
@@ -75,9 +79,13 @@ export default function ShowGrid (props: GridProps) {
             className={greenHexClasses.join(' ')}
           ></div>
         );
-
         let newBackgroundColor = '';
-        if (gridArray[i][j] === 1) {
+        let highlightIndex = recommendedMoves.slice(0, 4).findIndex((move) => move[0] === i && move[1] === j);
+        if (highlightIndex !== -1) {
+          const highlightClass = `var(--${hexSign}-preview-${highlightIndex + 1})`;
+          newBackgroundColor = highlightClass;
+        }
+        else if (gridArray[i][j] === 1) {
           newBackgroundColor = 'red';
         } else if (gridArray[i][j] === 2) {
           newBackgroundColor = 'blue';

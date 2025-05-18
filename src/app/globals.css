@@ -30,9 +30,19 @@
   --txt-color-100: rgb(255, 255, 255);
 
   --blue-side: royalblue;
-  --blue-side-secondary: rgb(35, 63, 148);
+  --blue-side-secondary: #233f94;
   --red-side: red;
-  --red-side-secondary: rgb(148, 10, 0);
+  --red-side-secondary: #940a00;
+
+  --blue-preview-1: #273D81;
+  --blue-preview-2: #2B3B6E;
+  --blue-preview-3: #2E3A5C;
+  --blue-preview-4: #323849;
+
+  --red-preview-1: #AF1616;
+  --red-preview-2: #792424;
+  --red-preview-3: #5E2B2B;
+  --red-preview-4: #433232;
 
   --red-100: #ffd6d6;
   --red-200: #ffadad;
