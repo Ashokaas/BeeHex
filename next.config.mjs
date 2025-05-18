@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+	reactStrictMode: false
 	/*output: 'export',
 	eslint: {
 		dirs: ['src', 'app', 'pages', 'components', 'lib', 'utils', 'hooks', 'styles'],
@@ -9,5 +10,4 @@ const nextConfig = {
 		ignoreBuildErrors: true,
 	}*/
 };
-
 export default nextConfig;

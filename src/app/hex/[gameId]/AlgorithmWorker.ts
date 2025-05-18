@@ -3,11 +3,11 @@ import { basicHeuristic, hashGrid, hashYX, Score, ScoredGameInstance } from "./A
 // Objectif du worker : explorer deux niveaux de profondeur et attribuer des scores aux instances
 // 
 
-var id = -1;
 self.addEventListener("message", (event) => {
 	let packet = event.data as AlgorithmWorkerBoundGenericPacket;
 	if (packet.type === AlgorithmWorkerBoundPacketType.EXPLORE_INSTANCE) {
 		const packet = event.data as AlgorithmWorkerBoundExplorePacket;
+		const id = packet.id;
 		const game = ScoredGameInstance.fromRaw(packet.game);
 		//console.log(id.toString() + " | received " + game.getGridHash() + " | " + game.getGridHash())
 		const resultMap = new Map<GridHash, RawScoredGameInstance>();
@@ -52,10 +52,6 @@ self.addEventListener("message", (event) => {
 				leaves: leaves
 			} as ExploreResult
 		} as AlgorithmExplorerBoundResultPacket)
-		return;
-	}
-	if (packet.type === AlgorithmWorkerBoundPacketType.SET_ID) {
-		id = (event.data as AlgorithmWorkerBoundSetIdPacket).id;
 		return;
 	}
 })

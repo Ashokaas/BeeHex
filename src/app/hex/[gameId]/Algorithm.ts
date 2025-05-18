@@ -96,7 +96,8 @@ export class ScoredGameInstance extends SimpleGameInstance {
 	public score: Score;
 	public previousInstances: Array<ScoredGameInstance> = [];
 	public nextInstances: Map<number, ScoredGameInstance>
-	
+	public leadingInstance: ScoredGameInstance | null = null; // Instance qui a le meilleur score
+	public completedBranch: boolean; // Indique si l'instance a été complètement explorée
 
 	constructor(grid: Array<Array<number>>, turn: number, moves: Array<Coordinate>, score: Score) {
 		super(grid, turn);
@@ -104,8 +105,10 @@ export class ScoredGameInstance extends SimpleGameInstance {
 		this.moves = moves.slice()
 		if (this.score.isWinCountdown && (this.score.score == 0.5 || this.score.score == -0.5)) {
 			this.nextInstances = empty_map
+			this.completedBranch = true
 		} else {
 			this.nextInstances = new Map<number, ScoredGameInstance>();
+			this.completedBranch = false
 		}
 	}
 
@@ -122,32 +125,86 @@ export class ScoredGameInstance extends SimpleGameInstance {
 			instance.updateScore();
 		}
 	}
-	getBestChildrenInstance(): ScoredGameInstance {
+
+	getNextChildToExplore(): ScoredGameInstance {
+		if (this.nextInstances.size == 0) {
+			return this
+		}
+		if (this.completedBranch) {
+			return this
+		}
+		const instancesLeft = this.nextInstances.values().toArray().filter(instance => instance.completedBranch == false);
+		
+		let minMax
+		if (this.turn % 2 === 0) {
+			minMax = (a: ScoredGameInstance, b: ScoredGameInstance) => a.getScore().isBiggerThan(b.getScore()) ? b : a
+		} else {
+			minMax = (a: ScoredGameInstance, b: ScoredGameInstance) => a.getScore().isBiggerThan(b.getScore()) ? a : b
+		}
+		let nextInstance = instancesLeft.reduce(minMax);
+		return nextInstance.getNextChildToExplore();
+
+	}
+
+	getBestChildInstance(): ScoredGameInstance {
+		if (this.nextInstances.size > 0) {
+			//console.log(this.getGridHash())
+			return this.leadingInstance!!.getBestChildInstance(); // On retourne l'instance avec le meilleur score
+		} else return this;
+		/*
 		if (this.nextInstances.size == 0) {
 			return this; // Si l'instance n'a pas d'enfants, on retourne l'instance elle-même
 		}
+		
 		if (this.turn % 2 === 0) {
-			return this.nextInstances.values().reduce((a, b) => a.getScore().isSmallerThan(b.getScore()) ? a : b).getBestChildrenInstance(); // Retourne l'instance avec le score maximum
+			for (let nextInstance of this.nextInstances.values().toArray()) {
+				if (nextInstance.getTurn() != this.getTurn() + 1) {
+					console.error("Order break", nextInstance.getTurn(), this.getTurn())
+				}
+			}
+			const result = this.nextInstances.values().reduce((a, b) => a.getScore().isSmallerThan(b.getScore()) ? a : b).getBestChildrenInstance();
+			
+			return result // Retourne l'instance avec le score maximum
 		} else {
-			return this.nextInstances.values().reduce((a, b) => a.getScore().isBiggerThan(b.getScore()) ? a : b).getBestChildrenInstance(); // Retourne l'instance avec le score minimum
+			for (let nextInstance of this.nextInstances.values().toArray()) {
+				if (nextInstance.getTurn() != this.getTurn() + 1) {
+					console.error("Order break", nextInstance.getTurn(), this.getTurn())
+				}
+			}
+			const result = this.nextInstances.values().reduce((a, b) => a.getScore().isBiggerThan(b.getScore()) ? a : b).getBestChildrenInstance();
+			return result // Retourne l'instance avec le score minimum
 		}
+		*/
 	}
 	updateScore() {
+		if (this.nextInstances.size == 0) {
+			console.warn("ScoredGameInstance.updateScore() called on an instance with no children")
+		}
 		let currentScore = this.score
-		let minMax = this.turn % 2 === 0 ? Score.min : Score.max; // Choix de la fonction min ou max en fonction du tour
-		let scores = this.nextInstances.values().map(instance => instance.getScore()).toArray();
-
-		let newScore = Score.fromRaw(minMax(scores).raw()); // On doit créer une nouvelle instance de Score, sinon on modifie l'instance de Score d'origine
+		let minMax;
+		if (this.turn % 2 === 0) {
+			minMax = (a: ScoredGameInstance, b: ScoredGameInstance) => a.getScore().isBiggerThan(b.getScore()) ? b : a
+		} else {
+			minMax = (a: ScoredGameInstance, b: ScoredGameInstance) => a.getScore().isBiggerThan(b.getScore()) ? a : b
+		}
+		const nextInstances = this.nextInstances.values().toArray();
+		const leadingInstance = nextInstances.reduce(minMax);
+		let leadingScore = leadingInstance.getScore();
+		let newScore = Score.fromRaw(leadingScore.raw()); // On doit créer une nouvelle instance de Score, sinon on modifie l'instance de Score d'origine
 		
 		if (newScore.isWinCountdown) { // Lorsque le score des branches est un nombre de coups avant la victoire, on doit augmenter ce nombre de 0.5, puisque un coup supplémentaire doit être joué
 			newScore.score += newScore.score > 0 ? 0.5 : -0.5 // 
 		}
 		this.grid = empty_array // On vide la grille pour économiser de la mémoire, il ne sert plus à rien de la garder puisque ses enfants existent
-		if (!currentScore.isEqualTo(newScore)) {
-			//console.log("Current turn : " + this.turn + " | Current score : " + currentScore.toString() + " | New score : " + newScore.toString())
-			//console.log("Scores : " + scores.map(score => score.toString()).join(", "))
+		this.completedBranch = leadingInstance.completedBranch
+		for (let instance of nextInstances) {
+			this.completedBranch = this.completedBranch && instance.completedBranch
+		}
+		if (!currentScore.isEqualTo(newScore) || this.leadingInstance != leadingInstance || this.completedBranch == true) {
+			//console.log("Current turn : " + this.turn + " | Current score : " + currentScore.toString() + " | New score : " + newScore.toString())	
 			//console.log("Climb up")
 			this.score = newScore;
+			this.leadingInstance = leadingInstance
 			this.updatePreviousInstances();
 		}
 
@@ -176,22 +233,41 @@ class MainScoredGameInstance extends ScoredGameInstance {
 		super(grid, turn, moves, score);
 		this.explorerCallback = explorerCallback
 		this.playedMove = playedMove;
+
 	}
 
 	updateScore() {
+		if (this.nextInstances.size == 0) {
+			console.warn("MainScoredGameInstance.updateScore() called on an instance with no children")
+		}
 		let currentScore = this.score
-		let minMax = this.turn % 2 === 0 ? Score.min : Score.max; // Choix de la fonction min ou max en fonction du tour
-		let scores = this.nextInstances.values().map(instance => instance.getScore()).toArray();
-		let newScore = Score.fromRaw(minMax(scores).raw()); // On doit créer une nouvelle instance de Score, sinon on modifie l'instance de Score d'origine
+		let minMax;
+		if (this.turn % 2 === 0) {
+			minMax = (a: ScoredGameInstance, b: ScoredGameInstance) => a.getScore().isBiggerThan(b.getScore()) ? b : a
+		} else {
+			minMax = (a: ScoredGameInstance, b: ScoredGameInstance) => a.getScore().isBiggerThan(b.getScore()) ? a : b
+		}
+		const nextInstances = this.nextInstances.values().toArray();
+		const leadingInstance = nextInstances.reduce(minMax);
+		let leadingScore = leadingInstance.getScore();
+		let newScore = Score.fromRaw(leadingScore.raw()); // On doit créer une nouvelle instance de Score, sinon on modifie l'instance de Score d'origine
+		
 		if (newScore.isWinCountdown) { // Lorsque le score des branches est un nombre de coups avant la victoire, on doit augmenter ce nombre de 0.5, puisque un coup supplémentaire doit être joué
 			newScore.score += newScore.score > 0 ? 0.5 : -0.5 // 
 		}
-		console.log("MAIN Current turn : " + this.turn + " | Current score : " + currentScore.toString() + " | New score : " + newScore.toString())
-		console.log("Scores : " + scores.map(score => score.toString()).join(", "))
+		//console.log("MAIN Current turn : " + this.turn + " | Current score : " + currentScore.toString() + " | New score : " + newScore.toString())
+		this.completedBranch = leadingInstance.completedBranch
 
-		if (!currentScore.isEqualTo(newScore)) {
-			console.log("CALLBACK")
+		for (let instance of nextInstances) {
+			this.completedBranch = this.completedBranch && instance.completedBranch
+		}
+		if (this.completedBranch) {
+			console.warn("Completed branch" + this.getGridHash())
+		}
+		if (!currentScore.isEqualTo(newScore) || this.leadingInstance != leadingInstance || this.completedBranch == true) {
+			//console.log("CALLBACK")
 			this.score = newScore;
+			this.leadingInstance = leadingInstance
 			this.explorerCallback(this)
 		} 
 	}
@@ -212,15 +288,22 @@ export class Explorer {
 	private instances: Map<GridHash, ScoredGameInstance>;
 	//private instancesToExplore: Map<string, ScoredGameInstance> = []; // Liste des instances à explorer
 	//private waitingWorkers: Array<Worker> = []; // Liste des workers en attente d'une instance à explorer$
-	private bestMoves: Array<MainScoredGameInstance> = []
+	private bestMoves: Array<MainScoredGameInstance>;
 	constructor(grid: Array<Array<number>>, turn: number, heuristic: Function, updateCallback: Function) {
 		let simpleGame = new SimpleGameInstance(grid, turn, []);
 		this.worker.addEventListener("message", this._workerCallback.bind(this));
 		this.heuristic = heuristic;
 		this.updateCallback = updateCallback;
+		this.bestMoves = []
 		this.game = this.rateInstance(simpleGame);
 		this.instances = new Map<GridHash, ScoredGameInstance>();
 		this.instances.set(this.game.getGridHash(), this.game);
+		if (this.game.getScore().isWinCountdown && (this.game.getScore().score == 0.5 || this.game.getScore().score == -0.5)) {
+			this.mainInstances = []
+			updateCallback({coordinate: [1, 1], score: this.game.getScore(), optimalRoute: []} as RecommendedMove); // Envoie une version vide de la recommandation
+			return
+		}
+		
 		this.mainInstances = this.populateMainInstances(); // Remplit la liste des instances principales à explorer
 		this.sendNextInstanceToWorker();
 		//this.workers = [];
@@ -245,26 +328,47 @@ export class Explorer {
 		// Ajoute l'instance de jeu initiale à la liste des instances à explorer
 	}
 
+	setGame(grid: Array<Array<number>>, turn: number, heuristic: Function, updateCallback: Function) {
+		let simpleGame = new SimpleGameInstance(grid, turn, []);
+		this.heuristic = heuristic;
+		this.updateCallback = updateCallback;
+		this.bestMoves = []
+		this.game = this.rateInstance(simpleGame);
+		this.instances = new Map<GridHash, ScoredGameInstance>();
+		this.instances.set(this.game.getGridHash(), this.game);
+		if (this.game.getScore().isWinCountdown && (this.game.getScore().score == 0.5 || this.game.getScore().score == -0.5)) {
+			this.mainInstances = []
+			updateCallback({coordinate: [1, 1], score: this.game.getScore(), optimalRoute: []} as RecommendedMove); // Envoie une version vide de la recommandation
+			return
+		}
+		
+		this.mainInstances = this.populateMainInstances(); // Remplit la liste des instances principales à explorer
+		this.sendNextInstanceToWorker();
+	}
+
 	mainInstanceCallback(mainInstance: MainScoredGameInstance) {
 		if (!this.bestMoves.includes(mainInstance)) {
 			this.bestMoves.push(mainInstance)
 		}
-		if (this.bestMoves.length <= 25) {
-			console.log("Best scores : [" + this.bestMoves.map(move => move.score.toString()).join(", ") + "]")
-			this.updateCallback({coordinate: mainInstance.playedMove, score: mainInstance.getScore(), optimalRoute: []} as RecommendedMove); // Envoie le coup joué et le score à la fonction de mise à jour
-			return
-		}
 		let minMaxFunction;
 		if (this.game.turn % 2 === 0) {
-			minMaxFunction = (a: MainScoredGameInstance, b: MainScoredGameInstance) => a.getScore().isBiggerThan(b.getScore()) ? a : b
+			//console.log("Min")
+			minMaxFunction = (a: MainScoredGameInstance, b: MainScoredGameInstance) => a.getScore().isBiggerThan(b.getScore()) ? 1 : -1
 		} else {
-			minMaxFunction = (a: MainScoredGameInstance, b: MainScoredGameInstance) => a.getScore().isSmallerThan(b.getScore()) ? a : b
+			//console.log("Max")
+			minMaxFunction = (a: MainScoredGameInstance, b: MainScoredGameInstance) => a.getScore().isSmallerThan(b.getScore()) ? 1 : -1
 		}
-		let leastMove = this.bestMoves.reduce(minMaxFunction)
-		this.bestMoves.splice(this.bestMoves.indexOf(leastMove), 1) // Retire le coup de la liste des meilleurs coups
-		console.log(leastMove.playedMove, ' - ', leastMove.getScore().toString())
-		console.log("Best scores : [" + this.bestMoves.map(move => move.score.toString()).join(", ") + "]")
-		this.updateCallback({coordinate: mainInstance.playedMove, score: mainInstance.getScore(), optimalRoute: []} as RecommendedMove);
+		this.bestMoves.sort(minMaxFunction)
+		if (this.bestMoves.length <= 10) {
+			//console.log("Best scores : [" + this.bestMoves.map(move => move.score.toString()).join(", ") + "]")
+			const recommendedMoves = this.bestMoves.map(move => {return {coordinate: move.playedMove, score: move.getScore(), optimalRoute: move.getBestChildInstance().moves} as RecommendedMove})
+			this.updateCallback(recommendedMoves); // Envoie le coup joué et le score à la fonction de mise à jour
+			return
+		}
+		this.bestMoves.pop()
+		//console.log("Best scores : [" + this.bestMoves.map(move => move.score.toString()).join(", ") + "]")
+		const recommendedMoves = this.bestMoves.map(move => {return {coordinate: move.playedMove, score: move.getScore(), optimalRoute: move.getBestChildInstance().moves} as RecommendedMove})
+		this.updateCallback(recommendedMoves); // Envoie le coup joué et le score à la fonction de mise à jour
 	}
 
 	populateMainInstances() {
@@ -275,17 +379,15 @@ export class Explorer {
 			let nextMainInstance = new MainScoredGameInstance(nextInstance.getGrid(), nextInstance.getTurn(), nextInstance.moves, nextInstance.getScore(), nextInstance.moves[0], this.mainInstanceCallback.bind(this)); // Crée une instance de jeu principale pour chaque instance suivante
 			nextMainInstances.set(moveHash, nextMainInstance)
 			this.instances.set(nextMainInstance.getGridHash(), nextMainInstance)
+			if (nextMainInstance.getScore().isWinCountdown == true && (nextMainInstance.getScore().score == 0.5 || nextMainInstance.getScore().score == -0.5)) {
+				this.mainInstanceCallback(nextMainInstance)
+				continue
+			}
 			let furtherInstances = explore(nextMainInstance)
 			for (let moveHash of furtherInstances.keys().toArray()) {
 				let furtherInstance = furtherInstances.get(moveHash)!!
-				let furtherInstanceScore = furtherInstance.getScore()
 				this.instances.set(furtherInstance.getGridHash(), furtherInstance);
 				nextMainInstance.nextInstances.set(moveHash, furtherInstance)
-				/*
-				if (furtherInstanceScore.isWinCountdown == false || (furtherInstanceScore.score != 0.5 && furtherInstanceScore.score != -0.5)) {
-					this.instancesToExplore.push(furtherInstance); // Ajoute l'instance à la liste des instances à explorer
-				}
-				*/
 			}
 			nextMainInstance.updateScore(); // Met à jour le score de l'instance principale
 		}
@@ -295,43 +397,61 @@ export class Explorer {
 	}
 
 	sendNextInstanceToWorker() {
-		
 		if (this.game.turn % 2 == 0) {
 			this.mainInstances.sort((a, b) => a.getScore().isSmallerThan(b.getScore()) ? -1 : 1); // Trie les instances principales par score décroissant
 		} else {
 			this.mainInstances.sort((a, b) => a.getScore().isBiggerThan(b.getScore()) ? -1 : 1); // Trie les instances principales par score croissant
 		}
+		let allWinCountdowns;
+		for (let i = 0; i < this.mainInstances.length && i < 5; i++) {
+			if (this.mainInstances[i].getScore().isWinCountdown == false) {
+				allWinCountdowns = false;
+				break;
+			}
+			allWinCountdowns = true;
+		}
 		for (let i = 0; i < this.mainInstances.length; i++) {
-			//console.log("Pass" + i + " | " + this.mainInstances[i].getScore().toString())
+			//console.log("Pass " + i + " | " + this.mainInstances[i].getScore().toString())
 			let mainInstance = this.mainInstances[i];
-			let bestInstance = mainInstance.getBestChildrenInstance(); // Récupère l'instance avec le meilleur score
-			if (!bestInstance.getScore().isWinCountdown || (bestInstance.getScore().score != 0.5 && bestInstance.getScore().score != -0.5)) {
-			//	console.log("Send " + bestInstance.getGridHash() + " | " + bestInstance.getScore().toString())
+			if (mainInstance.getScore().isWinCountdown && !allWinCountdowns) {
+				continue
+			}
+			let bestInstance = mainInstance.getNextChildToExplore(); // Récupère l'instance avec le meilleur score
+			if (!bestInstance.completedBranch) {
+				//console.log("Send " + bestInstance.getGridHash() + " | " + bestInstance.getScore().toString())
 				this.worker.postMessage({
+					id: this.game.getGridHash(),
 					type: AlgorithmWorkerBoundPacketType.EXPLORE_INSTANCE,
 					game: bestInstance.raw()
 				} as AlgorithmWorkerBoundExplorePacket); // Envoie l'instance au worker pour exploration
-				break; // On sort de la boucle une fois qu'on a trouvé une instance à explorer
+				return; // On sort de la boucle une fois qu'on a trouvé une instance à explorer
 			}
 		}
+		console.log("Finished exploration")
+		console.log(this.bestMoves)
 	}
 
-
+	public terminate() {
+		this.worker.removeEventListener("message", this._workerCallback.bind(this)); // Retire le listener du worker
+		this.worker.terminate(); // Termine le worker
+	}
+	
 	private _workerCallback(event: MessageEvent) {
 		const packet = event.data as AlgorithmExplorerBoundGenericPacket;
 		if (packet.type === AlgorithmExplorerBoundPacketType.RESULT) {
+
 			const packet = event.data as AlgorithmExplorerBoundResultPacket;
 			const id = packet.id;
+			if (id != this.game.getGridHash()) {
+				return
+			}
 			//const worker = this.workers[id];
 			const gameInstances = packet.result.gameInstances;
-			const leaves = packet.result.leaves;
 			for (const hash of gameInstances.keys().toArray()) {
 				if (!this.instances.has(hash)) {
 					const instance = ScoredGameInstance.fromRaw(gameInstances.get(hash)!!);
 					this.instances.set(hash, instance);
-				} else if (leaves.includes(hash)) {
-					leaves.splice(leaves.indexOf(hash), 1); // Retire l'instance de la liste des instances à ajouter à l'exploration, puisqu'elle est déjà dans la liste ou a déjà été explorée
-				}
+				} 
 			}
 			for (const hash of gameInstances.keys().toArray()) {
 				const instance = this.instances.get(hash)!!;
@@ -340,7 +460,10 @@ export class Explorer {
 					const nextInstanceHash = rawInstance.nextInstances.get(moveHash)!!;
 					const nextInstance = this.instances.get(nextInstanceHash)!!;
 					instance.nextInstances.set(moveHash, nextInstance);
-					nextInstance.previousInstances.push(instance); // Ajoute l'instance actuelle à la liste des instances précédentes de l'instance suivante				
+					if (!nextInstance.previousInstances.includes(instance)) {
+						nextInstance.previousInstances.push(instance); // Ajoute l'instance actuelle à la liste des instances précédentes de l'instance suivante
+					}
+									
 				}
 				if (instance.nextInstances.size > 0) {
 					instance.updateScore(); // Met à jour le score de l'instance actuelle
@@ -654,7 +777,7 @@ export class Score {
 	}
 
 	toString() {
-		return this.isWinCountdown ? `#${this.score}` : `${this.score}`;
+		return this.isWinCountdown ? `#${Math.round(this.score)}` : `${this.score}`;
 	}
 
 	public isBiggerThan(other: Score): boolean { // Comparaison de scores qui prend en compte les scores assurant la victoire après X coups
@@ -703,7 +826,7 @@ export class Score {
 }
 
 export function hashGrid(grid: Array<Array<number>>): GridHash { // passer ceci à du base 36
-	let hash = BigInt(0)
+	let hash = 0n
 	let ii = 1n
 	for (let i of grid) {
 	for (let j of i) {

@@ -158,6 +158,7 @@ export interface AlgorithmWorkerBoundGenericPacket {
 
 export interface AlgorithmWorkerBoundExplorePacket {
   type: AlgorithmWorkerBoundPacketType.EXPLORE_INSTANCE;
+  id: string;
   game: RawScoredGameInstance;
 }
 
@@ -172,7 +173,7 @@ export interface AlgorithmExplorerBoundGenericPacket {
 
 export interface AlgorithmExplorerBoundResultPacket {
   type: AlgorithmExplorerBoundPacketType.RESULT;
-  id: number;
+  id: string;
   result: ExploreResult;
 }
 export type Coordinate = [number, number]; // [y, x]
