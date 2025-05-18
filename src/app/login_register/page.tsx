@@ -80,11 +80,11 @@ export default function Login() {
       
 
 
-      <Title_h1 text="Login/register" icon="login" />
+      <Title_h1 text="Se connecter / S'inscrire" icon="login" />
       <form>
         <InputText
           type="text"
-          description='Username'
+          description="Nom d'utilisateur"
           placeholder='Jean Michel'
           autoComplete='off'
           value={username}
@@ -94,7 +94,7 @@ export default function Login() {
 
         <InputText
           type='password'
-          description='Password'
+          description='Mot de passe'
           placeholder=''
           autoComplete='off'
           value={password}
@@ -103,9 +103,9 @@ export default function Login() {
         <Spacer direction="H" spacing={3} />
 
         <div className={styles.buttons_parent}>
-          <BeautifulButton text="Login" icon="login" onClick={handleLoginSubmit} />
-          <Spacer direction="H" spacing={2} />
-          <BeautifulButton text="Register" icon="app_registration" onClick={handleRegisterSubmit} />
+          <BeautifulButton text="Connexion" icon="login" onClick={handleLoginSubmit} />
+          <Spacer direction="V" spacing={2} />
+          <BeautifulButton text="Inscription" icon="app_registration" onClick={handleRegisterSubmit} />
         </div>
       </form>
 

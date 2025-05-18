@@ -98,13 +98,13 @@ export default function Page() {
 
   return (
     <div className={styles.history_container}>
-      <Title_h1 text="History" icon="menu_book" />
+      <Title_h1 text="Historique" icon="menu_book" />
       <div className={styles.history_content}>
         {gamesArr.length === 0 ? (
           <div className={styles.history_item}>
-            <div className={styles.history_item_title}>History</div>
+            <div className={styles.history_item_title}>Historique</div>
             <div className={styles.history_item_content}>
-              <div className={styles.history_item_content_text}>No history available</div>
+              <div className={styles.history_item_content_text}>Pas d'historique disponible</div>
             </div>
           </div>
         ) : (

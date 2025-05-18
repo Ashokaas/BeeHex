@@ -140,9 +140,9 @@ export default function Page() {
         />
       )}
 
-      <Title_h1 text="My Account" icon='person' />
+      <Title_h1 text="Mon compte" icon='person' />
       <div className={styles.container}>
-        <p>{username ? `Welcome, ${username} !` : 'Loading...'}</p>
+        <p>{username ? `Bienvenue, ${username} !` : 'Chargement...'}</p>
         <LineChart games={games} />
 
         <form className={styles.form}
@@ -168,16 +168,16 @@ export default function Page() {
         >
           <div className={styles.form_inputs}>
             <div>
-              <label htmlFor="current_password">Current password:</label>
+              <label htmlFor="current_password">Mot de passe actuel:</label>
               <input type="password" id="current_password" name="current_password" required />
             </div>
             <div>
-              <label htmlFor="new_password">New password:</label>
+              <label htmlFor="new_password">Nouveau mot de passe:</label>
               <input type="password" id="new_password" name="new_password" required />
             </div>
           </div>
           <BeautifulButton
-            text="Update Password"
+            text="Mettre à jour le mot de passe"
             icon="lock"
             type="submit"
           />
