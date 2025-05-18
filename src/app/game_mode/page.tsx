@@ -273,8 +273,9 @@ export default function Home() {
         <Title_h1 text="Dernières parties" />
         <div className={styles.history_content}>
           {gamesArr.length === 0 ? (
-            <div className={styles.history_item}>
-                Aucune partie récente/Vous n'êtes pas connecté
+            <div className={styles.current_mmr}>
+                <b>Aucune partie récente/Vous n'êtes pas connecté</b>
+                
             </div>
           ) : (
             <>
