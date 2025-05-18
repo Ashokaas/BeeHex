@@ -150,6 +150,7 @@ export default function Home() {
   }
   const [gameState, setGameState] = useState(GameState.LOADING);
   const [storedMoves, setStoredMoves] = useState(moves);
+  const [gameParametersState, setGameParametersState] = useState(gameParameters);
   let workingGameState: GameState = GameState.LOADING;
   let game: GameInstance | undefined = undefined;
   const [grid, setGrid] = useState([[0, 0], [0, 0]]);
@@ -242,6 +243,7 @@ export default function Home() {
             setGameState(GameState.PLAYING);
             workingGameState = GameState.PLAYING;
             game = GameInstance.fromGame(game_details, ownId);
+            setGameParametersState(game_details.game_parameters);
             setGrid(game_details.grid);
             showGrid();
           }
@@ -334,11 +336,18 @@ export default function Home() {
         if (gameData.status === GameStatus.IN_PROGRESS) {
           onlineGameInitialize();
           return;
+        } else {
+          console.error('Game not in progress');
+          setGameParametersState(gameData.gameParameters);
+          setStoredMoves(gameData.moves!!.split(' ').map((move) => {
+            const move_int = parseInt(move);
+            const y = Math.floor(move_int / gameData.gameParameters.board_size);
+            const x = move_int % gameData.gameParameters.board_size;
+            return [x, y];
+          }));
+          setGameState(GameState.REVIEWING);
+          workingGameState = GameState.REVIEWING;
         }
-        setGameState(GameState.REVIEWING);
-        workingGameState = GameState.REVIEWING;
-        console.error('NOT IMPLEMENTED');
-        return;
       };
 
       async function localInitialize() {
@@ -359,6 +368,7 @@ export default function Home() {
           setGameState(GameState.PLAYING);
           workingGameState = GameState.PLAYING;
           game = GameInstance.fromGame(game_details, ownId);
+          setGameParametersState(game_details.game_parameters);
           setGrid(game_details.grid);
           showGrid();
         }
@@ -453,13 +463,14 @@ export default function Home() {
 
   useEffect(() => {
     if (gameState === GameState.REVIEWING) {
-      const grid = new Array(gameParameters?.board_size).fill(0).map(() => new Array(gameParameters?.board_size).fill(0));
+      const ggrid = new Array(gameParametersState?.board_size).fill(0).map(() => new Array(gameParametersState?.board_size).fill(0));
       for (let i = 0; i < currentMoves.length; i++) {
         const move = currentMoves[i];
-        grid[move[0]][move[1]] = i % 2 === 0 ? 1 : 2;
+        ggrid[move[0]][move[1]] = i % 2 === 0 ? 1 : 2;
       }
-      setGrid(grid);
-      explorer.setGame(grid, currentMoves.length + 1, basicHeuristic, explorerCallback)
+      setGrid(ggrid);
+      console.log(ggrid, currentMoves);
+      explorer.setGame(ggrid, currentMoves.length + 1, basicHeuristic, explorerCallback)
     }
   }, [gameState, currentMoves]);
 
