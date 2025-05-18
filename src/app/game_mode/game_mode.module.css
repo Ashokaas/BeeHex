@@ -54,3 +54,59 @@
   color: white;
 }
 
+
+
+
+.history_content {
+  width: 100%;
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 18px;
+}
+
+.history_item {
+  width: 90%;
+  padding: 18px 22px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.history_item_title {
+  font-size: 1.08rem;
+  font-weight: 600;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.title_win {
+  color: var(--secondary);
+}
+
+.title_lose {
+  color: var(--red-400);
+}
+
+
+.mmr_win {
+  color: var(--secondary);
+}
+
+.mmr_lose {
+  color: var(--red-400);
+}
+
+.current_mmr {
+  width: 100%;
+  text-align: center;
+  font-size: 1.12rem;
+  font-weight: bold;
+  color: var(--text-color);
+  margin-bottom: 10px;
+  letter-spacing: 0.5px;
+}
