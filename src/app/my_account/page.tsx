@@ -191,6 +191,8 @@ export default function Page() {
           onClick={async (e) => {
             e.preventDefault();
             Cookies.remove('token');
+            Cookies.remove('userId');
+            Cookies.remove('username');
             window.dispatchEvent(new Event('cookieChange'));
             router.push('/home')
           }}

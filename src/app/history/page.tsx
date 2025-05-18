@@ -11,7 +11,7 @@ import { useRouter } from "next/navigation";
 import 'material-symbols';
 import Cookies from "js-cookie";
 
-type Game = {
+type GameArr = {
   gameId: string;
   firstPlayerId: string;
   EloChangeFirstPlayer: number;
@@ -22,7 +22,7 @@ type Game = {
   moves: string;
 };
 
-function GameResult({ game }: { game: Game }) {
+function GameResult({ game }: { game: GameArr }) {
   const userId = Cookies.get('userId');
   const isFirstPlayer = game.firstPlayerId === userId;
   const victory = (isFirstPlayer && game.EloChangeFirstPlayer > 0) || (!isFirstPlayer && game.EloChangeSecondPlayer > 0);
@@ -68,16 +68,22 @@ function GameResult({ game }: { game: Game }) {
 }
 
 export default function Page() {
-  const [gamesArr, setGamesArr] = useState<Game[]>([]);
+  const [gamesArr, setGamesArr] = useState<GameArr[]>([]);
   const router = useRouter();
 
   const fetchUser = async () => {
     const token = Cookies.get('token');
-    if (!token) { router.push('/login_register'); }
+    const userId = Cookies.get('userId');
+    console.log("token:", token);
+    console.log("userId:", userId);
+    if (!token) { router.push('/login_register'); return; }
+    if (!userId) { console.warn("userId non trouvé dans les cookies"); return; }
     try {
-      const gamesRes = await axios.get(`http://${getEnv()['IP_HOST']}:3001/get_games_by_user/${Cookies.get('userId')}`)
+      const url = `http://${getEnv()['IP_HOST']}:3001/get_games_by_user/${userId}`;
+      console.log("Requête envoyée à :", url);
+      const gamesRes = await axios.get(url);
+      console.log("Réponse reçue :", gamesRes.data);
       setGamesArr(gamesRes.data);
-      console.log(gamesRes.data);
     } catch (error) {
       console.error('Error fetching user:', error);
     }
