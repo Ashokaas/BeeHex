@@ -493,7 +493,7 @@ export default function Home() {
       <div className={styles.game_interface}>
         <div className={styles.hex_parent}>
           <section className={`${styles.hexagon_grid} ${styles.hidden}`}>
-            <ShowGrid grid_array={grid} recommendedMoves={recommendedMoves}  clickCallback={clickCallback} hoverCallback={hoverCallback} />
+            <ShowGrid grid_array={grid} turn={turn} recommendedMoves={recommendedMoves}  clickCallback={clickCallback} hoverCallback={hoverCallback} />
           </section>
           <div className={styles.loading_spinner}></div>
         </div>
