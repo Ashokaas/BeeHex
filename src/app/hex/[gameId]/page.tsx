@@ -187,6 +187,7 @@ export default function Home() {
   const [endGameT1, setT1] = useState("Défaite/Victoire");
   const [endGameT2, setT2] = useState("Vous avez gagné +X MMR");
   const [currentMoves, setCurrentMoves] = useState(moves);
+  const [nextCurrentMove, setNextCurrentMove] = useState([0, 0] as Coordinate);
   const [sliderValue, setSliderValue] = useState(1);
 
   const [moveEvaluationScore1, setMoveEvaluationScore1] = useState(new Score(0, false));
@@ -200,7 +201,23 @@ export default function Home() {
   const [recommendedMoves, setRecommendedMoves] = useState([] as Coordinate[]);
 
 
+  function reviewClickCallback(i: number, j: number) {
+    setNextCurrentMove([i, j]);
+  }
+
   function explorerCallback(moves: RecommendedMove[]) {
+    if (moves.length === 1 && moves[0].coordinate[0] === -1) {
+      setMoveEvaluationScore1(new Score(0, false));
+      setMoveEvaluationMoves1([]);
+      setMoveEvaluationScore2(new Score(0, false));
+      setMoveEvaluationMoves2([]);
+      setMoveEvaluationScore3(new Score(0, false));
+      setMoveEvaluationMoves3([]);
+      setMoveEvaluationScore4(new Score(0, false));
+      setMoveEvaluationMoves4([]);
+      setRecommendedMoves([]);
+      return;
+    }
     for (let i = 0; i < moves.length; i++) {
       
       const move = moves[i];
@@ -218,7 +235,7 @@ export default function Home() {
         setMoveEvaluationMoves4(move.optimalRoute.slice(0, 6));
       }
     }
-    setRecommendedMoves(moves.map((move) => move.optimalRoute[0]));
+    setRecommendedMoves(moves.map((move) => move.optimalRoute[0])); //Crash si route vide
   }
 
 
@@ -266,8 +283,10 @@ export default function Home() {
               const x = move_int % game!!.getGridArray().length;
               return [x, y];
             }));
+            setClickCallback(() => reviewClickCallback);
             setGameState(GameState.REVIEWING);
             workingGameState = GameState.REVIEWING;
+            
             if ((ownId === player1Id && status === GameStatus.FIRST_PLAYER_WIN) || (ownId === player2Id && status === GameStatus.SECOND_PLAYER_WIN)) {
               console.log('Victoire');
               setT1("Victoire");
@@ -348,6 +367,7 @@ export default function Home() {
             const x = move_int % gameData.gameParameters.board_size;
             return [x, y];
           }));
+          setClickCallback(() => reviewClickCallback);
           setGameState(GameState.REVIEWING);
           workingGameState = GameState.REVIEWING;
         }
@@ -403,6 +423,7 @@ export default function Home() {
             }, 250 * (i + 1));
             });
             */
+          setClickCallback(() => reviewClickCallback);
           setGameState(GameState.REVIEWING);
           workingGameState = GameState.REVIEWING;
         }
@@ -480,6 +501,14 @@ export default function Home() {
   useEffect(() => {
     setTurn(grid.join("").replaceAll("0", "").length + 1);
   }, [grid]);
+
+  useEffect(() => {
+    if (gameState === GameState.REVIEWING) {
+      if (grid[nextCurrentMove[0]][nextCurrentMove[1]] === 0) {
+          setCurrentMoves(currentMoves.concat([nextCurrentMove]));
+      }
+    }
+  }, [nextCurrentMove]);
 
   return (
     <>

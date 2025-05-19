@@ -338,7 +338,7 @@ export class Explorer {
 		this.instances.set(this.game.getGridHash(), this.game);
 		if (this.game.getScore().isWinCountdown && (this.game.getScore().score == 0.5 || this.game.getScore().score == -0.5)) {
 			this.mainInstances = []
-			updateCallback({coordinate: [1, 1], score: this.game.getScore(), optimalRoute: []} as RecommendedMove); // Envoie une version vide de la recommandation
+			updateCallback([{coordinate: [-1, 1], score: this.game.getScore(), optimalRoute: [[-1, 1]]}] as RecommendedMove[]); // Envoie une version vide de la recommandation
 			return
 		}
 		
