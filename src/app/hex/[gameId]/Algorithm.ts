@@ -403,7 +403,7 @@ export class Explorer {
 			this.mainInstances.sort((a, b) => a.getScore().isBiggerThan(b.getScore()) ? -1 : 1); // Trie les instances principales par score croissant
 		}
 		let allWinCountdowns;
-		for (let i = 0; i < this.mainInstances.length && i < 5; i++) {
+		for (let i = 0; i < this.mainInstances.length && i < 25; i++) {
 			if (this.mainInstances[i].getScore().isWinCountdown == false) {
 				allWinCountdowns = false;
 				break;
@@ -645,6 +645,9 @@ export function attributeScore(grid: number[][], player: number): [number, numbe
 	}
 	return [minCost, minBridges]; // Retourne le cout et le nombre de ponts minimums trouvés
 }
+
+
+
 
 function isCoordinateInArray(array: Array<Coordinate>, coord: Coordinate) {
 	for (let i = 0; i < array.length; i++) {
