@@ -8,7 +8,7 @@ import React, { use, useEffect, useState } from 'react';
 import InputText from "@/components/input_text/input_text";
 import styles from './game_mode.module.css'
 import Spacer from "@/components/spacer/spacer";
-import { BOARD_SIZES, Game, ServerBoundGameSearchPacket, ServerBoundPacketType, TIME_LIMITS } from "../definitions";
+import { BOARD_SIZES, Game, ServerBoundGameSearchPacket, ServerBoundJoinRoomPacket, ServerBoundPacketType, TIME_LIMITS } from "../definitions";
 import { WebsocketHandler } from "./WebsocketHandler";
 import LoadingPage from "@/components/loading_page/loading_page";
 import { useRouter } from "next/navigation";
@@ -133,10 +133,10 @@ export default function Home() {
 
   /* if the user wants to play with a friend, then he can't play in ranked */
   useEffect(() => {
-    if (gameF === "Créer une partie (avec un ami)" || gameF === "Rejoindre un ami") {
+    if (gameF === "Partie privée") {
       setGameType("Normal");
     }
-    if (gameF === "Rejoindre un ami") {
+    if (gameF === "Partie privée") {
       setShowCodeInput(true);
 
     } else {
@@ -192,7 +192,17 @@ export default function Home() {
         movePlayedCallback,
         connectionEndedCallback
       }).awaitConnection();
-
+      if (gameF === "Partie privée") {
+        websocketHandler.sendPacket({
+          type: ServerBoundPacketType.JOIN_ROOM,
+          room_id: gameCode,
+          game_parameters: {
+            time_limit: parseInt(timeLimit),
+            board_size: parseInt(boardSize),
+            ranked: false
+          }
+        } as ServerBoundJoinRoomPacket);
+      } else {
       websocketHandler.sendPacket({
         type: ServerBoundPacketType.GAME_SEARCH,
         game_parameters: {
@@ -201,6 +211,7 @@ export default function Home() {
           ranked: gameType === "Classé",
         }
       } as ServerBoundGameSearchPacket);
+    }
 
       // cherche une game
       setIsSearchingGame(true);
@@ -249,7 +260,7 @@ export default function Home() {
           <RadioButton
             title="Avec qui jouer ?"
             varName={gameF}
-            values={["Chercher une partie", "Créer une partie (avec un ami)", "Rejoindre un ami"]}
+            values={["Chercher une partie", "Partie privée"]}
             setVar={setGameF}
           />
           <Spacer direction="H" spacing={3} />

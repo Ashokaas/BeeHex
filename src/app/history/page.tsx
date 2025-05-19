@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import 'material-symbols';
 import Cookies from "js-cookie";
+import router from "next/router";
 
 type GameArr = {
   gameId: string;
@@ -24,6 +25,7 @@ type GameArr = {
 
 function GameResult({ game }: { game: GameArr }) {
   const userId = Cookies.get('userId');
+  const gameid = game.gameId;
   const isFirstPlayer = game.firstPlayerId === userId;
   const victory = (isFirstPlayer && game.EloChangeFirstPlayer > 0) || (!isFirstPlayer && game.EloChangeSecondPlayer > 0);
   const mmrChange = isFirstPlayer ? game.EloChangeFirstPlayer : game.EloChangeSecondPlayer;
@@ -57,7 +59,7 @@ function GameResult({ game }: { game: GameArr }) {
         </div>
 
         <div className={styles.history_item_content}>
-          <BeautifulButton text="Analyse" icon="analytics" onClick={async (e) => { }} />
+          <BeautifulButton text="Analyse" icon="analytics" onClick={async (e) => { window.location.href = `/hex/o_${gameid}` }} />
         </div>
 
       </div>

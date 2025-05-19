@@ -198,8 +198,11 @@ export default function Home() {
   const [moveEvaluationMoves3, setMoveEvaluationMoves3] = useState([] as Coordinate[]);
   const [moveEvaluationMoves4, setMoveEvaluationMoves4] = useState([] as Coordinate[]);
   const [recommendedMoves, setRecommendedMoves] = useState([] as Coordinate[]);
+
+
   function explorerCallback(moves: RecommendedMove[]) {
     for (let i = 0; i < moves.length; i++) {
+      
       const move = moves[i];
       if (i === 0) {
         setMoveEvaluationScore1(move.score);

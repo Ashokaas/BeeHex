@@ -132,6 +132,7 @@ export interface ServerBoundJoinGamePacket {
 export interface ServerBoundJoinRoomPacket {
   type: ServerBoundPacketType.JOIN_ROOM;
   room_id: RoomId;
+  game_parameters: GameParameters;
 }
 
 export interface ServerBoundPlayMovePacket {
