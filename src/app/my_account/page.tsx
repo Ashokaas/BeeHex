@@ -38,7 +38,7 @@ const LineChart = ({ games }: { games: { mmrAfterGame: number, gameDate: number 
   };
 
   // L'axe X est maintenant l'ordre des parties
-  const data = games.map((game, i) => [
+  const data = games.reverse().map((game, i) => [
     `Partie ${i + 1}`, // Affiche "Game 1", "Game 2", ...
     game.mmrAfterGame,
     getRank(game.mmrAfterGame)

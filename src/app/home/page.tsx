@@ -64,7 +64,7 @@ export default function Home() {
 
 					</div>
 				</div>
-
+				<Spacer direction='H' spacing={15} />
 
 
 

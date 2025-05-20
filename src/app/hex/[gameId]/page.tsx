@@ -185,7 +185,7 @@ export default function Home() {
 
   const [showEndGameAlert, setShowEndGameAlert] = useState(false);
   const [endGameT1, setT1] = useState("Défaite/Victoire");
-  const [endGameT2, setT2] = useState("Vous avez gagné +X MMR");
+  const [endGameT2, setT2] = useState("Vous avez gagné");
   const [currentMoves, setCurrentMoves] = useState(moves);
   const [nextCurrentMove, setNextCurrentMove] = useState([0, 0] as Coordinate);
   const [sliderValue, setSliderValue] = useState(1);
@@ -290,12 +290,12 @@ export default function Home() {
             if ((ownId === player1Id && status === GameStatus.FIRST_PLAYER_WIN) || (ownId === player2Id && status === GameStatus.SECOND_PLAYER_WIN)) {
               console.log('Victoire');
               setT1("Victoire");
-              setT2("Vous avez gagné +X MMR");
+              setT2("Vous avez gagné");
               setShowEndGameAlert(true);
             } else if ((ownId === player1Id && status === GameStatus.SECOND_PLAYER_WIN) || (ownId === player2Id && status === GameStatus.FIRST_PLAYER_WIN)) {
               console.log('Défaite');
               setT1("Défaite");
-              setT2("Vous avez perdu -X MMR");
+              setT2("Vous avez perdu");
               setShowEndGameAlert(true);
             } else {
               console.log('Erreur');
@@ -536,15 +536,7 @@ export default function Home() {
             <PlayerStats name={players.player2.name} timer={players.player2.timer} />
           </div>
 
-          <div className={styles.highlightMove}>
-            <div>
-              <div>
-                <span className="material-symbols-rounded">search</span>
-                <p>Indice</p>
-              </div>
-            </div>
-          </div>
-
+          
         </div>
       </div>
       }
@@ -569,7 +561,7 @@ export default function Home() {
           <MoveEvaluation index={2} turn={turn} Evaluation={moveEvaluationScore3} nextMoves={moveEvaluationMoves3} onClick={oui} onHover={oui} onLeave={oui}/>
           <MoveEvaluation index={3} turn={turn} Evaluation={moveEvaluationScore4} nextMoves={moveEvaluationMoves4} onClick={oui} onHover={oui} onLeave={oui}/>
           <Spacer spacing={2} direction='H' />
-          <h2>Exploration</h2>
+          
         </div>
       </div>}
     </>

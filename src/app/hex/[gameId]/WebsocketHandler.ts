@@ -1,3 +1,4 @@
+import getEnv from "@/env/env";
 import * as packets from "../../definitions";
 
 interface WebsocketCallbacks {
@@ -17,7 +18,7 @@ export class WebsocketHandler {
 
 	constructor(callbacks: WebsocketCallbacks) {
 		this.callbacks = callbacks;
-		this.socket = new WebSocket("ws://localhost:3002/");
+		this.socket = new WebSocket(`ws://${getEnv()['IP_HOST']}:3002/`);
 		this.socket.onopen = () => {
 			console.log("Connected to game server");
 		};

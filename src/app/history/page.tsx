@@ -55,7 +55,7 @@ function GameResult({ game }: { game: GameArr }) {
         </div>
 
         <div className={styles.history_item_footer}>
-          le {date} en {game.moves.split('').length} coups
+          le {date} en {game.moves.split(' ').length} coups
         </div>
 
         <div className={styles.history_item_content}>
