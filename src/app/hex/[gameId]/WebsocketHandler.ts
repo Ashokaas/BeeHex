@@ -11,7 +11,6 @@ interface WebsocketCallbacks {
 	connectionEndedCallback: () => void;
 }
 
-
 export class WebsocketHandler {
 	private socket: WebSocket;
 	private callbacks: WebsocketCallbacks;

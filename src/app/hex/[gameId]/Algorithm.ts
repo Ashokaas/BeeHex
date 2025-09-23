@@ -1,7 +1,9 @@
 import { GridHash, RawScoredGameInstance, RawSimpleGameInstance, RawScore, Coordinate, AlgorithmExplorerBoundGenericPacket, AlgorithmExplorerBoundPacketType, AlgorithmExplorerBoundResultPacket, AlgorithmWorkerBoundPacketType, AlgorithmWorkerBoundExplorePacket, AlgorithmWorkerBoundSetIdPacket } from "../../definitions";
+import { ArrayCache } from "./ArrayCache";
 
 var empty_array: number[][] = []
 var empty_map: Map<number, ScoredGameInstance> = new Map<number, ScoredGameInstance>()
+var array_cache = new ArrayCache()
 export class SimpleGameInstance { // TODO Ajouter un check pour victoire
 	public grid: number[][];
 	public moves: Array<Coordinate>;
@@ -52,8 +54,9 @@ export class SimpleGameInstance { // TODO Ajouter un check pour victoire
 
 	playMoveYX(y: number, x: number) {
 		if (this.isValidMove(y, x)) {
-			let newGrid = this.grid.map(row => row.slice()); // Crée une copie de la grille
-			newGrid[y][x] = this.getCurrentPlayer();
+			let newGrid = this.grid.slice();
+			let row = newGrid[y]
+			newGrid[y] = array_cache.getFromOne(row, x, this.getCurrentPlayer());
 			let newMoves = this.moves.slice(); // Crée une copie des mouvements
 			newMoves.push([y, x]);
 			let newTurn = this.turn + 1; // Incrémente le tour
@@ -280,6 +283,8 @@ export interface RecommendedMove {
 }
 export class Explorer {
 	private game: ScoredGameInstance;
+	private startTime: EpochTimeStamp;
+	private exploredBoardCount: number = 0;
 	private heuristic: Function;
 	private updateCallback: Function;
 	private mainInstances: Array<MainScoredGameInstance>
@@ -295,6 +300,7 @@ export class Explorer {
 		this.heuristic = heuristic;
 		this.updateCallback = updateCallback;
 		this.bestMoves = []
+		this.startTime = Date.now();
 		this.game = this.rateInstance(simpleGame);
 		this.instances = new Map<GridHash, ScoredGameInstance>();
 		this.instances.set(this.game.getGridHash(), this.game);
@@ -439,13 +445,20 @@ export class Explorer {
 	private _workerCallback(event: MessageEvent) {
 		const packet = event.data as AlgorithmExplorerBoundGenericPacket;
 		if (packet.type === AlgorithmExplorerBoundPacketType.RESULT) {
-
 			const packet = event.data as AlgorithmExplorerBoundResultPacket;
 			const id = packet.id;
 			if (id != this.game.getGridHash()) {
 				return
 			}
 			//const worker = this.workers[id];
+			const currentTime = Date.now();
+			this.exploredBoardCount += 1;
+			if (currentTime - this.startTime > 5000) {
+				let boardsPerSecond = Math.round((this.exploredBoardCount * 1000) / (currentTime - this.startTime));
+				console.log(`Explored ${this.exploredBoardCount} boards in ${currentTime - this.startTime} ms (${boardsPerSecond} boards/s)`);
+				this.startTime = currentTime;
+				this.exploredBoardCount = 0;
+			}
 			const gameInstances = packet.result.gameInstances;
 			for (const hash of gameInstances.keys().toArray()) {
 				if (!this.instances.has(hash)) {
