@@ -63,7 +63,7 @@ function RevertButton() {
 
 async function fetchGame(gameId: string) {
   try {
-    const game = await axios.post(`http://${getEnv()['IP_HOST']}:3001/get_game/${gameId}`);
+    const game = await axios.post(`https://${getEnv()['API_IP']}/get_game/${gameId}`);
     return game.data;
   } catch (error) {
     console.error('Error fetching game:', error);
@@ -110,7 +110,7 @@ function parseGameParametersAndMoves(gameId: string): [LocalGameParameters, move
 
 }
 export default function Home() {
-  const token = Cookies.get('token');
+  const userId = Cookies.get('userId');
   const rawGameId = useParams<{ gameId: string }>().gameId;
   if (rawGameId === undefined || rawGameId === null || rawGameId === '' || rawGameId.length < 3) {
     window.location.href = '/';
@@ -159,7 +159,7 @@ export default function Home() {
   const [hoverCallback, setHoverCallback] = useState<(i: number, j: number) => void>(() => () => { });
   const fetchUser = async (userId: UserId) => {
     try {
-      const user = await axios.get(`http://${getEnv()['IP_HOST']}:3001/get_user/${userId}`, {});
+      const user = await axios.get(`https://${getEnv()['API_IP']}/get_user/${userId}`, {});
       return [user.data.id, user.data.username, user.data.mmr, user.data.registration_date];
     } catch (error) {
       console.error('Error fetching user:', error);
@@ -169,8 +169,7 @@ export default function Home() {
 
   const fetchSelf = async () => {
     try {
-      const user = await axios.post(`http://${getEnv()['IP_HOST']}:3001/me`, {}, {
-        headers: { 'Authorization': token },
+      const user = await axios.post(`https://${getEnv()['API_IP']}/me`, {}, {
         withCredentials: true,
       });
       return [user.data.id, user.data.username, user.data.mmr, user.data.registration_date];
@@ -342,7 +341,7 @@ export default function Home() {
           setClickCallback(() => onlineClickCallback);
           setHoverCallback(() => onlineHoverCallback);
         }
-        const [ownId, ownUsername, ownMMR, ownRegistrationDate] = token ? await fetchSelf() : [null, null, null, null]; // non enfait
+        const [ownId, ownUsername, ownMMR, ownRegistrationDate] = userId ? await fetchSelf() : [null, null, null, null]; // non enfait
         const gameData: DatabaseGame = await fetchGame(gameId);
         if (!gameData) {
           console.error('Game not found');
@@ -360,7 +359,6 @@ export default function Home() {
           onlineGameInitialize();
           return;
         } else {
-          console.error('Game not in progress');
           setGameParametersState(gameData.gameParameters);
           setStoredMoves(gameData.moves!!.split(' ').map((move) => {
             const move_int = parseInt(move);
@@ -466,7 +464,6 @@ export default function Home() {
           player2: { name: "Joueur 2", timer: "X:XX" }
         });
       }
-
 
       if (gameType === "online") {
         onlineGamePreInitialize();

@@ -97,18 +97,22 @@ export default function Page() {
     }
 
     try {
-      const user = await axios.post(`http://${getEnv()['IP_HOST']}:3001/me`, {}, {
+      const user = await axios.post(`https://${getEnv()['API_IP']}/me`, {}, {
         withCredentials: true,
       });
       setUsername(user.data.username);
       Cookies.set('userId', user.data.id);
-    } catch (error) {
+      } catch (error) {
       router.push('/login_register');
     }
     try {
       const userId = Cookies.get('userId');
-      const gamesResponse = await axios.get(`http://${getEnv()['IP_HOST']}:3001/get_games_by_user/${userId}`);
-      setGames(gamesResponse.data);
+      const gamesRes = await axios.get(`https://${getEnv()['API_IP']}/get_games_by_user/${userId}`, {
+        withCredentials: true,
+      });
+      setGames(gamesRes.data);
+
+
     } catch (error) {
       console.error('Error fetching games:', error);
     }
@@ -155,11 +159,10 @@ export default function Page() {
             const new_password = formData.get('new_password');
 
             try {
-              const token = Cookies.get('token');
               await axios.post(
-                `http://${getEnv()['IP_HOST']}:3001/edit_password`,
+                `https://${getEnv()['API_IP']}/edit_password`,
                 { current_password, new_password },
-                { headers: { 'Authorization': token }, withCredentials: true, }
+                { withCredentials: true, }
               );
               setPasswordEditSuccess(true);
             } catch (error) {
@@ -192,9 +195,16 @@ export default function Page() {
           icon="logout"
           onClick={async (e) => {
             e.preventDefault();
-            Cookies.remove('token');
             Cookies.remove('userId');
             Cookies.remove('username');
+            try {
+              await axios.get(
+                `https://${getEnv()['API_IP']}/logout`,
+                { withCredentials: true }
+              );
+            } catch (error) {
+              console.error('Error logging out:', error);
+            }
             window.dispatchEvent(new Event('cookieChange'));
             router.push('/home')
           }}

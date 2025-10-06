@@ -1,5 +1,6 @@
 export default function getEnv() {
   return {
-    'IP_HOST': '172.25.6.237',
+    'API_IP': 'api.beehex.local',
+    'WEBSOCKET_IP': 'game.beehex.local'
   };
 }

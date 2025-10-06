@@ -28,21 +28,30 @@ function LoginRegisterButton() {
   );
 }
 
+function LoginWaitButton() {
+  return (
+    <div className={styles.a} style={{ cursor: 'wait' }}>
+      <p>Chargement</p>
+      <span className="material-symbols-rounded">progress_activity</span>
+    </div>
+  );
+}
+
 
 function ShowLoginOrMyAccount() {
-  const [loggedIn, setLoggedIn] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(!!Cookies.get('userId'));
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
-    const checkLogin = () => setLoggedIn(!!Cookies.get('token'));
+    const checkLogin = () => setLoggedIn(!!Cookies.get('userId'));
     checkLogin();
 
     window.addEventListener('cookieChange', checkLogin);
     return () => window.removeEventListener('cookieChange', checkLogin);
   }, []);
 
-  if (!isMounted) return null; // Empêche le rendu côté serveur
+  if (!isMounted) return <LoginWaitButton />; // Empêche le rendu côté serveur
 
   return loggedIn ? <MyAccountButton /> : <LoginRegisterButton />;
 }

@@ -17,7 +17,7 @@ export class WebsocketHandler {
 
 	constructor(callbacks: WebsocketCallbacks) {
 		this.callbacks = callbacks;
-		this.socket = new WebSocket(`ws://${getEnv()['IP_HOST']}:3002/`);
+		this.socket = new WebSocket(`ws://${getEnv()['WEBSOCKET_IP']}/`);
 		this.socket.onopen = () => {
 			console.log("Connected to game server");
 		};

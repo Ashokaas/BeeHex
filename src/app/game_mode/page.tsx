@@ -95,7 +95,7 @@ export default function Home() {
       return;
     }
     try {
-      const gamesRes = await axios.get(`http://${getEnv()['IP_HOST']}:3001/get_games_by_user/${userId}`);
+      const gamesRes = await axios.get(`https://${getEnv()['API_IP']}/get_games_by_user/${userId}`);
       setGamesArr(gamesRes.data);
       console.log(gamesRes.data);
     } catch (error) {

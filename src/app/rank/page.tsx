@@ -31,7 +31,7 @@ export default function Home() {
 	const [total, setTotal] = useState(0);
 
 	const fetchUsers = async (first: number, last: number) => {
-		const response = await axios.get(`http://${getEnv()['IP_HOST']}:3001/get_all_users?first=${first}&limit=${limit}`);
+		const response = await axios.get(`https://${getEnv()['API_IP']}/get_all_users?first=${first}&limit=${limit}`);
 		while (response.data.rows.length < 5) {
 			response.data.rows.push({ username: "", mmr: "" });
 		}

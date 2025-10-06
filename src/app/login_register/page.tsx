@@ -41,18 +41,19 @@ export default function Login() {
 
   const handleSubmit = async (e: { preventDefault: () => void; }, type: 'login' | 'register') => {
     e.preventDefault();
-    const url = type === 'login' ? `http://${getEnv()["IP_HOST"]}:3001/login` : `http://${getEnv()["IP_HOST"]}:3001/register`;
+    const url = type === 'login' ? `https://${getEnv()["API_IP"]}/login` : `https://${getEnv()["API_IP"]}/register`;
 
     try {
       const response = await axios.post(url, { username, password }, { withCredentials: true } );
 
       // Store the token in local storage or a state management library
-      // window.dispatchEvent(new Event('cookieChange')); // Removed: no longer needed
+
       console.log(response);
+      window.dispatchEvent(new Event('cookieChange'));
       router.push('/home');
       /*
       if (type === 'login') {
-        const user = await axios.post(`http://${getEnv()["IP_HOST"]}:3001/me`, {}, { headers: { 'Authorization': response.data.token }, withCredentials: true, });
+        const user = await axios.post(`https://${getEnv()["API_IP"]}/me`, {}, { headers: { 'Authorization': response.data.token }, withCredentials: true, });
         console.log(user.data);
       }*/
       
@@ -73,6 +74,7 @@ export default function Login() {
           text1='Error'
           text2='An error occurred'
           type='bad'
+          onClick={async (e) => { setLogginError(false) }}
         />}
       
 
