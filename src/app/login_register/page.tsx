@@ -44,21 +44,18 @@ export default function Login() {
     const url = type === 'login' ? `http://${getEnv()["IP_HOST"]}:3001/login` : `http://${getEnv()["IP_HOST"]}:3001/register`;
 
     try {
-      const response = await axios.post(url, { username, password });
+      const response = await axios.post(url, { username, password }, { withCredentials: true } );
 
       // Store the token in local storage or a state management library
-      Cookies.set('token', response.data.token);
-      Cookies.set('username', response.data.user.username);
-      window.dispatchEvent(new Event('cookieChange'));
-
+      // window.dispatchEvent(new Event('cookieChange')); // Removed: no longer needed
       console.log(response);
-
       router.push('/home');
-
+      /*
       if (type === 'login') {
-        const user = await axios.post(`http://${getEnv()["IP_HOST"]}:3001/me`, {}, { headers: { 'Authorization': response.data.token } });
+        const user = await axios.post(`http://${getEnv()["IP_HOST"]}:3001/me`, {}, { headers: { 'Authorization': response.data.token }, withCredentials: true, });
         console.log(user.data);
-      }
+      }*/
+      
     } catch (error) {
       console.error(error);
       setLogginError(true);
