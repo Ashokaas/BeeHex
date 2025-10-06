@@ -79,6 +79,9 @@ const LineChart = ({ games }: { games: { mmrAfterGame: number, gameDate: number 
   return <div ref={chartRef} style={{ width: "600px", height: "400px" }} />;
 };
 
+
+
+
 // Main Page component
 export default function Page() {
   const [username, setUsername] = useState<string | null>(null);
@@ -90,25 +93,27 @@ export default function Page() {
 
   // Function to fetch user data
   const fetchUser = async () => {
-    const token = Cookies.get('token');
-    if (!token) {
+    const username = Cookies.get('username');
+    if (!username) {
       router.push('/login_register');
       return;
     }
 
     try {
       const user = await axios.post(`http://${getEnv()['IP_HOST']}:3001/me`, {}, {
-        headers: { 'Authorization': token }
+        withCredentials: true,
       });
       setUsername(user.data.username);
       Cookies.set('userId', user.data.id);
-
-      const gamesRes = await axios.get(`http://${getEnv()['IP_HOST']}:3001/get_games_by_user/${user.data.id}`);
-      setGames(gamesRes.data);
-
-
     } catch (error) {
-      console.error('Error fetching user:', error);
+      router.push('/login_register');
+    }
+    try {
+      const userId = Cookies.get('userId');
+      const gamesResponse = await axios.get(`http://${getEnv()['IP_HOST']}:3001/get_games_by_user/${userId}`);
+      setGames(gamesResponse.data);
+    } catch (error) {
+      console.error('Error fetching games:', error);
     }
   };
 
@@ -126,7 +131,7 @@ export default function Page() {
           text1="Password updated"
           text2="Your password has been successfully updated"
           type="good"
-          onClick={async (e) => { setPasswordEditSuccess(false)}}
+          onClick={async (e) => { setPasswordEditSuccess(false) }}
         />
       )}
 
@@ -136,7 +141,7 @@ export default function Page() {
           text1="Failed to update password"
           text2="Please check your current password"
           type="bad"
-          onClick={async (e) => { setPasswordEditError(false)}}
+          onClick={async (e) => { setPasswordEditError(false) }}
         />
       )}
 
@@ -157,7 +162,7 @@ export default function Page() {
               await axios.post(
                 `http://${getEnv()['IP_HOST']}:3001/edit_password`,
                 { current_password, new_password },
-                { headers: { 'Authorization': token } }
+                { headers: { 'Authorization': token }, withCredentials: true, }
               );
               setPasswordEditSuccess(true);
             } catch (error) {

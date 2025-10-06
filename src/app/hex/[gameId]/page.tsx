@@ -170,7 +170,8 @@ export default function Home() {
   const fetchSelf = async () => {
     try {
       const user = await axios.post(`http://${getEnv()['IP_HOST']}:3001/me`, {}, {
-        headers: { 'Authorization': token }
+        headers: { 'Authorization': token },
+        withCredentials: true,
       });
       return [user.data.id, user.data.username, user.data.mmr, user.data.registration_date];
     } catch (error) {
