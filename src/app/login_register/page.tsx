@@ -47,7 +47,7 @@ export default function Login() {
       const response = await axios.post(url, { username, password }, { withCredentials: true } );
 
       // Store the token in local storage or a state management library
-      window.dispatchEvent(new Event('cookieChange'));
+      // window.dispatchEvent(new Event('cookieChange')); // Removed: no longer needed
       console.log(response);
       router.push('/home');
       /*

@@ -79,9 +79,6 @@ const LineChart = ({ games }: { games: { mmrAfterGame: number, gameDate: number 
   return <div ref={chartRef} style={{ width: "600px", height: "400px" }} />;
 };
 
-
-
-
 // Main Page component
 export default function Page() {
   const [username, setUsername] = useState<string | null>(null);
@@ -93,8 +90,8 @@ export default function Page() {
 
   // Function to fetch user data
   const fetchUser = async () => {
-    const username = Cookies.get('username');
-    if (!username) {
+    const cookieUsername = Cookies.get('username');
+    if (!cookieUsername) {
       router.push('/login_register');
       return;
     }
