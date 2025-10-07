@@ -17,10 +17,12 @@
 .home_content .rules {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    background-image: linear-gradient(to bottom, var(--bg-color-secondary) 0%, rgba(13, 0, 255, 0.15) 100%);
+background: #400400;
+background: linear-gradient(240deg,rgb(51, 15, 13) 0%, rgb(13, 23, 56) 100%);
     padding: 4vh;
     border-radius: 30px;
     box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+
 
 }
 

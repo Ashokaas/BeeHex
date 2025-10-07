@@ -69,6 +69,10 @@ const BottomNavBar = () => {
       <p>Historique</p>
       <span className="material-symbols-rounded">replay</span>
     </Link>
+    <Link className={styles.a} href="/about">
+      <p>À propos</p>
+      <span className="material-symbols-rounded">info</span>
+    </Link>
     <ShowLoginOrMyAccount />
   </div>
   );

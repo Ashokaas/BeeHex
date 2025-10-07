@@ -520,7 +520,7 @@ export default function Home() {
           text2={endGameT2}
           icon={endGameT1 === "Victoire" ? "trophy" : "close"}
           type={endGameT1 === "Victoire" ? "good" : "bad"}
-          onClick={() => setShowEndGameAlert(false)}
+          onClick={async (e) => setShowEndGameAlert(false)}
         />}
       {gameState != GameState.REVIEWING &&
       <div className={styles.game_interface}>

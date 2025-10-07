@@ -61,19 +61,27 @@ qui est déjà blanc, il ne changera pas de couleur (car il est noir à la base)
     filter: invert(100%) !important;
 }
 
-/* A propos : gris */
+/* Historique : orange */
 #bottom_nav_bar .a:nth-child(4):hover {
-    background-color: #5f5f5f;
+    background-color: rgb(187, 103, 0);
 }
 #bottom_nav_bar .a:nth-child(4):hover img {
     filter: invert(100%) !important;
 }
 
-/* Login/register : rouge */
+/* A propos : gris */
 #bottom_nav_bar .a:nth-child(5):hover {
-    background-color: rgb(182, 58, 58);
+    background-color: #5f5f5f;
 }
 #bottom_nav_bar .a:nth-child(5):hover img {
+    filter: invert(100%) !important;
+}
+
+/* Login/register : rouge */
+#bottom_nav_bar .a:nth-child(6):hover {
+    background-color: rgb(182, 58, 58);
+}
+#bottom_nav_bar .a:nth-child(6):hover img {
     filter: invert(100%) !important;
 }
 

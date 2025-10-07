@@ -73,6 +73,7 @@ export default function Login() {
           text1='Error'
           text2='An error occurred'
           type='bad'
+          onClick={async (e) => { setLogginError(false) }}
         />}
       
 
