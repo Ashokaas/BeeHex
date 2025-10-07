@@ -18,6 +18,7 @@ export default function About() {
         <br /><br />
         Le code du projet est disponible sur <a href="https://github.com/Ashokaas/BeeHex">Github</a>.
         Le code de la première version est dans la branche <a href="https://github.com/Ashokaas/BeeHex/tree/beehex_v1">beehex_v1</a>
+      <br/>Le battle pass est dispo à : <a href="https://www.paypal.me/ashokasus">https://www.paypal.me/ashokasus</a>
       </p>
 
       <div id="logos">
