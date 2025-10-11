@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import BottomNavBar from '../../components/bottom_navbar/bottom_navbar';
+import BottomNavBar from '../../../components/bottom_navbar/bottom_navbar';
 import Head from 'next/head';
 import Title_h1 from "@/components/title_h1/title_h1";
 import BeautifulButton from "@/components/button/button";
@@ -8,10 +8,10 @@ import React, { use, useEffect, useState } from 'react';
 import InputText from "@/components/input_text/input_text";
 import styles from './game_mode.module.css'
 import Spacer from "@/components/spacer/spacer";
-import { BOARD_SIZES, Game, ServerBoundGameSearchPacket, ServerBoundJoinRoomPacket, ServerBoundPacketType, TIME_LIMITS } from "../definitions";
+import { BOARD_SIZES, Game, ServerBoundGameSearchPacket, ServerBoundJoinRoomPacket, ServerBoundPacketType, TIME_LIMITS } from "../../definitions";
 import { WebsocketHandler } from "./WebsocketHandler";
 import LoadingPage from "@/components/loading_page/loading_page";
-import { useRouter } from "next/navigation";
+import { redirect, RedirectType, useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import axios from "axios";
 import getEnv from "@/env/env";
@@ -91,13 +91,13 @@ export default function Home() {
   const fetchUserLastGames = async () => {
     const userId = Cookies.get('userId');
     if (!userId) {
-      console.log("userId non trouvé dans les cookies");
+      
       return;
     }
     try {
       const gamesRes = await axios.get(`https://${getEnv()['API_IP']}/get_games_by_user/${userId}`);
       setGamesArr(gamesRes.data);
-      console.log(gamesRes.data);
+      
     } catch (error) {
       console.error('Error fetching user:', error);
     }
@@ -146,15 +146,15 @@ export default function Home() {
 
   const handleValidationButton = async (e: { preventDefault: () => void; }) => {
     e.preventDefault();
-    console.log("Game type : " + gameType);
-    console.log("Game mode : " + gameMode);
-    console.log("Time limit : " + timeLimit);
-    console.log("Board size : " + boardSize);
-    console.log("Game with : " + gameF);
-    console.log("Game code : " + gameCode);
+    
+    
+    
+    
+    
+    
 
     if (gameType === "Hors-Ligne") {
-      window.location.href = `/hex/l_${timeLimit.toString()}_${boardSize.toString()}`
+      router.push(`/new/hex.html?id=l_${timeLimit.toString()}_${boardSize.toString()}`);
     }
     async function onlineSearchInitialize() {
 
@@ -164,11 +164,11 @@ export default function Home() {
       }
 
       function gameSearchCallback(game_parameters: any, player_count: number, elo_range: [number, number]) {
-        console.log(game_parameters, player_count, elo_range);
+        
       }
 
       function gameFoundCallback(game_id: any) {
-        window.location.href = `/hex/o_${game_id}`;
+        router.push(`/new/hex.html?id=o_${game_id}`);
       }
 
       function joinGameCallback(game_details: Game) { }

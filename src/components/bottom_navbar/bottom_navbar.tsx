@@ -12,7 +12,7 @@ import Cookies from 'js-cookie';
 
 function MyAccountButton() {
   return (
-    <Link className={styles.a} href="/my_account">
+    <Link className={styles.a} href="/new/my_account.html">
       <p>Mon compte</p>
       <span className="material-symbols-rounded">account_circle</span>
     </Link>
@@ -21,7 +21,7 @@ function MyAccountButton() {
 
 function LoginRegisterButton() {
   return (
-    <Link className={styles.a} href="/login_register">
+    <Link className={styles.a} href="/new/login_register.html">
       <p>Se connecter</p>
       <span className="material-symbols-rounded">login</span>
     </Link>
@@ -47,8 +47,12 @@ function ShowLoginOrMyAccount() {
     const checkLogin = () => setLoggedIn(!!Cookies.get('userId'));
     checkLogin();
 
-    window.addEventListener('cookieChange', checkLogin);
-    return () => window.removeEventListener('cookieChange', checkLogin);
+    if (typeof window !== "undefined") {
+      window?.addEventListener('cookieChange', checkLogin);
+      return () =>  window?.removeEventListener('cookieChange', checkLogin);
+    }
+    return () => {};
+    
   }, []);
 
   if (!isMounted) return <LoginWaitButton />; // Empêche le rendu côté serveur
@@ -62,19 +66,19 @@ function ShowLoginOrMyAccount() {
 const BottomNavBar = () => {
   return (
     <div id={styles.bottom_nav_bar}>
-    <Link className={styles.a} href="/">
+    <Link className={styles.a} href="/new/home.html">
       <p>Accueil</p>
       <span className="material-symbols-rounded">home</span>
     </Link>
-    <Link className={styles.a} href="/game_mode">
+    <Link className={styles.a} href="/new/game_mode.html">
       <p>Jouer</p>
       <span className="material-symbols-rounded">swords</span>
     </Link>
-    <Link className={styles.a} href="/rank">
+    <Link className={styles.a} href="/new/rank.html">
       <p>Classement</p>
       <span className="material-symbols-rounded">leaderboard</span>
     </Link>
-    <Link className={styles.a} href="/history">
+    <Link className={styles.a} href="/new/history.html">
       <p>Historique</p>
       <span className="material-symbols-rounded">replay</span>
     </Link>

@@ -92,7 +92,7 @@ export default function Page() {
   const fetchUser = async () => {
     const cookieUsername = Cookies.get('username');
     if (!cookieUsername) {
-      router.push('/login_register');
+      router.push('/new/login_register.html');
       return;
     }
 
@@ -103,7 +103,7 @@ export default function Page() {
       setUsername(user.data.username);
       Cookies.set('userId', user.data.id);
       } catch (error) {
-      router.push('/login_register');
+      router.push('/new/login_register.html');
     }
     try {
       const userId = Cookies.get('userId');
@@ -205,8 +205,10 @@ export default function Page() {
             } catch (error) {
               console.error('Error logging out:', error);
             }
-            window.dispatchEvent(new Event('cookieChange'));
-            router.push('/home')
+            if (typeof window !== "undefined") {
+              window?.dispatchEvent(new Event('cookieChange'));
+            }
+            router.push('/new/home.html');
           }}
         />
       </div>

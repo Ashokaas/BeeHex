@@ -27,13 +27,13 @@ export default function ShowGrid (props: GridProps) {
   
 
   function handleHexagonClick(i: number, j: number) {
-    console.log(`Clicked on hexagon ${i}-${j}`);
-    console.log(clickCallback)
+    
+    
     clickCallback(i, j);
   }
 
   function handleHexagonHover(i: number, j: number) { // Non utilisé pour l'instant, boilerplate pour plus tard peut-être
-    console.log(`Hovered on hexagon ${i}-${j}`);
+    
     hoverCallback(i, j);
   }
 

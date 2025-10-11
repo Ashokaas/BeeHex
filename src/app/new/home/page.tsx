@@ -1,6 +1,6 @@
 "use client";
 
-import BottomNavBar from '../../components/bottom_navbar/bottom_navbar';
+import BottomNavBar from '../../../components/bottom_navbar/bottom_navbar';
 import BeautifulButton from '@/components/button/button';
 import styles from './home.module.css';
 import CustomAlert from '@/components/custom_alert/custom_alert';
@@ -60,7 +60,7 @@ export default function Home() {
 
 					<div className={styles.try_now}>
 						<h2>Essayer maintenant !</h2>
-						<Link href='/hex/l_0_5'><img src="/exemple.gif" alt="BeeHex demo" /></Link>
+						<Link href='/new/hex/?id=l_0_5'><img src="/exemple.gif" alt="BeeHex demo" /></Link>
 
 					</div>
 				</div>

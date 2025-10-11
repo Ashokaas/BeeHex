@@ -1,14 +1,12 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
-import { useParams } from 'next/navigation'
-import Image from "next/image";
-import BottomNavBar from '../../../components/bottom_navbar/bottom_navbar';
 import "material-symbols";
 import styles from "./hex.module.css";
 import axios from "axios";
 
 import Cookies from 'js-cookie';
 
-import React, { useState, useEffect, use } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 
 import ShowGrid from "./Grid";
 import GameInstance from "./GameInstance";
@@ -18,11 +16,12 @@ import { WebsocketHandler } from "./WebsocketHandler";
 import { DatabaseGame, Game, GameStatus, ServerBoundJoinGamePacket, ServerBoundPacketType, ServerBoundPlayMovePacket, UserId, LocalGameParameters, Coordinate } from "../../definitions";
 import { OfflineHandler } from './OfflineHandler';
 import CustomAlert from '@/components/custom_alert/custom_alert';
-import { attributeScore, basicHeuristic, Explorer, RecommendedMove, Score, SimpleGameInstance } from './Algorithm';
+import { basicHeuristic, Explorer, RecommendedMove, Score } from './Algorithm';
 import SteppedSlider from '@/components/stepped_slider/stepped_slider';
 import { MoveEvaluation } from '@/components/analysis_board/move_evaluation/move_evaluation';
-import Title_h1 from '@/components/title_h1/title_h1';
 import Spacer from '@/components/spacer/spacer';
+import { useRouter, useSearchParams } from "next/navigation";
+import { stat } from "fs";
 
 
 enum GameState {
@@ -33,13 +32,25 @@ enum GameState {
 }
 
 type moveArray = number[][];
-const explorer = new Explorer([[1, 1], [1, 1]], 5, basicHeuristic, () => {})
 
-export function PlayerStats(props: { name: string, timer: string }) {
+
+export function PlayerStats(props: { name: string, timer: string, status: "red" | "blue" | "neutral" }) {
+  let timerStyle;
+  switch (props.status) {
+    case "red": timerStyle = styles.player_timer_red; break;
+    case "blue": timerStyle = styles.player_timer_blue; break;
+    case "neutral": timerStyle = styles.player_timer_neutral; break;
+  }
+
+  // Set font height to 0 if timer == "X:XX" by fusing timerStyle with styles.player_timer_hidden
+  if (props.timer === "X:XX") {
+    timerStyle = `${timerStyle}   ${styles.player_timer_hidden}`;
+  }
+  
   return (
     <div className={styles.player_status}>
       <h1 className={styles.player_name}>{props.name}</h1>
-      <h1 className={styles.player_timer}>{props.timer}</h1>
+      <h1 className={timerStyle}>{props.timer}</h1>
     </div>
   );
 }
@@ -110,10 +121,11 @@ function parseGameParametersAndMoves(gameId: string): [LocalGameParameters, move
 
 }
 export default function Home() {
+  const router = useRouter();
   const userId = Cookies.get('userId');
-  const rawGameId = useParams<{ gameId: string }>().gameId;
+  const rawGameId = useSearchParams().get('id')!;
   if (rawGameId === undefined || rawGameId === null || rawGameId === '' || rawGameId.length < 3) {
-    window.location.href = '/';
+    router.push("/new/home.html");
   }
   let gameType: "online" | "local" | "moves";
   let gameParameters: { time_limit: number, board_size: number } | undefined | null;
@@ -129,7 +141,7 @@ export default function Home() {
     gameType = "local";
     gameParameters = parseGameParameters(gameId);
     if (!gameParameters) {
-      window.location.href = '/';
+      router.push("/new/home.html");
     }
 
   }
@@ -138,7 +150,7 @@ export default function Home() {
     gameType = "moves";
     const gameParametersAndMoves = parseGameParametersAndMoves(gameId);
     if (!gameParametersAndMoves) {
-      window.location.href = '/';
+      router.push("/new/home.html");
 
     } else {
       [gameParameters, moves] = gameParametersAndMoves;
@@ -146,7 +158,7 @@ export default function Home() {
   }
   else {
     //Error
-    window.location.href = '/';
+    router.push("/new/home.html");
   }
   const [gameState, setGameState] = useState(GameState.LOADING);
   const [storedMoves, setStoredMoves] = useState(moves);
@@ -154,9 +166,10 @@ export default function Home() {
   let workingGameState: GameState = GameState.LOADING;
   let game: GameInstance | undefined = undefined;
   const [grid, setGrid] = useState([[0, 0], [0, 0]]);
-  const [turn , setTurn] = useState(1);
+  const [turn, setTurn] = useState(0);
   const [clickCallback, setClickCallback] = useState<(i: number, j: number) => void>(() => () => { });
   const [hoverCallback, setHoverCallback] = useState<(i: number, j: number) => void>(() => () => { });
+  const [explorerSetGame, setExplorerSetGame] = useState<((grid: Array<Array<number>>, turn: number, heuristic: Function, updateCallback: Function) => void)>(() => () => { });
   const fetchUser = async (userId: UserId) => {
     try {
       const user = await axios.get(`https://${getEnv()['API_IP']}/get_user/${userId}`, {});
@@ -200,6 +213,9 @@ export default function Home() {
   const [moveEvaluationMoves4, setMoveEvaluationMoves4] = useState([] as Coordinate[]);
   const [recommendedMoves, setRecommendedMoves] = useState([] as Coordinate[]);
 
+  const [timerStatus1, setTimerStatus1] = useState<"red" | "blue" | "neutral">("neutral");
+  const [timerStatus2, setTimerStatus2] = useState<"red" | "blue" | "neutral">("neutral");
+
 
   function reviewClickCallback(i: number, j: number) {
     setNextCurrentMove([i, j]);
@@ -241,7 +257,15 @@ export default function Home() {
 
 
   useEffect(() => {
+    const explorer = new Explorer([[1, 1], [1, 1]], 5, basicHeuristic, () => {});
+    
+    if (typeof window !== undefined) {
+      window.onbeforeunload = () => {
+        explorer.terminate();
+      }
+    }
 
+    setExplorerSetGame(() => explorer.setGame.bind(explorer));
     async function initialize() {
       async function onlineGamePreInitialize() {
 
@@ -252,7 +276,7 @@ export default function Home() {
           }
 
           function gameSearchCallback(game_parameters: any, player_count: number, elo_range: [number, number]) { // Inutilisé ici, destiné à la page de recherche de jeu
-            console.log(game_parameters, player_count, elo_range);
+            
           }
 
           function gameFoundCallback(game_id: any) {
@@ -266,17 +290,21 @@ export default function Home() {
             setGameParametersState(game_details.game_parameters);
             setGrid(game_details.grid);
             showGrid();
+            
+            delayedScaleHexagonGrid();
           }
 
           function movePlayedCallback(x: number, y: number, turn: number, grid_array: Array<Array<number>>) {
             if (game) {
               game.updateGameState(grid_array, turn);
               setGrid(grid_array);
+              
+              delayedScaleHexagonGrid();
             }
           }
 
           function gameEndCallback(status: GameStatus, moves: string) {
-            console.log('Game ended', status, moves);
+            
             setStoredMoves(moves.split(' ').map((move) => {
               const move_int = parseInt(move);
               const y = Math.floor(move_int / game!!.getGridArray().length);
@@ -288,22 +316,22 @@ export default function Home() {
             workingGameState = GameState.REVIEWING;
             
             if ((ownId === player1Id && status === GameStatus.FIRST_PLAYER_WIN) || (ownId === player2Id && status === GameStatus.SECOND_PLAYER_WIN)) {
-              console.log('Victoire');
+              
               setT1("Victoire");
               setT2("Vous avez gagné");
               setShowEndGameAlert(true);
             } else if ((ownId === player1Id && status === GameStatus.SECOND_PLAYER_WIN) || (ownId === player2Id && status === GameStatus.FIRST_PLAYER_WIN)) {
-              console.log('Défaite');
+              
               setT1("Défaite");
               setT2("Vous avez perdu");
               setShowEndGameAlert(true);
             } else {
-              console.log('Erreur');
+              
             }
           }
 
           function connectionEndedCallback() {
-            console.log('Connection ended');
+            
             if (workingGameState === GameState.PLAYING) {
               setGameState(GameState.RECONNECTING);
               workingGameState = GameState.RECONNECTING;
@@ -345,22 +373,22 @@ export default function Home() {
         const gameData: DatabaseGame = await fetchGame(gameId);
         if (!gameData) {
           console.error('Game not found');
-          window.location.href = '/';
+          router.push("/new/home.html");
         }
 
         const [player1Id, player1Username, player1MMR, player1RegistrationDate] = await fetchUser(gameData.firstPlayerId);
         const [player2Id, player2Username, player2MMR, player2RegistrationDate] = await fetchUser(gameData.secondPlayerId);
 
         setPlayers({
-          player1: { name: player1Username, timer: "X:XX" },
-          player2: { name: player2Username, timer: "X:XX" }
+          player1: { name: player1Username, timer: "" },
+          player2: { name: player2Username, timer: "" }
         });
         if (gameData.status === GameStatus.IN_PROGRESS) {
           onlineGameInitialize();
           return;
         } else {
           setGameParametersState(gameData.gameParameters);
-          setStoredMoves(gameData.moves!!.split(' ').map((move) => {
+          setStoredMoves(gameData.moves!!.split(' ').map((move: string) => {
             const move_int = parseInt(move);
             const y = Math.floor(move_int / gameData.gameParameters.board_size);
             const x = move_int % gameData.gameParameters.board_size;
@@ -379,7 +407,7 @@ export default function Home() {
         }
 
         function gameSearchCallback(game_parameters: any, player_count: number, elo_range: [number, number]) { // Inutilisé ici, destiné à la page de recherche de jeu
-          console.log(game_parameters, player_count, elo_range);
+          
         }
 
         function gameFoundCallback(game_id: any) {
@@ -393,6 +421,7 @@ export default function Home() {
           setGameParametersState(game_details.game_parameters);
           setGrid(game_details.grid);
           showGrid();
+          delayedScaleHexagonGrid();
         }
 
         function movePlayedCallback(x: number, y: number, turn: number, grid_array: Array<Array<number>>) {
@@ -403,7 +432,7 @@ export default function Home() {
         }
 
         function gameEndCallback(status: GameStatus, moves: string, winningHexagons: Array<[number, number]>) {
-          console.log('Game ended', status, moves);
+          
           setStoredMoves(moves.split(' ').map((move) => {
               const move_int = parseInt(move);
               const y = Math.floor(move_int / game!!.getGridArray().length);
@@ -411,7 +440,7 @@ export default function Home() {
               return [x, y];
             }));
             /*
-          console.log('winningHexagons', winningHexagons);
+          
           winningHexagons.reverse();
             winningHexagons.forEach((hexagon, i) => {
             setTimeout(() => {
@@ -475,6 +504,11 @@ export default function Home() {
     };
 
     initialize();
+    
+    delayedScaleHexagonGrid();
+    return () => {
+      explorer.terminate();
+    };
   }, []); // L'array vide signifie que cette fonction ne s'exécute qu'une seule fois
 
   useEffect(() => {
@@ -491,14 +525,24 @@ export default function Home() {
         ggrid[move[0]][move[1]] = i % 2 === 0 ? 1 : 2;
       }
       setGrid(ggrid);
-      console.log(ggrid, currentMoves);
-      explorer.setGame(ggrid, currentMoves.length + 1, basicHeuristic, explorerCallback)
+      
+      explorerSetGame(ggrid, currentMoves.length + 1, basicHeuristic, explorerCallback)
     }
   }, [gameState, currentMoves]);
 
   useEffect(() => {
-    setTurn(grid.join("").replaceAll("0", "").length + 1);
+    setTurn(grid.join("").replaceAll("0", "").replaceAll(",", "").length + 1);
   }, [grid]);
+
+  useEffect(() => {
+    if (turn % 2 === 1) {
+      setTimerStatus1("red");
+      setTimerStatus2("neutral");
+    } else {
+      setTimerStatus1("neutral");
+      setTimerStatus2("blue");
+    }
+  }, [turn]);
 
   useEffect(() => {
     if (gameState === GameState.REVIEWING) {
@@ -509,6 +553,7 @@ export default function Home() {
   }, [nextCurrentMove]);
 
   return (
+    <Suspense>
     <>
       {showEndGameAlert
         &&
@@ -530,8 +575,8 @@ export default function Home() {
 
         <div className={styles.players}>
           <div className={styles.game_status}>
-            <PlayerStats name={players.player1.name} timer={players.player1.timer} />
-            <PlayerStats name={players.player2.name} timer={players.player2.timer} />
+            <PlayerStats name={players.player1.name} timer={players.player1.timer} status={timerStatus1} />
+            <PlayerStats name={players.player2.name} timer={players.player2.timer} status={timerStatus2} />
           </div>
 
           
@@ -563,8 +608,63 @@ export default function Home() {
         </div>
       </div>}
     </>
+    </Suspense>
   );
 }
 function oui(i:number) {
-  console.log("oui");
+  
+}
+
+function delayedScaleHexagonGrid() {
+  setTimeout(scaleHexagonGrid, 10);
+}
+function scaleHexagonGrid() {
+  if (typeof document === undefined || typeof window === undefined) {
+    return;
   }
+  //const gridSize = currentGame.board.size 
+  const hexagonGrid = document.getElementsByClassName(styles.hexagon_grid)[0] as HTMLDivElement;
+  const hexagonParent = document.getElementsByClassName(styles.hex_parent)[0] as HTMLDivElement;
+  const playerPanel = document.getElementsByClassName(styles.players)[0] as HTMLDivElement;
+  const gameInterface = document.getElementsByClassName(styles.game_interface)[0] as HTMLDivElement;
+  const playerPanelWidth = playerPanel.clientWidth
+  const outerWidth = hexagonGrid.clientWidth
+  const parentOuterWidth = hexagonParent.clientWidth;
+  const outerHeight = hexagonGrid.clientHeight
+  const parentOuterHeight = hexagonParent.clientHeight;
+  const gameInterfaceHeight = gameInterface.clientHeight
+  const screen_width = Math.min(screen.availWidth, window.innerWidth)
+  const screen_height =  Math.min(screen.availHeight, window.innerHeight)
+  if (outerWidth === 0) {
+    setTimeout(scaleHexagonGrid, 100);
+    return;
+  }
+  const width_ratio = Math.min((1/(outerWidth/parentOuterWidth)*0.94), 4)
+  const height_ratio =  Math.min((1/(outerHeight/parentOuterHeight)*0.94), 4)
+  if (Math.min(width_ratio, height_ratio) > 3.8) {
+    setTimeout(scaleHexagonGrid, 10);
+  } else {  
+    hexagonGrid.style.transform = `scale(${Math.min(width_ratio, height_ratio, 2.25)})`
+  }
+  if (screen_width >= screen_height) {
+    hexagonParent.style.width = `0px`
+    hexagonParent.style.width = `${screen_width - playerPanelWidth}px`;
+    hexagonParent.style.maxWidth = ``;
+    hexagonParent.style.height = `${gameInterfaceHeight}px`;
+    playerPanel.style.height = `${screen_height}px`;  
+  } else {
+  hexagonParent.style.maxWidth = `${screen_height}px`;
+  hexagonParent.style.width = `100%`;
+  hexagonParent.style.height = ``;
+  playerPanel.style.height = ``;
+  //hexagonGrid.css('margin', `0`)
+  }
+  ////console.log(screen_width, outerWidth);
+}
+
+if (typeof window !== "undefined") {
+  window.addEventListener('resize', scaleHexagonGrid);
+  window.addEventListener('resize', delayedScaleHexagonGrid);
+  delayedScaleHexagonGrid();
+  setTimeout(scaleHexagonGrid, 750);
+}

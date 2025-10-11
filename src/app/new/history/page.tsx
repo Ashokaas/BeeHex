@@ -10,7 +10,6 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import 'material-symbols';
 import Cookies from "js-cookie";
-import router from "next/router";
 
 type GameArr = {
   gameId: string;
@@ -24,6 +23,7 @@ type GameArr = {
 };
 
 function GameResult({ game }: { game: GameArr }) {
+  const router = useRouter();
   const userId = Cookies.get('userId');
   const gameid = game.gameId;
   const isFirstPlayer = game.firstPlayerId === userId;
@@ -59,7 +59,7 @@ function GameResult({ game }: { game: GameArr }) {
         </div>
 
         <div className={styles.history_item_content}>
-          <BeautifulButton text="Analyse" icon="analytics" onClick={async (e) => { window.location.href = `/hex/o_${gameid}` }} />
+          <BeautifulButton text="Analyse" icon="analytics" onClick={async (e) => router.push(`/new/hex.html?id=o_${gameid}`)} />
         </div>
 
       </div>
@@ -75,13 +75,13 @@ export default function Page() {
 
   const fetchUser = async () => {
     const userId = Cookies.get('userId');
-    console.log("userId:", userId);
-    if (!userId) { router.push('/login_register'); return; }
+    
+    if (!userId) { router.push('/new/login_register.html'); return; }
     try {
       const url = `https://${getEnv()['API_IP']}/get_games_by_user/${userId}`;
-      console.log("Requête envoyée à :", url);
+      
       const gamesRes = await axios.get(url);
-      console.log("Réponse reçue :", gamesRes.data);
+      
       setGamesArr(gamesRes.data);
     } catch (error) {
       console.error('Error fetching user:', error);
@@ -101,7 +101,7 @@ export default function Page() {
           <div className={styles.history_item}>
             <div className={styles.history_item_title}>Historique</div>
             <div className={styles.history_item_content}>
-              <div className={styles.history_item_content_text}>Pas d'historique disponible</div>
+              <div className={styles.history_item_content_text}>Pas d&apos;historique disponible</div>
             </div>
           </div>
         ) : (

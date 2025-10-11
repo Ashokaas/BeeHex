@@ -148,17 +148,16 @@
     font-size: 2em;
 }
 
-.game_interface .hex_parent {
+.game_interface {
     grid-column: 1;
     display: grid;
     grid-template-rows: 5fr 1fr;
     grid-template-columns: 1fr;
     justify-content: center;
-    align-items: center;
     width: 100%;
 }
 
-.hex_parent .hexagon_grid {
+ .hexagon_grid {
     grid-row: 1;
     grid-column: 1;
     display: flex;
@@ -182,7 +181,9 @@
 }
 
 .hex_parent {
-    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 .game_interface .hex_parent > * {
     margin: 1vh 0;
@@ -209,15 +210,43 @@
     width: 95%;
 }
 
-.player_timer {
+.player_timer_neutral {
     padding: 10px;
     padding-top: 0px;
     padding-bottom: 0px;
     margin-top: 5px;
     font-size: 3em;
+    min-height: 8px;
+    overflow: hidden;
     background-color: var(--bg-color);
     color: gray;
+}
 
+.player_timer_red {
+    padding: 10px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    margin-top: 5px;
+    font-size: 3em;
+    min-height: 8px;
+    overflow: hidden;
+    background-color: var(--red-side);
+    color: white;
+}
+.player_timer_blue {
+    padding: 10px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    margin-top: 5px;
+    font-size: 3em;
+    min-height: 8px;
+    overflow: hidden;
+    background-color: var(--blue-side);
+    color: white;
+}
+
+.player_timer_hidden {
+    height: 8px;
 }
 
 .player_status {

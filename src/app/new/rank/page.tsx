@@ -35,7 +35,7 @@ export default function Home() {
 		while (response.data.rows.length < 5) {
 			response.data.rows.push({ username: "", mmr: "" });
 		}
-		console.log(response.data.rows.length);
+		
 		setUsers(response.data.rows);
 		setTotal(response.data.total);
 
@@ -59,10 +59,10 @@ export default function Home() {
 		}
 	}
 
-	const reqSvgs = require.context('../../assets/ranked_icons', true, /\.svg$/)
+	const reqSvgs = require.context('../../../assets/ranked_icons', true, /\.svg$/)
 	const paths = reqSvgs.keys()
 	const svgs = paths.map(path => reqSvgs(path))
-	console.log(svgs)
+	
 	const ranks = [200, 400, 600, 800, 1000, 1200, 1400, 1600, 1800]
 	const classements = [
     [200, "Faux-bourdon I"],

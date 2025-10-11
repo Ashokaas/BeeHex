@@ -40,7 +40,7 @@ export default class GameInstance {
   }
 
   updateGameState(grid_array: Array<Array<number>>, turn: number) {
-    console.log(`${grid_array.join("|")}`)
+    
     this.grid_array = grid_array;
     this.turn = turn;
   }

@@ -1,6 +1,6 @@
 export default function getEnv() {
   return {
-    'API_IP': 'api.beehex.local',
-    'WEBSOCKET_IP': 'game.beehex.local'
+    'API_IP': 'api.beehex.fr',
+    'WEBSOCKET_IP': 'game.beehex.fr'
   };
 }

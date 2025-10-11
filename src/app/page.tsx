@@ -1,5 +1,9 @@
-import { redirect } from 'next/navigation'
+'use client';
+
+import { useRouter } from "next/navigation";
+
  
 export default function() {
-  redirect('/home') // Navigate to the new post page
+  const router = useRouter();
+  router.push('/new/home.html');
 }

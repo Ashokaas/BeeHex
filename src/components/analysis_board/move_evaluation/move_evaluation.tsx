@@ -2,7 +2,7 @@ import React from "react";
 import styles from "./move_evaluation.module.css";
 import Spacer from "../../spacer/spacer";
 import { Coordinate } from "@/app/definitions";
-import { Score } from "@/app/hex/[gameId]/Algorithm";
+import { Score } from "@/app/new/hex/[gameId]/Algorithm";
 
 export function MoveEvaluation(props: { 
   index: number, 

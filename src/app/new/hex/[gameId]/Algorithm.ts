@@ -1,4 +1,4 @@
-import { GridHash, RawScoredGameInstance, RawSimpleGameInstance, RawScore, Coordinate, AlgorithmExplorerBoundGenericPacket, AlgorithmExplorerBoundPacketType, AlgorithmExplorerBoundResultPacket, AlgorithmWorkerBoundPacketType, AlgorithmWorkerBoundExplorePacket, AlgorithmWorkerBoundSetIdPacket } from "../../definitions";
+import { GridHash, RawScoredGameInstance, RawSimpleGameInstance, RawScore, Coordinate, AlgorithmExplorerBoundGenericPacket, AlgorithmExplorerBoundPacketType, AlgorithmExplorerBoundResultPacket, AlgorithmWorkerBoundPacketType, AlgorithmWorkerBoundExplorePacket, AlgorithmWorkerBoundSetIdPacket } from "../../../definitions";
 import { ArrayCache } from "./ArrayCache";
 
 var empty_array: number[][] = []
@@ -151,7 +151,7 @@ export class ScoredGameInstance extends SimpleGameInstance {
 
 	getBestChildInstance(): ScoredGameInstance {
 		if (this.nextInstances.size > 0) {
-			//console.log(this.getGridHash())
+			//
 			return this.leadingInstance!!.getBestChildInstance(); // On retourne l'instance avec le meilleur score
 		} else return this;
 		/*
@@ -204,8 +204,8 @@ export class ScoredGameInstance extends SimpleGameInstance {
 			this.completedBranch = this.completedBranch && instance.completedBranch
 		}
 		if (!currentScore.isEqualTo(newScore) || this.leadingInstance != leadingInstance || this.completedBranch == true) {
-			//console.log("Current turn : " + this.turn + " | Current score : " + currentScore.toString() + " | New score : " + newScore.toString())	
-			//console.log("Climb up")
+			//	
+			//
 			this.score = newScore;
 			this.leadingInstance = leadingInstance
 			this.updatePreviousInstances();
@@ -258,7 +258,7 @@ class MainScoredGameInstance extends ScoredGameInstance {
 		if (newScore.isWinCountdown) { // Lorsque le score des branches est un nombre de coups avant la victoire, on doit augmenter ce nombre de 0.5, puisque un coup supplémentaire doit être joué
 			newScore.score += newScore.score > 0 ? 0.5 : -0.5 // 
 		}
-		//console.log("MAIN Current turn : " + this.turn + " | Current score : " + currentScore.toString() + " | New score : " + newScore.toString())
+		//
 		this.completedBranch = leadingInstance.completedBranch
 
 		for (let instance of nextInstances) {
@@ -268,7 +268,7 @@ class MainScoredGameInstance extends ScoredGameInstance {
 			console.warn("Completed branch" + this.getGridHash())
 		}
 		if (!currentScore.isEqualTo(newScore) || this.leadingInstance != leadingInstance || this.completedBranch == true) {
-			//console.log("CALLBACK")
+			//
 			this.score = newScore;
 			this.leadingInstance = leadingInstance
 			this.explorerCallback(this)
@@ -358,21 +358,21 @@ export class Explorer {
 		}
 		let minMaxFunction;
 		if (this.game.turn % 2 === 0) {
-			//console.log("Min")
+			//
 			minMaxFunction = (a: MainScoredGameInstance, b: MainScoredGameInstance) => a.getScore().isBiggerThan(b.getScore()) ? 1 : -1
 		} else {
-			//console.log("Max")
+			//
 			minMaxFunction = (a: MainScoredGameInstance, b: MainScoredGameInstance) => a.getScore().isSmallerThan(b.getScore()) ? 1 : -1
 		}
 		this.bestMoves.sort(minMaxFunction)
 		if (this.bestMoves.length <= 10) {
-			//console.log("Best scores : [" + this.bestMoves.map(move => move.score.toString()).join(", ") + "]")
+			//
 			const recommendedMoves = this.bestMoves.map(move => {return {coordinate: move.playedMove, score: move.getScore(), optimalRoute: move.getBestChildInstance().moves} as RecommendedMove})
 			this.updateCallback(recommendedMoves); // Envoie le coup joué et le score à la fonction de mise à jour
 			return
 		}
 		this.bestMoves.pop()
-		//console.log("Best scores : [" + this.bestMoves.map(move => move.score.toString()).join(", ") + "]")
+		//
 		const recommendedMoves = this.bestMoves.map(move => {return {coordinate: move.playedMove, score: move.getScore(), optimalRoute: move.getBestChildInstance().moves} as RecommendedMove})
 		this.updateCallback(recommendedMoves); // Envoie le coup joué et le score à la fonction de mise à jour
 	}
@@ -417,14 +417,14 @@ export class Explorer {
 			allWinCountdowns = true;
 		}
 		for (let i = 0; i < this.mainInstances.length; i++) {
-			//console.log("Pass " + i + " | " + this.mainInstances[i].getScore().toString())
+			//
 			let mainInstance = this.mainInstances[i];
 			if (mainInstance.getScore().isWinCountdown && !allWinCountdowns) {
 				continue
 			}
 			let bestInstance = mainInstance.getNextChildToExplore(); // Récupère l'instance avec le meilleur score
 			if (!bestInstance.completedBranch) {
-				//console.log("Send " + bestInstance.getGridHash() + " | " + bestInstance.getScore().toString())
+				//
 				this.worker.postMessage({
 					id: this.game.getGridHash(),
 					type: AlgorithmWorkerBoundPacketType.EXPLORE_INSTANCE,
@@ -433,8 +433,8 @@ export class Explorer {
 				return; // On sort de la boucle une fois qu'on a trouvé une instance à explorer
 			}
 		}
-		console.log("Finished exploration")
-		console.log(this.bestMoves)
+		
+		
 	}
 
 	public terminate() {
@@ -455,7 +455,7 @@ export class Explorer {
 			this.exploredBoardCount += 1;
 			if (currentTime - this.startTime > 5000) {
 				let boardsPerSecond = Math.round((this.exploredBoardCount * 1000) / (currentTime - this.startTime));
-				console.log(`Explored ${this.exploredBoardCount} boards in ${currentTime - this.startTime} ms (${boardsPerSecond} boards/s)`);
+				
 				this.startTime = currentTime;
 				this.exploredBoardCount = 0;
 			}
@@ -530,7 +530,7 @@ export function basicHeuristic(instance: SimpleGameInstance): Score {
 	let grid = instance.getGrid();
 	let player1Score = attributeScore(grid, 1); // On calcule le score du joueur 1
 	let player2Score = attributeScore(grid, 2); // On calcule le score du joueur 2
-	//console.log(`minCost|minBridge1: ${player1Score[0]}|${player1Score[1]}, J2: ${player2Score[0]}|${player2Score[1]}, turn: ${instance.getTurn()}, grid: ${grid.join("|")}`)
+	//
 	if (player1Score[0] === 0) {
 		return new Score(player1Score[1] + (instance.getTurn() % 2 === 0 ? 0.5 : 0), true)
 	}
@@ -676,7 +676,7 @@ function getInnerBridgeHexagons(hex1: Coordinate, hex2: Coordinate): Array<Coord
 	let diffX = hex2[1] - hex1[1];
 	let y = hex2[0];
 	let x = hex2[1];
-	//console.log(x, y, hex2[0], hex2[1], diffX, diffY)
+	//
 	if (diffX === 1 && diffY === 1) {
 		return [[y, x - 1], [y - 1, x]];
 	}

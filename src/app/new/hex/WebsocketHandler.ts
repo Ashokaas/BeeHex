@@ -17,16 +17,16 @@ export class WebsocketHandler {
 
 	constructor(callbacks: WebsocketCallbacks) {
 		this.callbacks = callbacks;
-		this.socket = new WebSocket(`ws://${getEnv()['WEBSOCKET_IP']}/`);
+		this.socket = new WebSocket(`wss://${getEnv()['WEBSOCKET_IP']}/`);
 		this.socket.onopen = () => {
-			console.log("Connected to game server");
+			
 		};
 		this.socket.onmessage = (e) => {
 			const packet = JSON.parse(e.data) as packets.ClientBoundGenericPacket;
 			this.handlePacket(packet);
 		};
 		this.socket.onclose = () => {
-			console.log("Disconnected from game server");
+			
 			this.callbacks.connectionEndedCallback();
 		};
 		this.socket.onerror = (e) => {

@@ -1,6 +1,6 @@
 "use client"
 
-import BottomNavBar from '../../components/bottom_navbar/bottom_navbar';
+import BottomNavBar from '../../../components/bottom_navbar/bottom_navbar';
 import "material-symbols";
 import styles from "./login_register.module.css";
 
@@ -33,7 +33,7 @@ function StatusText(props: { text: string }) {
 export default function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  console.log(getEnv());
+  
   const router = useRouter()
 
   const [logginError, setLogginError] = useState(false);
@@ -48,13 +48,15 @@ export default function Login() {
 
       // Store the token in local storage or a state management library
 
-      console.log(response);
-      window.dispatchEvent(new Event('cookieChange'));
-      router.push('/home');
+      
+      if (typeof window !== "undefined") {
+        window?.dispatchEvent(new Event('cookieChange'));
+      }
+      router.push('/new/home.html');
       /*
       if (type === 'login') {
         const user = await axios.post(`https://${getEnv()["API_IP"]}/me`, {}, { headers: { 'Authorization': response.data.token }, withCredentials: true, });
-        console.log(user.data);
+        
       }*/
       
     } catch (error) {

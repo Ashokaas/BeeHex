@@ -1,5 +1,5 @@
 import Image from "next/image";
-import BottomNavBar from '../../components/bottom_navbar/bottom_navbar';
+import BottomNavBar from '../../../components/bottom_navbar/bottom_navbar';
 import Head from 'next/head';
 
 export default function Home() {
