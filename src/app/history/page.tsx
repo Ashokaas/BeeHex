@@ -74,12 +74,9 @@ export default function Page() {
   const router = useRouter();
 
   const fetchUser = async () => {
-    const token = Cookies.get('token');
     const userId = Cookies.get('userId');
-    console.log("token:", token);
     console.log("userId:", userId);
-    if (!token) { router.push('/login_register'); return; }
-    if (!userId) { console.warn("userId non trouvé dans les cookies"); return; }
+    if (!userId) { router.push('/login_register'); return; }
     try {
       const url = `http://${getEnv()['IP_HOST']}:3001/get_games_by_user/${userId}`;
       console.log("Requête envoyée à :", url);

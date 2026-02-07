@@ -10,10 +10,10 @@ import Cookies from 'js-cookie';
 
 // en fait pour régler mon problème il faut créer un élément pour chaque bouton mais là je vais me coucher
 
-function MyAccountButton() {
+function MyAccountButton(props: { username: string }) {
   return (
     <Link className={styles.a} href="/my_account">
-      <p>Mon compte</p>
+      <p>{props.username}</p>
       <span className="material-symbols-rounded">account_circle</span>
     </Link>
   );
@@ -28,6 +28,15 @@ function LoginRegisterButton() {
   );
 }
 
+function LoadingButton() {
+  return (
+    <div className={styles.a}>
+      <p>Chargement...</p>
+      <span className="material-symbols-rounded">hourglass_empty</span>
+    </div>
+  );
+}
+
 
 function ShowLoginOrMyAccount() {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -35,16 +44,16 @@ function ShowLoginOrMyAccount() {
 
   useEffect(() => {
     setIsMounted(true);
-    const checkLogin = () => setLoggedIn(!!Cookies.get('token'));
+    const checkLogin = () => setLoggedIn(!!Cookies.get('username'));
     checkLogin();
 
     window.addEventListener('cookieChange', checkLogin);
     return () => window.removeEventListener('cookieChange', checkLogin);
   }, []);
 
-  if (!isMounted) return null; // Empêche le rendu côté serveur
+  if (!isMounted) return <LoadingButton />; // Empêche le rendu côté serveur
 
-  return loggedIn ? <MyAccountButton /> : <LoginRegisterButton />;
+  return loggedIn ? <MyAccountButton username={Cookies.get('username') || ''} /> : <LoginRegisterButton />;
 }
 
 
