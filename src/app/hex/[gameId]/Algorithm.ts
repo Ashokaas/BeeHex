@@ -17,9 +17,6 @@ export class SimpleGameInstance { // TODO Ajouter un check pour victoire
 		this.gridHash = hashGrid(grid); 
 	}
 
-
-	
-
 	getValidMoves() {
 		const validMoves: Array<Coordinate> = [];
 		for (let i = 0; i < this.grid.length; i++) {

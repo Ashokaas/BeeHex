@@ -1,5 +1,5 @@
 export const BOARD_SIZES = [5, 7, 9];
-export const TIME_LIMITS = [0, 180, 300, 600];
+export const TIME_LIMITS = [0];
 
 export type UserId = string;
 export type RoomId = string;

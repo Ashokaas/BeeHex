@@ -228,7 +228,7 @@ export default function Home() {
           <RadioButton
             title="Choisir le type de partie"
             varName={gameType}
-            values={["Normal", "Classé", "Hors-Ligne"]}
+            values={["Normal", "Hors-Ligne"]}
             setVar={setGameType}
           />
           <Spacer direction="H" spacing={3} />
