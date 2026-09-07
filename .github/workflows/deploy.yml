@@ -77,12 +77,18 @@ jobs:
     environment: production
 
     steps:
+      - name: Décoder la clé SSH (base64 → fichier)
+        shell: bash
+        run: |
+          echo "${{ secrets.VPS_SSHKEY }}" | base64 -d > ssh_key
+          chmod 600 ssh_key
+
       - name: Déployer sur le serveur
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.VPS_SSHKEY }}
+          key_path: ssh_key
           script: |
             git -C /opt/beehex pull --ff-only
 
