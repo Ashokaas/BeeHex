@@ -92,6 +92,7 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key_path: ssh_key
           script: |
+            set -euo pipefail
             git -C /opt/beehex pull --ff-only
 
             cat > /opt/beehex/.env <<'EOF'
