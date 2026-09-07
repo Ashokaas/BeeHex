@@ -80,13 +80,11 @@ jobs:
       - name: Déployer sur le serveur
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSHKEY }}
           script: |
             git -C /opt/beehex pull --ff-only
-
-            echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u "${{ secrets.GHCR_USER }}" --password-stdin
 
             cat > /opt/beehex/.env <<'EOF'
             # > Variables GitHub (non-secrètes)
@@ -94,8 +92,8 @@ jobs:
             CORS_ORIGIN=${{ vars.FRONTEND_PUBLIC_URL }}
             API_PUBLIC_URL=${{ vars.API_PUBLIC_URL }}
             # URLs du frontend, lues au runtime par /api/config :
-            NEXT_PUBLIC_API_URL=${{ vars.NEXT_PUBLIC_API_URL }}
-            NEXT_PUBLIC_WEBSOCKET_URL=${{ vars.NEXT_PUBLIC_WEBSOCKET_URL }}
+            NEXT_PUBLIC_API_URL=${{ vars.API_PUBLIC_URL }}
+            NEXT_PUBLIC_WEBSOCKET_URL=${{ vars.WS_PUBLIC_URL }}
             POSTGRES_DB=${{ vars.POSTGRES_DB }}
             POSTGRES_USER=${{ vars.POSTGRES_USER }}
             EOF
