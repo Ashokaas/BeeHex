@@ -81,7 +81,9 @@ jobs:
         shell: bash
         run: |
           echo "${{ secrets.VPS_SSHKEY }}" | base64 -d > ssh_key
-          chmod 600 ssh_key
+          # 644 obligatoire : le workspace est monté dans le conteneur de
+          # l'action appleboy avec userns-remap, un fichier 600 y est illisible.
+          chmod 644 ssh_key
 
       - name: Déployer sur le serveur
         uses: appleboy/ssh-action@v1.0.3
